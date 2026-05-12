@@ -1,0 +1,15 @@
+	Overview
+calculate stuff
+
+make a struct, or an entity, and have that entity have attributes
+-> pos, vel, acc
+struct RigidBody {
+	mass
+	
+	pos(vec3)
+	vel(vec3)
+	rot(vec3) -> conv to Quat
+
+}
+
+Update functions, 
