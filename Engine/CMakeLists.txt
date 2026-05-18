@@ -10,6 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(glfw3 REQUIRED)
 
+find_package(ReactPhysics3D REQUIRED)
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -41,6 +42,7 @@ include_directories(include)
 # Add the executable and link the libraries
 
 target_link_libraries(${PROJ_NAME} 
+	ReactPhysics3D::ReactPhysics3D
   imgui
   glfw 
   GL
