@@ -1,5 +1,9 @@
+#include <glm/ext/matrix_transform.hpp>
 #include <iostream>
+#include <reactphysics3d/collision/shapes/BoxShape.h>
 #include <reactphysics3d/engine/PhysicsCommon.h>
+#include <reactphysics3d/mathematics/Quaternion.h>
+#include <reactphysics3d/mathematics/Transform.h>
 #include <reactphysics3d/mathematics/Vector3.h>
 #ifndef _GLAD_GUARD_
 #include <glad/glad.h>
@@ -31,9 +35,9 @@ const char *vertexShaderSource =
     "uniform mat4 projection;\n"
     "void main()\n"
     "{\n"
-    "	// gl_Position = transform * vec4(aPos, 1.0);\n"
+    "	gl_Position = model * vec4(aPos, 1.0);\n"
     "	//gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-    "	gl_Position = vec4(aPos, 1.0);\n"
+    "	// gl_Position = vec4(aPos, 1.0);\n"
     "	ourColor = aColor;\n"
     "	TexCoord = aTex;\n"
     "}\n";
@@ -90,23 +94,13 @@ std::vector<float> verts = {
 };
 
 std::vector<unsigned int> indices = {
-    // Front face
-    0, 1, 2, 2, 3, 0,
-
-    // Back face
-    4, 5, 6, 6, 7, 4,
-
-    // Left face
-    8, 9, 10, 10, 11, 8,
-
-    // Right face
-    12, 13, 14, 14, 15, 12,
-
-    // Top face
-    16, 17, 18, 18, 19, 16,
-
-    // Bottom face
-    20, 21, 22, 22, 23, 20};
+    0,  1,  2,  2,  3,  0,  // Front face
+    4,  5,  6,  6,  7,  4,  // Back face
+    8,  9,  10, 10, 11, 8,  // Left face
+    12, 13, 14, 14, 15, 12, // Right face
+    16, 17, 18, 18, 19, 16, // Top face
+    20, 21, 22, 22, 23, 20  // Bottom face
+};
 void closeWindow(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_CAPS_LOCK) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
@@ -131,7 +125,7 @@ int main() {
 
   PhysicsCommon physicsCommon;
   PhysicsWorld *world = physicsCommon.createPhysicsWorld();
-  world->setGravity(Vector3(0, -9.81, 0));
+  world->setGravity(Vector3(0, -0.81, 0));
 
   unsigned int vao, vbo, ibo;
 
@@ -189,15 +183,53 @@ int main() {
   glDeleteShader(vertex);
   glDeleteShader(fragment);
 
+  float position[3] = {0.2f, 0.2f, 0.2f};
+  float scale[3] = {0.2f, 0.2f, 0.2f};
+
+  glUseProgram(shader);
+  glm::mat4 model;
+  model = glm::mat4(1.0f);
+  model = glm::scale(model, glm::vec3(0.2));
+  model = glm::translate(model, glm::vec3(0));
+  unsigned int modelLoc = glGetUniformLocation(shader, "model");
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+  Vector3 startPosition(0, 0, 0);
+  Quaternion startOrn = Quaternion::identity();
+  Transform startTransform(startPosition, startOrn);
+  RigidBody *body = world->createRigidBody(startTransform);
+
+  Vector3 boxSize(0.2, 0.2, 0.2);
+  BoxShape *boxShape = physicsCommon.createBoxShape(boxSize);
+  Transform identityTransform = Transform::identity();
+  body->addCollider(boxShape, identityTransform);
+  body->setMass(1);
+
+  const float timeStep = 1.0f / 60.0f;
+
   while (!glfwWindowShouldClose(window)) {
     closeWindow(window);
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2, 0.1, 0.3, 1.0);
 
+		world->update(timeStep);
+		Transform t = body->getTransform();
+		Vector3 pos = t.getPosition();
+		Quaternion rot = t.getOrientation();
+
+		glm::vec3 position(pos.x, pos.y, pos.z);
+		std::cout << pos.y << std::endl;
+
     glUseProgram(shader);
+
+    // model = glm::scale(model, glm::vec3(0.2));
+    model = glm::translate(model, glm::vec3(position));
+    unsigned int modelLoc = glGetUniformLocation(shader, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+    glBindVertexArray(0);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
