@@ -212,13 +212,13 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2, 0.1, 0.3, 1.0);
 
-		world->update(timeStep);
-		Transform t = body->getTransform();
-		Vector3 pos = t.getPosition();
-		Quaternion rot = t.getOrientation();
+    world->update(timeStep);
+    Transform t = body->getTransform();
+    Vector3 pos = t.getPosition();
+    Quaternion rot = t.getOrientation();
 
-		glm::vec3 position(pos.x, pos.y, pos.z);
-		std::cout << pos.y << std::endl;
+    glm::vec3 position(pos.x, pos.y, pos.z);
+    std::cout << pos.y << std::endl;
 
     glUseProgram(shader);
 
