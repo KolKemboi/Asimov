@@ -17,7 +17,7 @@
 
 using namespace reactphysics3d;
 
-unsigned int WIDTH = 960;
+unsigned int WIDTH = 1920;
 unsigned int HEIGHT = 1080;
 unsigned int PixelsPerMetre = 100;
 GLFWwindow *window;
@@ -115,7 +115,7 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  // glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
   window = glfwCreateWindow(WIDTH, HEIGHT, "", NULL, NULL);
   glfwMakeContextCurrent(window);
