@@ -15,6 +15,33 @@ set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
+
+####### SETTING UP APE static libs
+##CORE STATIC LIBS
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Core)
+set(CORE_SOURCES
+	${CORE_DIR}/impl/APE_engine.cpp
+	${CORE_DIR}/impl/APE_shader.cpp
+	${CORE_DIR}/impl/APE_camera.cpp
+	${CORE_DIR}/impl/APE_ECS.cpp
+)
+
+add_library(APE_core STATIC ${CORE_SOURCES})
+target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
+
+##PHYSICS STATIC LIBS
+set(PHYSICS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Physics)
+set(PHYSICS_SOURCES
+	${PHYSICS_DIR}/impl/APE_integrator.cpp
+	${PHYSICS_DIR}/impl/APE_CollisionDetection.cpp
+	${PHYSICS_DIR}/impl/APE_CollisionResolution.cpp
+)
+
+add_library(APE_physics STATIC ${PHYSICS_SOURCES})
+target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
+
+###### CHANGE HERE TO COMPILE YOUR OWN IMGUI
+
 # set(IMGUI_SOURCES
 #   ${IMGUI_DIR}/imgui.cpp
 #   ${IMGUI_DIR}/imgui_demo.cpp
@@ -26,9 +53,11 @@ set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 # 	${IMGUI_DIR}/ImGuizmo.cpp
 # ) 
 
+
 # add_library(imgui STATIC ${IMGUI_SOURCES})
 # target_include_directories(imgui PUBLIC ${IMGUI_DIR})
 
+###GRABS THE STATIC IMGUI LIB
 add_library(imgui STATIC IMPORTED)
 set_target_properties(
 	imgui
@@ -38,11 +67,12 @@ set_target_properties(
 )
 
 
-file(COPY ${CMAKE_SOURCE_DIR}/src/shaders DESTINATION ${CMAKE_BINARY_DIR})
+# file(COPY ${CMAKE_SOURCE_DIR}/src/shaders DESTINATION ${CMAKE_BINARY_DIR})
+
+file(COPY ${CMAKE_SOURCE_DIR}/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
-	src/App.cpp 
-	src/toolbox/impl/Shader.cpp 
+	src/engine/App/app.cpp 
   src/glad.c
 )
 
@@ -53,8 +83,13 @@ include_directories(include)
 
 # Add the executable and link the libraries
 
+### MAKE SURE TO LINK APE_core to APE_physics
+target_link_libraries(APE_core PUBLIC APE_physics)
+
 target_link_libraries(${PROJ_NAME} 
   imgui
+	APE_core
+	APE_physics
   glfw 
   GL
 	ReactPhysics3D::ReactPhysics3D
