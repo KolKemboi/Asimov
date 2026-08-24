@@ -42,6 +42,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
 	src/App.cpp 
+	src/toolbox/impl/Shader.cpp 
   src/glad.c
 )
 
