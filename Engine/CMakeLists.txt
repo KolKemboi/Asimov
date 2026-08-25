@@ -10,6 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(glfw3 REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
+find_package(assimp REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -25,6 +26,7 @@ set(CORE_SOURCES
 	${CORE_DIR}/impl/APE_camera.cpp
 	${CORE_DIR}/impl/APE_mesh.cpp
 	${CORE_DIR}/impl/APE_ECS.cpp
+	${CORE_DIR}/impl/APE_assetloader.cpp
 )
 
 add_library(APE_core STATIC ${CORE_SOURCES})
@@ -80,9 +82,9 @@ set_target_properties(
 )
 
 
-# file(COPY ${CMAKE_SOURCE_DIR}/src/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/assets/models DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
 	src/App/app.cpp 
@@ -90,6 +92,9 @@ add_executable(${PROJ_NAME}
 )
 
 target_include_directories(${PROJ_NAME} PUBLIC ${GLAD_DIR})
+
+###INCLUDE THE APE HEADERS
+target_include_directories(${PROJ_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
 
 # Include directories
 include_directories(include)
@@ -101,8 +106,11 @@ target_link_libraries(APE_core PUBLIC APE_physics)
 ### MAKE SURE TO LINK APE_core to APE_buffers
 target_link_libraries(APE_core PUBLIC APE_buffers)
 
+target_link_libraries(APE_core PUBLIC assimp)
+
 target_link_libraries(${PROJ_NAME} 
   imgui
+	assimp
 	APE_core
 	APE_physics
   glfw 
