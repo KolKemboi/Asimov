@@ -1,4 +1,6 @@
 #include "APE_shader.hpp"
+#include "APE_engine.hpp"
+#include "APE_mesh.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -34,18 +36,63 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
   }
   const char *vShaderCode = vertexCode.c_str();
   const char *fShaderCode = fragmentCode.c_str();
+
+  this->m_VertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(m_VertexShader, 1, &vShaderCode, NULL);
+  glCompileShader(m_VertexShader);
+  _checkShaderCompilation(m_VertexShader, "VERTEX");
+
+  this->m_FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(m_FragmentShader, 1, &fShaderCode, NULL);
+  glCompileShader(m_FragmentShader);
+  _checkShaderCompilation(m_FragmentShader, "FRAGMENT");
+
+  this->m_ShaderProgram = glCreateProgram();
+  glAttachShader(m_ShaderProgram, m_VertexShader);
+  glAttachShader(m_ShaderProgram, m_FragmentShader);
+  glLinkProgram(m_ShaderProgram);
+  _checkShaderCompilation(m_ShaderProgram, "PROGRAM");
+
+  glDeleteShader(m_VertexShader);
+  glDeleteShader(m_FragmentShader);
 }
 
 unsigned int Shader::GetShaderProgram() { return m_ShaderProgram; }
 
-void Shader::_checkShaderCompilation(){}
+void Shader::_checkShaderCompilation(unsigned int shader, std::string type) {
+  int success;
+  char infoLog[1024];
+  if (type != "PROGRAM") {
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+      glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+      printf("ERROR::SHADER COMPILATION ERROR::%s::%s\n", type.c_str(),
+             infoLog);
+    }
+  } else {
+    glGetProgramiv(shader, GL_LINK_STATUS, &success);
+    if (!success) {
+      glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+      printf("ERROR::PROGRAM LINKING ERROR::%s::%s\n", type.c_str(), infoLog);
+    }
+  }
+}
+
+void Shader::UseShader(){
+	glUseProgram(m_ShaderProgram);
+}
+
+void Shader::Clean() {
+  glDeleteShader(m_ShaderProgram);
+  printf("SHADER::CLEANED\n");
+}
 
 /*
  * set the necessary values for this
  * that is mat4, vec3 and float, anything else can be cast into one of these
  */
-void Shader::SetMat4(glm::mat4 matrix, const char *uniformName) {}
+void Shader::SetMat4(glm::mat4 &matrix, const char *uniformName) {}
 
-void Shader::SetVec3(glm::vec3 vector, const char *uniformName) {}
+void Shader::SetVec3(glm::vec3 &vector, const char *uniformName) {}
 
-void Shader::SetFloat(float floatValue, const char *uniformName) {}
+void Shader::SetFloat(float &floatValue, const char *uniformName) {}

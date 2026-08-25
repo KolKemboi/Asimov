@@ -1,4 +1,6 @@
 #include "APE_engine.hpp"
+#include "APE_mesh.hpp"
+#include "APE_shader.hpp"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <cstdlib>
@@ -7,11 +9,38 @@
 
 Engine::Engine(const char *windowName) : m_WindowName(windowName) {
   this->_initGlfwWindowUtils();
+  this->verts = {
+      // positions          // colors           // texture coords
+      -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0
+      0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
+      0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // 2
+      -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, // 3
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4
+      0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
+      -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
+  };
+  this->indices = {
+      // Front face
+      0, 1, 2, 2, 3, 0,
+  };
+
+  this->m_Mesh =
+      std::make_unique<Mesh>(verts, verts.size() * sizeof(float), indices,
+                             indices.size() * sizeof(float));
+
+  this->m_MainFrameBuffer =
+      std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 }
 
 void Engine::Run() { this->_runAPEEngine(); }
 
-void Engine::Clean() { this->_cleanGlfwWindowUtils(); }
+void Engine::Clean() {
+
+  this->m_Mesh->Clean();
+
+  this->_cleanGlfwWindowUtils();
+}
 
 /*
  * Creates the window variables
@@ -63,14 +92,21 @@ void Engine::_miniInputSystem(GLFWwindow *window) {
 }
 
 void Engine::_runAPEEngine() {
+  this->m_DefaultShader->UseShader();
+
   while (!glfwWindowShouldClose(m_Window)) {
+
+    this->m_MainFrameBuffer->BindFrameBuffer();
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
+    this->m_Mesh->BindVAO();
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);
+    this->m_MainFrameBuffer->UnBindFrameBuffer();
 
     this->_miniInputSystem(this->m_Window);
 
-    glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
+    glfwSwapBuffers(this->m_Window);
   }
 }
 
@@ -78,6 +114,8 @@ void Engine::_runAPEEngine() {
  * cleaning everything here
  */
 void Engine::_cleanGlfwWindowUtils() {
+  this->m_DefaultShader->Clean();
+  this->m_DefaultShader = nullptr;
   glfwDestroyWindow(this->m_Window);
   this->m_Window = NULL;
   glfwTerminate();

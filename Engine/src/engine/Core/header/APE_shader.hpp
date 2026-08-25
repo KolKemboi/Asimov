@@ -5,6 +5,7 @@
 #endif
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 
 class Shader {
 public:
@@ -12,12 +13,16 @@ public:
 
   unsigned int GetShaderProgram();
 
-  void SetMat4(glm::mat4, const char *);
-  void SetVec3(glm::vec3, const char *);
-  void SetFloat(float, const char *);
+	void UseShader();
+
+	void Clean();
+
+  void SetMat4(glm::mat4 &, const char *);
+  void SetVec3(glm::vec3 &, const char *);
+  void SetFloat(float &, const char *);
 
 private:
-  void _checkShaderCompilation();
+  void _checkShaderCompilation(unsigned int, std::string);
 
 private:
   unsigned m_ShaderProgram, m_VertexShader, m_FragmentShader;
