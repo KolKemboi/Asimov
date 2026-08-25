@@ -23,11 +23,24 @@ set(CORE_SOURCES
 	${CORE_DIR}/impl/APE_engine.cpp
 	${CORE_DIR}/impl/APE_shader.cpp
 	${CORE_DIR}/impl/APE_camera.cpp
+	${CORE_DIR}/impl/APE_mesh.cpp
 	${CORE_DIR}/impl/APE_ECS.cpp
 )
 
 add_library(APE_core STATIC ${CORE_SOURCES})
 target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
+
+##CORE STATIC LIBS
+set(BUFFERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers)
+set(BUFFERS_SOURCES
+	${BUFFERS_DIR}/impl/APE_VBO.cpp
+	${BUFFERS_DIR}/impl/APE_VAO.cpp
+	${BUFFERS_DIR}/impl/APE_IBO.cpp
+	${BUFFERS_DIR}/impl/APE_FBO.cpp
+)
+
+add_library(APE_buffers STATIC ${BUFFERS_SOURCES})
+target_include_directories(APE_buffers PUBLIC ${BUFFERS_DIR}/header)
 
 ##PHYSICS STATIC LIBS
 set(PHYSICS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Physics)
@@ -72,7 +85,7 @@ set_target_properties(
 file(COPY ${CMAKE_SOURCE_DIR}/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
-	src/engine/App/app.cpp 
+	src/App/app.cpp 
   src/glad.c
 )
 
@@ -85,6 +98,8 @@ include_directories(include)
 
 ### MAKE SURE TO LINK APE_core to APE_physics
 target_link_libraries(APE_core PUBLIC APE_physics)
+### MAKE SURE TO LINK APE_core to APE_buffers
+target_link_libraries(APE_core PUBLIC APE_buffers)
 
 target_link_libraries(${PROJ_NAME} 
   imgui
