@@ -26,7 +26,7 @@ private:
   const char *m_WindowName;
   unsigned int m_WindowWidth, m_WindowHeight;
   std::shared_ptr<Shader> m_DefaultShader;
-	std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
+  std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::vector<float> verts;
   std::vector<unsigned int> indices;
   std::unique_ptr<Mesh> m_Mesh; // using this because I need the context

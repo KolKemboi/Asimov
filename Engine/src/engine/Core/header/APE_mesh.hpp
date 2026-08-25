@@ -6,14 +6,18 @@
 #include "APE_IBO.hpp"
 #include "APE_VAO.hpp"
 #include "APE_VBO.hpp"
+#include <APE_assetloader.hpp>
+#include <glm/glm.hpp>
 
 class Mesh {
 public:
-  Mesh(std::vector<float>&, size_t, std::vector<unsigned int>&, size_t);
+  Mesh(std::vector<float> &, size_t, std::vector<unsigned int> &, size_t);
 
-	void Clean();
+  ModelLoader m_ModelLoader("");
 
-	void BindVAO();
+  void Clean();
+
+  void BindVAO();
   unsigned int ReturnMeshVertexArrayObject();
 
 private:

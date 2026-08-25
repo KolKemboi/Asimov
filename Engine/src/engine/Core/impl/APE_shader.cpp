@@ -78,9 +78,7 @@ void Shader::_checkShaderCompilation(unsigned int shader, std::string type) {
   }
 }
 
-void Shader::UseShader(){
-	glUseProgram(m_ShaderProgram);
-}
+void Shader::UseShader() { glUseProgram(m_ShaderProgram); }
 
 void Shader::Clean() {
   glDeleteShader(m_ShaderProgram);

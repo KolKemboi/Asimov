@@ -11,19 +11,30 @@ Engine::Engine(const char *windowName) : m_WindowName(windowName) {
   this->_initGlfwWindowUtils();
   this->verts = {
       // positions          // colors           // texture coords
-      -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0
-      0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
-      0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // 2
-      -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, // 3
-      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4
-      0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-      -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
+      0.0f,  0.0f,  0.0f, 0.0f, 0.0f, // 0
+      0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // 1
+      -1.0f, 1.0f,  0.0f, 0.0f, 1.0f, // 2
+      -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, // 3
+
+      0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // 4
+      0.0f,  -1.0f, 1.0f, 1.0f, 0.0f, // 5
+      1.0f,  -1.0f, 1.0f, 1.0f, 1.0f, // 6
+      1.0f,  0.0f,  1.0f, 0.0f, 1.0f, // 7
   };
   this->indices = {
       // Front face
       0, 1, 2, 2, 3, 0,
+
+      4, 5, 6, 6, 7, 4,
   };
+
+  /*
+   * plane 1 verts starts from 0 to 19
+   * plane 1 indices starts from 0 to 5
+   *
+   * plane 2 verts starts from 20 to 39
+   * plane 2 indices starts from 6 to 11
+   */
 
   this->m_Mesh =
       std::make_unique<Mesh>(verts, verts.size() * sizeof(float), indices,
@@ -96,12 +107,12 @@ void Engine::_runAPEEngine() {
 
   while (!glfwWindowShouldClose(m_Window)) {
 
-    this->m_MainFrameBuffer->BindFrameBuffer();
+    // this->m_MainFrameBuffer->BindFrameBuffer();
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
     this->m_Mesh->BindVAO();
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);
-    this->m_MainFrameBuffer->UnBindFrameBuffer();
+    // this->m_MainFrameBuffer->UnBindFrameBuffer();
 
     this->_miniInputSystem(this->m_Window);
 
