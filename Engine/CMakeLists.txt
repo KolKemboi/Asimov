@@ -18,6 +18,17 @@ set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
 
 ####### SETTING UP APE static libs
+
+##PHYSICS STATIC LIBS
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Core)
+set(CORE_SOURCES
+	${CORE_DIR}/impl/APE_window.cpp
+)
+
+add_library(APE_core STATIC ${CORE_SOURCES})
+target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
+
+
 ##RENDERER STATIC LIBS
 set(RENDERER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Renderer)
 set(RENDERER_SOURCES
@@ -54,6 +65,15 @@ set(PHYSICS_SOURCES
 
 add_library(APE_physics STATIC ${PHYSICS_SOURCES})
 target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
+
+##PHYSICS STATIC LIBS
+set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
+set(UI_SOURCES
+	${UI_DIR}/impl/APE_interface.cpp
+)
+
+add_library(APE_ui STATIC ${UI_SOURCES})
+target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 
 ###### CHANGE HERE TO COMPILE YOUR OWN IMGUI
 
@@ -108,10 +128,17 @@ target_link_libraries(APE_renderer PUBLIC APE_buffers)
 
 target_link_libraries(APE_renderer PUBLIC assimp)
 
+target_link_libraries(APE_core PUBLIC APE_renderer)
+target_link_libraries(APE_core PUBLIC APE_ui)
+
+target_link_libraries(APE_ui PUBLIC imgui)
+
 target_link_libraries(${PROJ_NAME} 
   imgui
 	assimp
+	APE_core
 	APE_renderer
+	APE_ui
 	APE_physics
   glfw 
   GL
