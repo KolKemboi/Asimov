@@ -13,7 +13,7 @@ class Mesh {
 public:
   Mesh(std::vector<float> &, size_t, std::vector<unsigned int> &, size_t);
 
-  ModelLoader m_ModelLoader("");
+  ModelLoader m_ModelLoader;
 
   void Clean();
 

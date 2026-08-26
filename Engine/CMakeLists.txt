@@ -18,19 +18,19 @@ set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
 
 ####### SETTING UP APE static libs
-##CORE STATIC LIBS
-set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Core)
-set(CORE_SOURCES
-	${CORE_DIR}/impl/APE_engine.cpp
-	${CORE_DIR}/impl/APE_shader.cpp
-	${CORE_DIR}/impl/APE_camera.cpp
-	${CORE_DIR}/impl/APE_mesh.cpp
-	${CORE_DIR}/impl/APE_ECS.cpp
-	${CORE_DIR}/impl/APE_assetloader.cpp
+##RENDERER STATIC LIBS
+set(RENDERER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Renderer)
+set(RENDERER_SOURCES
+	${RENDERER_DIR}/impl/APE_engine.cpp
+	${RENDERER_DIR}/impl/APE_shader.cpp
+	${RENDERER_DIR}/impl/APE_camera.cpp
+	${RENDERER_DIR}/impl/APE_mesh.cpp
+	${RENDERER_DIR}/impl/APE_ECS.cpp
+	${RENDERER_DIR}/impl/APE_assetloader.cpp
 )
 
-add_library(APE_core STATIC ${CORE_SOURCES})
-target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
+add_library(APE_renderer STATIC ${RENDERER_SOURCES})
+target_include_directories(APE_renderer PUBLIC ${RENDERER_DIR}/header)
 
 ##CORE STATIC LIBS
 set(BUFFERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers)
@@ -101,17 +101,17 @@ include_directories(include)
 
 # Add the executable and link the libraries
 
-### MAKE SURE TO LINK APE_core to APE_physics
-target_link_libraries(APE_core PUBLIC APE_physics)
-### MAKE SURE TO LINK APE_core to APE_buffers
-target_link_libraries(APE_core PUBLIC APE_buffers)
+### MAKE SURE TO LINK APE_renderer to APE_physics
+target_link_libraries(APE_renderer PUBLIC APE_physics)
+### MAKE SURE TO LINK APE_renderer to APE_buffers
+target_link_libraries(APE_renderer PUBLIC APE_buffers)
 
-target_link_libraries(APE_core PUBLIC assimp)
+target_link_libraries(APE_renderer PUBLIC assimp)
 
 target_link_libraries(${PROJ_NAME} 
   imgui
 	assimp
-	APE_core
+	APE_renderer
 	APE_physics
   glfw 
   GL
