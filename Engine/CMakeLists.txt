@@ -36,14 +36,13 @@ set(RENDERER_SOURCES
 	${RENDERER_DIR}/impl/APE_shader.cpp
 	${RENDERER_DIR}/impl/APE_camera.cpp
 	${RENDERER_DIR}/impl/APE_mesh.cpp
-	${RENDERER_DIR}/impl/APE_ECS.cpp
 	${RENDERER_DIR}/impl/APE_assetloader.cpp
 )
 
 add_library(APE_renderer STATIC ${RENDERER_SOURCES})
 target_include_directories(APE_renderer PUBLIC ${RENDERER_DIR}/header)
 
-##CORE STATIC LIBS
+##BUFFERS STATIC LIBS
 set(BUFFERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers)
 set(BUFFERS_SOURCES
 	${BUFFERS_DIR}/impl/APE_VBO.cpp
@@ -66,7 +65,7 @@ set(PHYSICS_SOURCES
 add_library(APE_physics STATIC ${PHYSICS_SOURCES})
 target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
 
-##PHYSICS STATIC LIBS
+##UI_STATIC LIBS
 set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
 set(UI_SOURCES
 	${UI_DIR}/impl/APE_interface.cpp
@@ -74,6 +73,15 @@ set(UI_SOURCES
 
 add_library(APE_ui STATIC ${UI_SOURCES})
 target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
+
+##ECS STATIC LIBS
+set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
+set(ECS_SOURCES
+	${ECS_DIR}/impl/APE_ECS.cpp
+)
+
+add_library(APE_ecs STATIC ${ECS_SOURCES})
+target_include_directories(APE_ecs PUBLIC ${ECS_DIR}/header)
 
 ###### CHANGE HERE TO COMPILE YOUR OWN IMGUI
 
@@ -136,6 +144,7 @@ target_link_libraries(APE_ui PUBLIC imgui)
 target_link_libraries(${PROJ_NAME} 
   imgui
 	assimp
+	APE_ecs
 	APE_core
 	APE_renderer
 	APE_ui

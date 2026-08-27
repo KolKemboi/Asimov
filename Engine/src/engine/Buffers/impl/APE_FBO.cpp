@@ -31,9 +31,9 @@ FrameBuffer::FrameBuffer(unsigned int &windowWidth,
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+unsigned int FrameBuffer::ReturnColorTexture() { return this->m_ColorTexture; }
+
 void FrameBuffer::BindFrameBuffer() {
   glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 }
-void FrameBuffer::UnBindFrameBuffer() {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
+void FrameBuffer::UnBindFrameBuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }

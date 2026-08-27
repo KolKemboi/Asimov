@@ -48,6 +48,7 @@ void APE_Window::_setUpGLFWContext() {
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
+  this->m_Engine = std::make_unique<Engine>();
 }
 
 void APE_Window::_run() {
@@ -58,13 +59,77 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
+    m_MainFrameBuffer = this->m_Engine->Render(std::move(m_MainFrameBuffer));
 
-		ImGui::Begin("ViewPort");
-		ImGui::End();
-		ImGui::Begin("Outliner");
-		ImGui::End();
-		ImGui::Begin("Properties");
-		ImGui::End();
+    ImGui::Begin("Viewport");
+
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+
+    // Desired aspect ratio (16:9)
+    const float aspect = 16.0f / 9.0f;
+
+    // Compute the largest image that fits while preserving the aspect ratio
+    float imageWidth = avail.x;
+    float imageHeight = imageWidth / aspect;
+
+    if (imageHeight > avail.y) {
+      imageHeight = avail.y;
+      imageWidth = imageHeight * aspect;
+    }
+
+    // Center the image in the viewport
+    ImVec2 cursor = ImGui::GetCursorPos();
+
+    ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
+                               cursor.y + (avail.y - imageHeight) * 0.5f));
+
+    ImGui::Image(
+        (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
+        ImVec2(imageWidth, imageHeight), ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::End();
+    ImGui::Begin("Outliner");
+    ImGui::End();
+    ImGui::Begin("Properties");
+
+    ImGui::Text("Basic Widgets");
+    ImGui::Separator();
+
+    ImGui::Button("Button");
+    ImGui::SameLine();
+    ImGui::SmallButton("Small");
+
+    static bool check = false;
+    ImGui::Checkbox("Enable feature", &check);
+
+    static int radio = 0;
+    ImGui::RadioButton("Option A", &radio, 0);
+    ImGui::RadioButton("Option B", &radio, 1);
+
+    static float value = 50.0f;
+    ImGui::SliderFloat("Slider", &value, 0.0f, 100.0f);
+    ImGui::DragFloat("Drag", &value, 0.5f, 0.0f, 100.0f);
+
+    static char text[256] = {};
+    ImGui::InputText("Name", text, sizeof(text));
+
+    static int combo = 0;
+    const char *options[] = {"First", "Second", "Third"};
+    ImGui::Combo("Options", &combo, options, IM_ARRAYSIZE(options));
+
+    static float color[4] = {1, 0, 0, 1};
+    ImGui::ColorEdit4("Color", color);
+
+    ImGui::ProgressBar(0.7f, ImVec2(250, 0));
+
+    if (ImGui::CollapsingHeader("More")) {
+      ImGui::Text("Extra content");
+      ImGui::BulletText("Item one");
+      ImGui::BulletText("Item two");
+      ImGui::BulletText("Item three");
+    }
+
+    ImGui::End();
 
     this->m_MainInterface->NewRenderIMGUI();
     glfwSwapBuffers(this->m_Window);

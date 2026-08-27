@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #endif
 #include <APE_FBO.hpp>
+#include <APE_engine.hpp>
 #include <APE_interface.hpp>
 #include <APE_shader.hpp>
 #include <GLFW/glfw3.h>
@@ -31,6 +32,7 @@ private:
   std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::unique_ptr<Shader> m_MainShader;
   std::unique_ptr<Interface> m_MainInterface;
+	std::unique_ptr<Engine> m_Engine;
   GLFWwindow *m_Window;
 
   std::vector<GLFWwindow *> m_Windows;

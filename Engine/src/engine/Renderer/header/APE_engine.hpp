@@ -10,32 +10,21 @@
 #include <vector>
 
 /*
- * Set up windowing
- * Set up glad
- * Get a window
+ * get a frame buffer,
+ * render, return the frame buffer
  *
  */
 class Engine {
 public:
-  Engine(const char *);
-  void Run();
-  void Clean();
+  Engine();
+  std::unique_ptr<FrameBuffer> Render(std::unique_ptr<FrameBuffer>);
 
 private:
-  GLFWwindow *m_Window;
-  const char *m_WindowName;
-  unsigned int m_WindowWidth, m_WindowHeight;
-  std::shared_ptr<Shader> m_DefaultShader;
-  std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::vector<float> verts;
+
   std::vector<unsigned int> indices;
   std::unique_ptr<Mesh> m_Mesh; // using this because I need the context
                                 // initialized first, before running anything
 
 private:
-  void _initGlfwWindowUtils();
-  void _runAPEEngine();
-  void _cleanGlfwWindowUtils();
-
-  void _miniInputSystem(GLFWwindow *);
 };

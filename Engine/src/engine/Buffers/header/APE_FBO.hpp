@@ -9,6 +9,8 @@ public:
 
   unsigned int ReturnFrameBuffer();
 
+	unsigned int ReturnColorTexture();
+
   void BindFrameBuffer();
   void UnBindFrameBuffer();
 
