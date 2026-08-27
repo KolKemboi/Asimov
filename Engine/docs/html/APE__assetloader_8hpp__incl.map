@@ -1,0 +1,17 @@
+<map id="src/engine/Renderer/header/APE_assetloader.hpp" name="src/engine/Renderer/header/APE_assetloader.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="466,5,677,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,161,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="466,46,168,94,167,89,465,41"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="186,93,349,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="499,48,326,92,324,87,498,43"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="373,93,495,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="540,48,468,89,465,84,537,43"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="519,93,623,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="574,46,574,79,569,79,569,46"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="647,93,722,119"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="600,43,658,83,655,87,597,48"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="746,93,805,119"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="621,43,734,86,732,91,619,48"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="829,93,892,119"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="641,43,817,90,815,95,640,48"/>
+</map>

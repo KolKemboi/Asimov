@@ -1,0 +1,9 @@
+<map id="Mesh::Clean" name="Mesh::Clean">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,108,80"/>
+<area shape="rect" id="Node000002" href="$classIndexBuffer.html#ad2768ab435bbaca50e995378a37df1b3" title=" " alt="" coords="159,5,301,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,52,171,32,172,37,103,57"/>
+<area shape="rect" id="Node000003" href="$classVertexArray.html#a6721eaf5980163233ab98a1805ff0ec7" title=" " alt="" coords="159,55,301,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="108,65,145,65,145,70,108,70"/>
+<area shape="rect" id="Node000004" href="$classVertexBuffer.html#af21cc3dee13b5f9c5905954e83bd9e58" title=" " alt="" coords="156,104,304,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="103,77,172,98,171,103,101,83"/>
+</map>
