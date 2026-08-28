@@ -125,8 +125,8 @@ set_target_properties(
 
 
 
-file(COPY ${CMAKE_SOURCE_DIR}/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/assets/models DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/assets/models DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
 	src/App/app.cpp 
@@ -143,17 +143,21 @@ include_directories(include)
 
 # Add the executable and link the libraries
 
-### MAKE SURE TO LINK APE_renderer to APE_physics
 target_link_libraries(APE_renderer PUBLIC APE_physics)
-### MAKE SURE TO LINK APE_renderer to APE_buffers
 target_link_libraries(APE_renderer PUBLIC APE_buffers)
-
 target_link_libraries(APE_renderer PUBLIC assimp)
 
 target_link_libraries(APE_core PUBLIC APE_renderer)
 target_link_libraries(APE_core PUBLIC APE_ui)
+target_link_libraries(APE_core PUBLIC APE_ecs)
 
 target_link_libraries(APE_ui PUBLIC imgui)
+
+
+target_link_libraries(APE_ecs PUBLIC imgui)
+target_link_libraries(APE_ecs PUBLIC APE_physics)
+target_link_libraries(APE_ecs PUBLIC APE_renderer)
+
 
 target_link_libraries(${PROJ_NAME} 
   imgui

@@ -1,3 +1,4 @@
+#include "APE_ECS.hpp"
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
@@ -42,13 +43,16 @@ void APE_Window::_setUpGLFWContext() {
   glViewport(0, 0, (GLsizei)m_WindowWidth, (GLsizei)m_WindowHeight);
 
   // set up shader and framebuffer
-  this->m_MainShader = std::make_unique<Shader>(
+  this->m_MainShader = std::make_shared<Shader>(
       "shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
   this->m_MainFrameBuffer =
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
-  this->m_Engine = std::make_unique<Engine>();
+  // this->m_Engine = std::make_unique<Engine>();
+
+  this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
+  this->m_AddEntitySystem->AddCube(m_Registry);
 }
 
 void APE_Window::_run() {
@@ -59,7 +63,15 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-    m_MainFrameBuffer = this->m_Engine->Render(std::move(m_MainFrameBuffer));
+
+    auto view = m_Registry.view<Name, Transform, Material>();
+    for (auto [entity, name, transform, material] : view.each()) {
+      printf("%s\n", name.s_Name.c_str());
+      printf("pos.x %f pos.y %f pos.z %f \n", transform.s_Position.x,
+             transform.s_Position.y, transform.s_Position.z);
+      printf("mat.col.r %f mat.col.g %f mat.col.b %f \n", material.s_Color.r,
+             material.s_Color.g, material.s_Color.b);
+    }
 
     ImGui::Begin("Viewport");
 
@@ -89,6 +101,34 @@ void APE_Window::_run() {
 
     ImGui::End();
     ImGui::Begin("Outliner");
+
+    if (glfwGetKey(this->m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+      if (glfwGetKey(this->m_Window, GLFW_KEY_A) == GLFW_PRESS)
+        ImGui::OpenPopup("Add Object");
+
+    // if (ImGui::Button("Open")) {
+    // }
+
+    if (ImGui::BeginPopupModal("Add Object", nullptr,
+                               ImGuiWindowFlags_AlwaysAutoResize)) {
+      // ImGui::Text("Hello!");
+
+      if (ImGui::Button("Cube")) {
+        // Do something
+        // ImGui::CloseCurrentPopup();
+      }
+
+      // ImGui::SameLine();
+
+      if (ImGui::Button("Sphere")) {
+        // ImGui::CloseCurrentPopup();
+      }
+      if (ImGui::Button("Cylinder")) {
+        // ImGui::CloseCurrentPopup();
+      }
+
+      ImGui::EndPopup();
+    }
     ImGui::End();
     ImGui::Begin("Properties");
 

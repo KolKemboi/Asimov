@@ -39,14 +39,12 @@ Engine::Engine() {
                              indices.size() * sizeof(float));
 }
 
-std::unique_ptr<FrameBuffer>
-Engine::Render(std::unique_ptr<FrameBuffer> framebuffer) {
-  framebuffer->BindFrameBuffer();
+void Engine::RenderBackground(){
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
+}
+void Engine::Render() {
 
-  glClear(GL_COLOR_BUFFER_BIT);
-  glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
   this->m_Mesh->BindVAO();
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);
-  framebuffer->UnBindFrameBuffer();
-  return framebuffer;
 }

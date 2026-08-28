@@ -17,7 +17,8 @@
 class Engine {
 public:
   Engine();
-  std::unique_ptr<FrameBuffer> Render(std::unique_ptr<FrameBuffer>);
+  void Render();
+  void RenderBackground();
 
 private:
   std::vector<float> verts;
