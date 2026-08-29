@@ -81,7 +81,43 @@ $(document).ready(function() { init_codefold(0); });
   <div class="headertitle"><div class="title">APE_ECS.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="APE__ECS_8hpp.html">Go to the documentation of this file.</a><div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<a href="APE__ECS_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;<a class="code" href="APE__Components_8hpp.html">APE_Components.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="APE__FBO_8hpp.html">APE_FBO.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="APE__engine_8hpp.html">APE_engine.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="APE__shader_8hpp.html">APE_shader.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;entt/entt.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/ext/matrix_float4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;glm/ext/vector_float3.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// should return an entity</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">// class AddEntitySystem {</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// public:</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//   // everything default,</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//   // AddEntitySystem(entt::registry &amp;, const char*);//say it gets name name</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">//   void AddCube(entt::registry &amp;);</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">//   void AddSphere(entt::registry &amp;);</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">//</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// private:</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// };</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classRenderSystem.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classRenderSystem.html">RenderSystem</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  std::unique_ptr&lt;FrameBuffer&gt; <a class="code hl_function" href="classRenderSystem.html#abff79c3c3a7c02c1dcd3ee29cb6f6bf8">RenderScene</a>(std::unique_ptr&lt;FrameBuffer&gt;,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                                           std::unique_ptr&lt;Engine&gt;,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                           entt::registry &amp;);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="ttc" id="aAPE__Components_8hpp_html"><div class="ttname"><a href="APE__Components_8hpp.html">APE_Components.hpp</a></div></div>
+<div class="ttc" id="aAPE__FBO_8hpp_html"><div class="ttname"><a href="APE__FBO_8hpp.html">APE_FBO.hpp</a></div></div>
+<div class="ttc" id="aAPE__engine_8hpp_html"><div class="ttname"><a href="APE__engine_8hpp.html">APE_engine.hpp</a></div></div>
+<div class="ttc" id="aAPE__shader_8hpp_html"><div class="ttname"><a href="APE__shader_8hpp.html">APE_shader.hpp</a></div></div>
+<div class="ttc" id="aclassRenderSystem_html"><div class="ttname"><a href="classRenderSystem.html">RenderSystem</a></div><div class="ttdef"><b>Definition</b> APE_ECS.hpp:23</div></div>
+<div class="ttc" id="aclassRenderSystem_html_abff79c3c3a7c02c1dcd3ee29cb6f6bf8"><div class="ttname"><a href="classRenderSystem.html#abff79c3c3a7c02c1dcd3ee29cb6f6bf8">RenderSystem::RenderScene</a></div><div class="ttdeci">std::unique_ptr&lt; FrameBuffer &gt; RenderScene(std::unique_ptr&lt; FrameBuffer &gt;, std::unique_ptr&lt; Engine &gt;, entt::registry &amp;)</div><div class="ttdef"><b>Definition</b> APE_ECS.cpp:7</div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

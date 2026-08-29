@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.10)
 set(PROJ_NAME Asimov)
 
@@ -32,6 +31,16 @@ endif()
 
 
 ####### SETTING UP APE static libs
+
+##HELPERS STATIC LIBS
+set(HELPERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers)
+set(HELPERS_SOURCES
+	${HELPERS_DIR}/impl/APE_loadmodelhelper.cpp
+)
+
+add_library(APE_helpers STATIC ${HELPERS_SOURCES})
+target_include_directories(APE_helpers PUBLIC ${HELPERS_DIR}/header)
+
 
 ##PHYSICS STATIC LIBS
 set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Core)
@@ -92,6 +101,7 @@ target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
 set(ECS_SOURCES
 	${ECS_DIR}/impl/APE_ECS.cpp
+	${ECS_DIR}/impl/APE_AddEntitySystem.cpp
 )
 
 add_library(APE_ecs STATIC ${ECS_SOURCES})
@@ -135,34 +145,40 @@ add_executable(${PROJ_NAME}
 
 target_include_directories(${PROJ_NAME} PUBLIC ${GLAD_DIR})
 
-###INCLUDE THE APE HEADERS
-target_include_directories(${PROJ_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
-
 # Include directories
 include_directories(include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
+
 
 # Add the executable and link the libraries
+
+target_link_libraries(APE_helpers PUBLIC assimp)
 
 target_link_libraries(APE_renderer PUBLIC APE_physics)
 target_link_libraries(APE_renderer PUBLIC APE_buffers)
 target_link_libraries(APE_renderer PUBLIC assimp)
+target_link_libraries(APE_renderer PUBLIC APE_helpers)
 
 target_link_libraries(APE_core PUBLIC APE_renderer)
 target_link_libraries(APE_core PUBLIC APE_ui)
 target_link_libraries(APE_core PUBLIC APE_ecs)
+target_link_libraries(APE_core PUBLIC APE_helpers)
 
 target_link_libraries(APE_ui PUBLIC imgui)
+target_link_libraries(APE_ui PUBLIC APE_helpers)
 
 
 target_link_libraries(APE_ecs PUBLIC imgui)
 target_link_libraries(APE_ecs PUBLIC APE_physics)
 target_link_libraries(APE_ecs PUBLIC APE_renderer)
+target_link_libraries(APE_ecs PUBLIC APE_helpers)
 
 
 target_link_libraries(${PROJ_NAME} 
   imgui
 	assimp
 	APE_ecs
+	APE_helpers
 	APE_core
 	APE_renderer
 	APE_ui

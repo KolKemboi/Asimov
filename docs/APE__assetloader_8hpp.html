@@ -78,11 +78,11 @@ $(function() {
   <div class="headertitle"><div class="title">APE_assetloader.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;assimp/Importer.hpp&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="APE__types_8hpp_source.html">APE_types.hpp</a>&gt;</code><br />
+<code>#include &lt;assimp/Importer.hpp&gt;</code><br />
 <code>#include &lt;assimp/postprocess.h&gt;</code><br />
 <code>#include &lt;assimp/scene.h&gt;</code><br />
 <code>#include &lt;glm/glm.hpp&gt;</code><br />
-<code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -90,21 +90,24 @@ Include dependency graph for APE_assetloader.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="APE__assetloader_8hpp__incl.png" border="0" usemap="#aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hpp" alt=""/></div>
 <map name="aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hpp" id="aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hpp">
-<area shape="rect" title=" " alt="" coords="466,5,677,45"/>
-<area shape="rect" title=" " alt="" coords="5,93,161,119"/>
-<area shape="poly" title=" " alt="" coords="466,46,168,94,167,89,465,41"/>
-<area shape="rect" title=" " alt="" coords="186,93,349,119"/>
-<area shape="poly" title=" " alt="" coords="499,48,326,92,324,87,498,43"/>
-<area shape="rect" title=" " alt="" coords="373,93,495,119"/>
-<area shape="poly" title=" " alt="" coords="540,48,468,89,465,84,537,43"/>
-<area shape="rect" title=" " alt="" coords="519,93,623,119"/>
-<area shape="poly" title=" " alt="" coords="574,46,574,79,569,79,569,46"/>
-<area shape="rect" title=" " alt="" coords="647,93,722,119"/>
-<area shape="poly" title=" " alt="" coords="600,43,658,83,655,87,597,48"/>
-<area shape="rect" title=" " alt="" coords="746,93,805,119"/>
-<area shape="poly" title=" " alt="" coords="621,43,734,86,732,91,619,48"/>
-<area shape="rect" title=" " alt="" coords="829,93,892,119"/>
-<area shape="poly" title=" " alt="" coords="641,43,817,90,815,95,640,48"/>
+<area shape="rect" title=" " alt="" coords="176,5,387,45"/>
+<area shape="rect" href="APE__types_8hpp.html" title=" " alt="" coords="125,93,243,119"/>
+<area shape="poly" title=" " alt="" coords="259,48,211,87,207,82,256,43"/>
+<area shape="rect" title=" " alt="" coords="5,167,109,192"/>
+<area shape="poly" title=" " alt="" coords="197,48,149,67,106,95,83,124,68,155,63,152,78,121,102,91,147,62,195,43"/>
+<area shape="rect" title=" " alt="" coords="144,167,203,192"/>
+<area shape="poly" title=" " alt="" coords="181,48,144,67,129,79,116,95,111,111,117,127,130,142,146,157,142,161,126,146,112,129,106,111,111,92,125,76,141,62,179,43"/>
+<area shape="rect" title=" " alt="" coords="238,167,301,192"/>
+<area shape="poly" title=" " alt="" coords="282,46,274,153,269,153,277,46"/>
+<area shape="rect" title=" " alt="" coords="319,93,475,119"/>
+<area shape="poly" title=" " alt="" coords="311,43,370,83,367,88,308,48"/>
+<area shape="rect" title=" " alt="" coords="500,93,663,119"/>
+<area shape="poly" title=" " alt="" coords="354,43,525,87,524,92,353,48"/>
+<area shape="rect" title=" " alt="" coords="687,93,809,119"/>
+<area shape="poly" title=" " alt="" coords="388,42,674,90,673,95,387,47"/>
+<area shape="poly" title=" " alt="" coords="165,121,91,162,89,157,162,116"/>
+<area shape="poly" title=" " alt="" coords="185,119,180,154,174,153,180,119"/>
+<area shape="poly" title=" " alt="" coords="199,117,247,156,243,160,196,121"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -112,27 +115,41 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="APE__assetloader_8hpp__dep__incl.png" border="0" usemap="#aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hppdep" alt=""/></div>
 <map name="aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hppdep" id="aEngine_2src_2engine_2Renderer_2header_2APE__assetloader_8hppdep">
-<area shape="rect" title=" " alt="" coords="396,5,607,45"/>
-<area shape="rect" href="APE__mesh_8hpp.html" title=" " alt="" coords="289,93,489,133"/>
-<area shape="poly" title=" " alt="" coords="467,56,416,95,413,91,464,52"/>
-<area shape="rect" href="APE__assetloader_8cpp.html" title=" " alt="" coords="513,93,713,133"/>
-<area shape="poly" title=" " alt="" coords="539,52,590,91,587,95,536,56"/>
-<area shape="rect" href="APE__engine_8hpp.html" title=" " alt="" coords="221,181,421,221"/>
-<area shape="poly" title=" " alt="" coords="368,146,338,183,334,179,364,143"/>
-<area shape="rect" href="APE__engine_8cpp.html" title=" " alt="" coords="5,269,205,309"/>
-<area shape="poly" title=" " alt="" coords="305,140,257,159,211,184,184,204,159,228,121,271,117,268,155,224,180,200,208,179,255,154,303,135"/>
-<area shape="rect" href="APE__shader_8cpp.html" title=" " alt="" coords="437,269,637,309"/>
-<area shape="poly" title=" " alt="" coords="416,142,523,267,519,271,412,146"/>
-<area shape="rect" href="APE__mesh_8cpp.html" title=" " alt="" coords="496,181,696,221"/>
-<area shape="poly" title=" " alt="" coords="448,136,552,179,550,184,446,141"/>
-<area shape="rect" href="APE__window_8hpp.html" title=" " alt="" coords="229,269,413,309"/>
-<area shape="poly" title=" " alt="" coords="324,235,324,269,319,269,319,235"/>
-<area shape="poly" title=" " alt="" coords="262,229,154,272,152,267,260,224"/>
-<area shape="poly" title=" " alt="" coords="382,224,491,267,489,272,380,229"/>
-<area shape="rect" href="app_8cpp.html" title=" " alt="" coords="137,365,311,390"/>
-<area shape="poly" title=" " alt="" coords="291,321,239,366,236,362,288,317"/>
-<area shape="rect" href="APE__window_8cpp.html" title=" " alt="" coords="335,357,505,397"/>
-<area shape="poly" title=" " alt="" coords="355,316,400,355,396,359,352,320"/>
+<area shape="rect" title=" " alt="" coords="680,5,891,45"/>
+<area shape="rect" href="APE__mesh_8hpp.html" title=" " alt="" coords="573,93,773,133"/>
+<area shape="poly" title=" " alt="" coords="751,56,700,95,697,91,748,52"/>
+<area shape="rect" href="APE__assetloader_8cpp.html" title=" " alt="" coords="797,93,997,133"/>
+<area shape="poly" title=" " alt="" coords="823,52,874,91,871,95,820,56"/>
+<area shape="rect" href="APE__engine_8hpp.html" title=" " alt="" coords="411,181,611,221"/>
+<area shape="poly" title=" " alt="" coords="627,142,548,184,545,179,624,137"/>
+<area shape="rect" href="APE__engine_8cpp.html" title=" " alt="" coords="548,269,748,309"/>
+<area shape="poly" title=" " alt="" coords="671,147,653,270,648,269,666,147"/>
+<area shape="rect" href="APE__shader_8cpp.html" title=" " alt="" coords="772,269,972,309"/>
+<area shape="poly" title=" " alt="" coords="685,146,700,184,726,219,764,247,806,267,804,272,761,252,722,223,696,186,680,148"/>
+<area shape="rect" href="APE__mesh_8cpp.html" title=" " alt="" coords="736,181,936,221"/>
+<area shape="poly" title=" " alt="" coords="722,137,802,179,799,184,720,142"/>
+<area shape="rect" href="APE__window_8hpp.html" title=" " alt="" coords="5,445,189,485"/>
+<area shape="poly" title=" " alt="" coords="398,210,316,223,273,234,231,249,190,269,153,293,121,323,96,359,88,380,87,403,94,445,88,446,81,403,83,379,91,356,117,319,150,289,188,264,229,245,271,229,315,218,397,204"/>
+<area shape="rect" href="APE__Components_8hpp.html" title=" " alt="" coords="255,269,473,309"/>
+<area shape="poly" title=" " alt="" coords="468,231,397,272,395,267,465,226"/>
+<area shape="rect" href="APE__ECS_8hpp.html" title=" " alt="" coords="427,357,594,397"/>
+<area shape="poly" title=" " alt="" coords="513,235,513,357,508,357,508,235"/>
+<area shape="poly" title=" " alt="" coords="554,227,619,267,617,272,551,231"/>
+<area shape="poly" title=" " alt="" coords="604,222,794,267,792,272,602,227"/>
+<area shape="rect" href="app_8cpp.html" title=" " alt="" coords="11,541,184,566"/>
+<area shape="poly" title=" " alt="" coords="100,499,100,540,95,540,95,499"/>
+<area shape="rect" href="APE__window_8cpp.html" title=" " alt="" coords="303,533,473,573"/>
+<area shape="poly" title=" " alt="" coords="175,487,325,531,324,536,173,492"/>
+<area shape="rect" href="APE__AddEntitySystem_8hpp.html" title=" " alt="" coords="106,357,353,397"/>
+<area shape="poly" title=" " alt="" coords="324,319,261,359,258,355,321,315"/>
+<area shape="rect" href="APE__AddEntitySystem_8cpp.html" title=" " alt="" coords="214,445,445,485"/>
+<area shape="poly" title=" " alt="" coords="371,323,371,359,367,398,357,424,345,446,340,444,352,422,361,397,366,359,365,323"/>
+<area shape="poly" title=" " alt="" coords="410,314,480,355,477,360,407,319"/>
+<area shape="poly" title=" " alt="" coords="190,407,128,447,125,443,187,403"/>
+<area shape="poly" title=" " alt="" coords="264,404,309,443,305,447,260,408"/>
+<area shape="poly" title=" " alt="" coords="500,411,482,448,458,487,436,513,413,535,409,531,432,509,454,484,477,446,495,409"/>
+<area shape="rect" href="APE__ECS_8cpp.html" title=" " alt="" coords="521,445,687,485"/>
+<area shape="poly" title=" " alt="" coords="543,405,585,443,582,447,540,409"/>
 </map>
 </div>
 </div>
@@ -140,10 +157,6 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structVertex.html">Vertex</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAPEObject.html">APEObject</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModelLoader.html">ModelLoader</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>

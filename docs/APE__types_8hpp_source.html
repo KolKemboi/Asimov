@@ -84,29 +84,32 @@ $(document).ready(function() { init_codefold(0); });
 <a href="APE__types_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="foldopen" id="foldopen00006" data-start="{" data-end="};">
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="structVertex.html">    6</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structVertex.html">Vertex</a> {</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structVertex.html#abb3cfacd96b5955b0cec9359840ee49f">    7</a></span>  glm::vec3 <a class="code hl_variable" href="structVertex.html#abb3cfacd96b5955b0cec9359840ee49f">Position</a>;</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structVertex.html#a9ab4dc431b41509f0b1bb1a4bf09d4e2">    8</a></span>  glm::vec3 <a class="code hl_variable" href="structVertex.html#a9ab4dc431b41509f0b1bb1a4bf09d4e2">Normal</a>;</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structVertex.html#a921a513c1e6d1e63e99d477fa837a317">    9</a></span>  glm::vec2 <a class="code hl_variable" href="structVertex.html#a921a513c1e6d1e63e99d477fa837a317">TexCoords</a>;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>};</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structVertex.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structVertex.html">Vertex</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structVertex.html#a8eb7207169b1750c7c2df677972fda2f">    8</a></span>  glm::vec3 <a class="code hl_variable" href="structVertex.html#a8eb7207169b1750c7c2df677972fda2f">s_Position</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structVertex.html#ad9cc63eae638bbbfd97e27baf11e43d8">    9</a></span>  glm::vec3 <a class="code hl_variable" href="structVertex.html#ad9cc63eae638bbbfd97e27baf11e43d8">s_Normal</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structVertex.html#ac849693b053214c1698d94b84d96078f">   10</a></span>  glm::vec2 <a class="code hl_variable" href="structVertex.html#ac849693b053214c1698d94b84d96078f">s_TexCoords</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>};</div>
 </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structAPEObject.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structAPEObject.html">APEObject</a> {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structAPEObject.html#ad8653cca14efee75c2d85538ab0ad75e">   13</a></span>  std::vector&lt;Vertex&gt; <a class="code hl_variable" href="structAPEObject.html#ad8653cca14efee75c2d85538ab0ad75e">vertices</a>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structAPEObject.html#ac62e32cce0e272c526d3759bfe8b3ddf">   14</a></span>  std::vector&lt;unsigned int&gt; <a class="code hl_variable" href="structAPEObject.html#ac62e32cce0e272c526d3759bfe8b3ddf">indices</a>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structAPEObject.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structAPEObject.html">APEObject</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structAPEObject.html#ad08df5b5bd51dd5b081111983990b888">   14</a></span>  std::string <a class="code hl_variable" href="structAPEObject.html#ad08df5b5bd51dd5b081111983990b888">s_Name</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structAPEObject.html#a74e9327f7d0a3166f05f4a549479f51b">   15</a></span>  std::vector&lt;Vertex&gt; <a class="code hl_variable" href="structAPEObject.html#a74e9327f7d0a3166f05f4a549479f51b">s_Vertices</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structAPEObject.html#a916a457c57335b0d30a3f97b737ac841">   16</a></span>  std::vector&lt;unsigned int&gt; <a class="code hl_variable" href="structAPEObject.html#a916a457c57335b0d30a3f97b737ac841">s_Indices</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
 </div>
-<div class="ttc" id="astructAPEObject_html"><div class="ttname"><a href="structAPEObject.html">APEObject</a></div><div class="ttdef"><b>Definition</b> APE_types.hpp:12</div></div>
-<div class="ttc" id="astructAPEObject_html_ac62e32cce0e272c526d3759bfe8b3ddf"><div class="ttname"><a href="structAPEObject.html#ac62e32cce0e272c526d3759bfe8b3ddf">APEObject::indices</a></div><div class="ttdeci">std::vector&lt; unsigned int &gt; indices</div><div class="ttdef"><b>Definition</b> APE_types.hpp:14</div></div>
-<div class="ttc" id="astructAPEObject_html_ad8653cca14efee75c2d85538ab0ad75e"><div class="ttname"><a href="structAPEObject.html#ad8653cca14efee75c2d85538ab0ad75e">APEObject::vertices</a></div><div class="ttdeci">std::vector&lt; Vertex &gt; vertices</div><div class="ttdef"><b>Definition</b> APE_types.hpp:13</div></div>
-<div class="ttc" id="astructVertex_html"><div class="ttname"><a href="structVertex.html">Vertex</a></div><div class="ttdef"><b>Definition</b> APE_types.hpp:6</div></div>
-<div class="ttc" id="astructVertex_html_a921a513c1e6d1e63e99d477fa837a317"><div class="ttname"><a href="structVertex.html#a921a513c1e6d1e63e99d477fa837a317">Vertex::TexCoords</a></div><div class="ttdeci">glm::vec2 TexCoords</div><div class="ttdef"><b>Definition</b> APE_types.hpp:9</div></div>
-<div class="ttc" id="astructVertex_html_a9ab4dc431b41509f0b1bb1a4bf09d4e2"><div class="ttname"><a href="structVertex.html#a9ab4dc431b41509f0b1bb1a4bf09d4e2">Vertex::Normal</a></div><div class="ttdeci">glm::vec3 Normal</div><div class="ttdef"><b>Definition</b> APE_types.hpp:8</div></div>
-<div class="ttc" id="astructVertex_html_abb3cfacd96b5955b0cec9359840ee49f"><div class="ttname"><a href="structVertex.html#abb3cfacd96b5955b0cec9359840ee49f">Vertex::Position</a></div><div class="ttdeci">glm::vec3 Position</div><div class="ttdef"><b>Definition</b> APE_types.hpp:7</div></div>
+<div class="ttc" id="astructAPEObject_html"><div class="ttname"><a href="structAPEObject.html">APEObject</a></div><div class="ttdef"><b>Definition</b> APE_types.hpp:13</div></div>
+<div class="ttc" id="astructAPEObject_html_a74e9327f7d0a3166f05f4a549479f51b"><div class="ttname"><a href="structAPEObject.html#a74e9327f7d0a3166f05f4a549479f51b">APEObject::s_Vertices</a></div><div class="ttdeci">std::vector&lt; Vertex &gt; s_Vertices</div><div class="ttdef"><b>Definition</b> APE_types.hpp:15</div></div>
+<div class="ttc" id="astructAPEObject_html_a916a457c57335b0d30a3f97b737ac841"><div class="ttname"><a href="structAPEObject.html#a916a457c57335b0d30a3f97b737ac841">APEObject::s_Indices</a></div><div class="ttdeci">std::vector&lt; unsigned int &gt; s_Indices</div><div class="ttdef"><b>Definition</b> APE_types.hpp:16</div></div>
+<div class="ttc" id="astructAPEObject_html_ad08df5b5bd51dd5b081111983990b888"><div class="ttname"><a href="structAPEObject.html#ad08df5b5bd51dd5b081111983990b888">APEObject::s_Name</a></div><div class="ttdeci">std::string s_Name</div><div class="ttdef"><b>Definition</b> APE_types.hpp:14</div></div>
+<div class="ttc" id="astructVertex_html"><div class="ttname"><a href="structVertex.html">Vertex</a></div><div class="ttdef"><b>Definition</b> APE_types.hpp:7</div></div>
+<div class="ttc" id="astructVertex_html_a8eb7207169b1750c7c2df677972fda2f"><div class="ttname"><a href="structVertex.html#a8eb7207169b1750c7c2df677972fda2f">Vertex::s_Position</a></div><div class="ttdeci">glm::vec3 s_Position</div><div class="ttdef"><b>Definition</b> APE_types.hpp:8</div></div>
+<div class="ttc" id="astructVertex_html_ac849693b053214c1698d94b84d96078f"><div class="ttname"><a href="structVertex.html#ac849693b053214c1698d94b84d96078f">Vertex::s_TexCoords</a></div><div class="ttdeci">glm::vec2 s_TexCoords</div><div class="ttdef"><b>Definition</b> APE_types.hpp:10</div></div>
+<div class="ttc" id="astructVertex_html_ad9cc63eae638bbbfd97e27baf11e43d8"><div class="ttname"><a href="structVertex.html#ad9cc63eae638bbbfd97e27baf11e43d8">Vertex::s_Normal</a></div><div class="ttdeci">glm::vec3 s_Normal</div><div class="ttdef"><b>Definition</b> APE_types.hpp:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

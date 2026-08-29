@@ -1,12 +1,18 @@
 #pragma once
+#include <tuple>
+#include <unordered_map>
 #include <vector>
 #ifndef __GLAD_GAURD__
 #include <glad/glad.h>
 #endif
-#include <APE_ECS.hpp>
+#include <APE_AddEntitySystem.hpp>
 #include <APE_FBO.hpp>
+#include <APE_IBO.hpp>
+#include <APE_VAO.hpp>
+#include <APE_VBO.hpp>
 #include <APE_engine.hpp>
 #include <APE_interface.hpp>
+#include <APE_loadmodelhelper.hpp>
 #include <APE_shader.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
@@ -36,15 +42,25 @@ private:
   std::unique_ptr<Interface> m_MainInterface;
   // std::unique_ptr<Engine> m_Engine;
   GLFWwindow *m_Window;
-  std::unique_ptr<RenderSystem> m_RenderSystem;
-  std::unique_ptr<Registry> m_MockMake;
+
+  std::unique_ptr<VertexArray> m_MainVAO;
+  std::unique_ptr<VertexBuffer> m_MainVBO;
+	std::unique_ptr<IndexBuffer> m_MainIBO;
+
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
+
+  std::unique_ptr<ModelLoaderHelper> m_ModelLoaderHelper;
 
   std::vector<GLFWwindow *> m_Windows;
 
   entt::registry m_Registry;
 
 private:
+  std::vector<float> m_MainVertexBuffer;
+  std::vector<unsigned int> m_MainIndexBuffer;
+  std::unordered_map<std::string, std::tuple<unsigned int, unsigned int>>
+      m_MainModelMapping;
+
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _miniInputSystem(GLFWwindow *);

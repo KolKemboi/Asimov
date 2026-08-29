@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['shader_0',['Shader',['../classShader.html',1,'']]]
+  ['name_0',['Name',['../structName.html',1,'']]]
 ];
