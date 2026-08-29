@@ -36,6 +36,7 @@ endif()
 set(HELPERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers)
 set(HELPERS_SOURCES
 	${HELPERS_DIR}/impl/APE_loadmodelhelper.cpp
+	${HELPERS_DIR}/impl/APE_meshmakerhelper.cpp
 )
 
 add_library(APE_helpers STATIC ${HELPERS_SOURCES})
@@ -153,6 +154,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
 # Add the executable and link the libraries
 
 target_link_libraries(APE_helpers PUBLIC assimp)
+target_link_libraries(APE_helpers PUBLIC APE_buffers)
 
 target_link_libraries(APE_renderer PUBLIC APE_physics)
 target_link_libraries(APE_renderer PUBLIC APE_buffers)

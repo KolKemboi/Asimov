@@ -27,6 +27,7 @@ struct Material {
 };
 
 struct Renderable {
+	//need a VAO here
   unsigned int s_IndexCount;
   unsigned int s_StartIndex;
 

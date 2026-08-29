@@ -14,6 +14,7 @@
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_shader.hpp>
+#include <APE_types.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
 #include <memory>
@@ -42,18 +43,11 @@ private:
   std::unique_ptr<Interface> m_MainInterface;
   // std::unique_ptr<Engine> m_Engine;
   GLFWwindow *m_Window;
-
-
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
-
-  std::unique_ptr<ModelLoaderHelper> m_ModelLoaderHelper;
-
   std::vector<GLFWwindow *> m_Windows;
-
   entt::registry m_Registry;
 
 private:
-
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _miniInputSystem(GLFWwindow *);

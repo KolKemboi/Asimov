@@ -56,8 +56,6 @@ void APE_Window::_setUpGLFWContext() {
   // this->m_Engine = std::make_unique<Engine>();
 
   this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
-  this->m_ModelLoaderHelper =
-      std::make_unique<ModelLoaderHelper>("models/primitives/primitives.obj");
 }
 
 void APE_Window::_run() {
@@ -70,8 +68,6 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-
-    auto renderView = m_Registry.view<Renderable>();
 
     ImGui::Begin("Viewport");
 
@@ -110,12 +106,8 @@ void APE_Window::_run() {
       if (glfwGetKey(this->m_Window, GLFW_KEY_A) == GLFW_PRESS)
         ImGui::OpenPopup("Add Object");
 
-    // if (ImGui::Button("Open")) {
-    // }
-
     if (ImGui::BeginPopupModal("Add Object", nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize)) {
-      // ImGui::Text("Hello!");
 
       if (ImGui::Button("Cube")) {
         ImGui::CloseCurrentPopup();

@@ -7,11 +7,12 @@
 #endif
 #include "APE_VAO.hpp"
 #include <GLFW/glfw3.h>
+#include <APE_types.hpp>
 
 class VertexBuffer {
 public:
-	VertexBuffer(){}
-  void GenVertexBuffers(std::vector<float> &, size_t );
+  VertexBuffer() {}
+  void GenVertexBuffers(std::vector<Vertex> &);
   void Clean();
 
 private:
