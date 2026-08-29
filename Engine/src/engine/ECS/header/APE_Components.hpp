@@ -30,7 +30,7 @@ struct Renderable {
   unsigned int s_IndexCount;
   unsigned int s_StartIndex;
 
-  Renderable(unsigned int idxCount, unsigned int startIdx)
+  Renderable(unsigned int startIdx, unsigned int idxCount)
       : s_IndexCount(idxCount), s_StartIndex(startIdx) {};
 };
 

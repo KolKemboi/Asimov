@@ -10,6 +10,7 @@
 
 class VertexBuffer {
 public:
+	VertexBuffer(){}
   void GenVertexBuffers(std::vector<float> &, size_t );
   void Clean();
 

@@ -10,6 +10,7 @@
 
 class IndexBuffer {
 public:
+  IndexBuffer() {};
   void GenIndexBuffers(std::vector<unsigned int> &, size_t);
   void Clean();
 

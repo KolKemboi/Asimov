@@ -45,7 +45,7 @@ private:
 
   std::unique_ptr<VertexArray> m_MainVAO;
   std::unique_ptr<VertexBuffer> m_MainVBO;
-	std::unique_ptr<IndexBuffer> m_MainIBO;
+  std::unique_ptr<IndexBuffer> m_MainIBO;
 
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
 

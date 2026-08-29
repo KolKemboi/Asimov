@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <imgui.h>
 #include <memory>
 #include <optional>
@@ -64,64 +65,83 @@ void APE_Window::_setUpGLFWContext() {
    * store the name of the model, start of the idxs and idxcount
    */
 
-  unsigned int start = 0;
-  unsigned int offset = 0;
+  unsigned int vertexOffset = 0;
 
-	//SHIT I ALSO NEED TO SHIFT THE INDICES BY THE MAX OF THE PREV ONE
   for (auto &object : this->m_ModelLoaderHelper->m_Objects) {
+
     std::string name = object.s_Name;
-    for (auto vert : object.s_Vertices) {
-      float posx = vert.s_Position.x;
-      float posy = vert.s_Position.y;
-      float posz = vert.s_Position.z;
-      this->m_MainVertexBuffer.push_back(posx);
-      this->m_MainVertexBuffer.push_back(posy);
-      this->m_MainVertexBuffer.push_back(posz);
+    // printf("%s\n", name.c_str());
 
-      float normx = vert.s_Normal.x;
-      float normy = vert.s_Normal.y;
-      float normz = vert.s_Normal.z;
-      this->m_MainVertexBuffer.push_back(normx);
-      this->m_MainVertexBuffer.push_back(normy);
-      this->m_MainVertexBuffer.push_back(normz);
+    unsigned int startIndex = m_MainIndexBuffer.size();
 
-      float texx = vert.s_TexCoords.x;
-      float texy = vert.s_TexCoords.y;
-      this->m_MainVertexBuffer.push_back(texx);
-      this->m_MainVertexBuffer.push_back(texy);
+    // --------------------
+    // Vertices
+    // --------------------
+
+    for (auto &vert : object.s_Vertices) {
+      m_MainVertexBuffer.push_back(vert.s_Position.x);
+      m_MainVertexBuffer.push_back(vert.s_Position.y);
+      m_MainVertexBuffer.push_back(vert.s_Position.z);
+
+      m_MainVertexBuffer.push_back(vert.s_Normal.x);
+      m_MainVertexBuffer.push_back(vert.s_Normal.y);
+      m_MainVertexBuffer.push_back(vert.s_Normal.z);
+
+      m_MainVertexBuffer.push_back(vert.s_TexCoords.x);
+      m_MainVertexBuffer.push_back(vert.s_TexCoords.y);
     }
-    for (auto &idx : object.s_Indices) {
-      this->m_MainIndexBuffer.push_back(idx);
-    }
-    start = offset;
-    offset = this->m_MainIndexBuffer.size();
 
-    this->m_MainModelMapping[name] =
-        std::make_pair(start, this->m_MainIndexBuffer.size());
+    // --------------------
+    // Indices
+    // --------------------
+
+    for (auto idx : object.s_Indices) {
+      m_MainIndexBuffer.push_back(idx + vertexOffset);
+    }
+
+    // Number of indices belonging to THIS object
+    unsigned int indexCount = m_MainIndexBuffer.size() - startIndex;
+
+    // Store:
+    //   first index
+    //   number of indices
+    m_MainModelMapping[name] = std::make_pair(startIndex, indexCount);
+
+    // Next object's vertices start here
+    vertexOffset += object.s_Vertices.size();
+  }
+  for (const auto &val : m_MainVertexBuffer) {
+    printf("%f", val);
   }
 
-  /// DEBUGGGG
-  // for (auto &map : this->m_MainModelMapping) {
-  //   printf("%s\n", map.first.c_str());
-  //   printf("%d\n", std::get<0>(map.second));
-  //   printf("%d\n", std::get<1>(map.second));
-  // }
-
+  printf("%s %d %d\n", "Cube", std::get<0>(m_MainModelMapping["Cube"]),
+         std::get<1>(m_MainModelMapping["Cube"]));
+  printf("%s %d %d\n", "Plane", std::get<0>(m_MainModelMapping["Plane"]),
+         std::get<1>(m_MainModelMapping["Plane"]));
+  printf("%s %d %d\n", "Sphere", std::get<0>(m_MainModelMapping["Sphere"]),
+         std::get<1>(m_MainModelMapping["Sphere"]));
+  // printf("%s %d %d\n", "Cylinder",
+  // std::get<0>(m_MainModelMapping["Cylinder"]),
+  //        std::get<1>(m_MainModelMapping["Cylinder"]));
   this->m_MainVAO = std::make_unique<VertexArray>();
-  this->m_MainVAO->BindVertexArray();
   this->m_MainVBO = std::make_unique<VertexBuffer>();
-  this->m_MainVBO->GenVertexBuffers(m_MainVertexBuffer,
-                                    sizeof(m_MainVertexBuffer));
-
   this->m_MainIBO = std::make_unique<IndexBuffer>();
-  this->m_MainIBO->GenIndexBuffers(m_MainIndexBuffer,
-                                   sizeof(m_MainIndexBuffer));
+
+  this->m_MainVAO->GenVertexArrays();
+  this->m_MainVAO->BindVertexArray();
+  this->m_MainVBO->GenVertexBuffers(m_MainVertexBuffer,
+                                    m_MainVertexBuffer.size() * sizeof(float));
+
+  this->m_MainIBO->GenIndexBuffers(m_MainIndexBuffer, m_MainIndexBuffer.size() *
+                                                          sizeof(unsigned int));
   this->m_MainVAO->AttribPointerSetUp();
 }
 
 void APE_Window::_run() {
+
   this->m_MainShader->UseShader();
   this->m_MainVAO->BindVertexArray();
+
   while (!glfwWindowShouldClose(m_Window)) {
     // call the renderer and give it the frame buffer and a vector of objects
     // with the renderable component to render
@@ -129,26 +149,20 @@ void APE_Window::_run() {
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
 
-    // auto view = m_Registry.view<Name, Transform, Material>();
-    // for (auto [entity, name, transform, material] : view.each()) {
-    //   printf("%s\n", name.s_Name.c_str());
-    //   printf("pos.x %f pos.y %f pos.z %f \n", transform.s_Position.x,
-    //          transform.s_Position.y, transform.s_Position.z);
-    //   printf("mat.col.r %f mat.col.g %f mat.col.b %f \n", material.s_Color.r,
-    //          material.s_Color.g, material.s_Color.b);
-    // }
-
     auto renderView = m_Registry.view<Renderable>();
 
     this->m_MainFrameBuffer->BindFrameBuffer();
-    glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2, 0.2, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     for (auto [entity, renderable] : renderView.each()) {
-      printf("%d\n", renderable.s_IndexCount);
-      printf("%d\n", renderable.s_StartIndex);
+      // printf("%d\n", renderable.s_IndexCount);
+      // printf("%d\n", renderable.s_StartIndex);
 
       glDrawElements(GL_TRIANGLES, renderable.s_IndexCount, GL_UNSIGNED_INT,
                      (void *)(renderable.s_StartIndex * sizeof(unsigned int)));
+      // glDrawElements(GL_TRIANGLES, renderable.s_IndexCount, GL_UNSIGNED_INT,
+      //                (void *)0);
     }
     this->m_MainFrameBuffer->UnBindFrameBuffer();
 
@@ -202,6 +216,7 @@ void APE_Window::_run() {
             std::get<1>(m_MainModelMapping["Cube"]));
         ImGui::CloseCurrentPopup();
       }
+
       if (ImGui::Button("Plane")) {
         this->m_AddEntitySystem->AddPlaneSystem(
             m_Registry, std::get<0>(m_MainModelMapping["Plane"]),
@@ -209,14 +224,13 @@ void APE_Window::_run() {
         ImGui::CloseCurrentPopup();
       }
 
-      // ImGui::SameLine();
-
       if (ImGui::Button("Sphere")) {
         this->m_AddEntitySystem->AddSphereSystem(
             m_Registry, std::get<0>(m_MainModelMapping["Sphere"]),
             std::get<1>(m_MainModelMapping["Sphere"]));
         ImGui::CloseCurrentPopup();
       }
+
       if (ImGui::Button("Cylinder")) {
         this->m_AddEntitySystem->AddCylinderSystem(
             m_Registry, std::get<0>(m_MainModelMapping["Cylinder"]),
@@ -269,6 +283,7 @@ void APE_Window::_run() {
     ImGui::End();
 
     this->m_MainInterface->NewRenderIMGUI();
+
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
   }
