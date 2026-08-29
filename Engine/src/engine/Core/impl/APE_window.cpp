@@ -58,89 +58,11 @@ void APE_Window::_setUpGLFWContext() {
   this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
   this->m_ModelLoaderHelper =
       std::make_unique<ModelLoaderHelper>("models/primitives/primitives.obj");
-  /*
-   * ape object
-   * load all the verts into m_MainVertexBuffer
-   * load all the indices into m_MainIndicesBuffer
-   * store the name of the model, start of the idxs and idxcount
-   */
-
-  unsigned int vertexOffset = 0;
-
-  for (auto &object : this->m_ModelLoaderHelper->m_Objects) {
-
-    std::string name = object.s_Name;
-    // printf("%s\n", name.c_str());
-
-    unsigned int startIndex = m_MainIndexBuffer.size();
-
-    // --------------------
-    // Vertices
-    // --------------------
-
-    for (auto &vert : object.s_Vertices) {
-      m_MainVertexBuffer.push_back(vert.s_Position.x);
-      m_MainVertexBuffer.push_back(vert.s_Position.y);
-      m_MainVertexBuffer.push_back(vert.s_Position.z);
-
-      m_MainVertexBuffer.push_back(vert.s_Normal.x);
-      m_MainVertexBuffer.push_back(vert.s_Normal.y);
-      m_MainVertexBuffer.push_back(vert.s_Normal.z);
-
-      m_MainVertexBuffer.push_back(vert.s_TexCoords.x);
-      m_MainVertexBuffer.push_back(vert.s_TexCoords.y);
-    }
-
-    // --------------------
-    // Indices
-    // --------------------
-
-    for (auto idx : object.s_Indices) {
-      m_MainIndexBuffer.push_back(idx + vertexOffset);
-    }
-
-    // Number of indices belonging to THIS object
-    unsigned int indexCount = m_MainIndexBuffer.size() - startIndex;
-
-    // Store:
-    //   first index
-    //   number of indices
-    m_MainModelMapping[name] = std::make_pair(startIndex, indexCount);
-
-    // Next object's vertices start here
-    vertexOffset += object.s_Vertices.size();
-  }
-  for (const auto &val : m_MainVertexBuffer) {
-    printf("%f", val);
-  }
-
-  printf("%s %d %d\n", "Cube", std::get<0>(m_MainModelMapping["Cube"]),
-         std::get<1>(m_MainModelMapping["Cube"]));
-  printf("%s %d %d\n", "Plane", std::get<0>(m_MainModelMapping["Plane"]),
-         std::get<1>(m_MainModelMapping["Plane"]));
-  printf("%s %d %d\n", "Sphere", std::get<0>(m_MainModelMapping["Sphere"]),
-         std::get<1>(m_MainModelMapping["Sphere"]));
-  // printf("%s %d %d\n", "Cylinder",
-  // std::get<0>(m_MainModelMapping["Cylinder"]),
-  //        std::get<1>(m_MainModelMapping["Cylinder"]));
-  this->m_MainVAO = std::make_unique<VertexArray>();
-  this->m_MainVBO = std::make_unique<VertexBuffer>();
-  this->m_MainIBO = std::make_unique<IndexBuffer>();
-
-  this->m_MainVAO->GenVertexArrays();
-  this->m_MainVAO->BindVertexArray();
-  this->m_MainVBO->GenVertexBuffers(m_MainVertexBuffer,
-                                    m_MainVertexBuffer.size() * sizeof(float));
-
-  this->m_MainIBO->GenIndexBuffers(m_MainIndexBuffer, m_MainIndexBuffer.size() *
-                                                          sizeof(unsigned int));
-  this->m_MainVAO->AttribPointerSetUp();
 }
 
 void APE_Window::_run() {
 
   this->m_MainShader->UseShader();
-  this->m_MainVAO->BindVertexArray();
 
   while (!glfwWindowShouldClose(m_Window)) {
     // call the renderer and give it the frame buffer and a vector of objects
@@ -150,21 +72,6 @@ void APE_Window::_run() {
     this->m_MainInterface->SetUpDocking();
 
     auto renderView = m_Registry.view<Renderable>();
-
-    this->m_MainFrameBuffer->BindFrameBuffer();
-    glClearColor(0.2, 0.2, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    for (auto [entity, renderable] : renderView.each()) {
-      // printf("%d\n", renderable.s_IndexCount);
-      // printf("%d\n", renderable.s_StartIndex);
-
-      glDrawElements(GL_TRIANGLES, renderable.s_IndexCount, GL_UNSIGNED_INT,
-                     (void *)(renderable.s_StartIndex * sizeof(unsigned int)));
-      // glDrawElements(GL_TRIANGLES, renderable.s_IndexCount, GL_UNSIGNED_INT,
-      //                (void *)0);
-    }
-    this->m_MainFrameBuffer->UnBindFrameBuffer();
 
     ImGui::Begin("Viewport");
 
@@ -211,30 +118,18 @@ void APE_Window::_run() {
       // ImGui::Text("Hello!");
 
       if (ImGui::Button("Cube")) {
-        this->m_AddEntitySystem->AddCubeSystem(
-            m_Registry, std::get<0>(m_MainModelMapping["Cube"]),
-            std::get<1>(m_MainModelMapping["Cube"]));
         ImGui::CloseCurrentPopup();
       }
 
       if (ImGui::Button("Plane")) {
-        this->m_AddEntitySystem->AddPlaneSystem(
-            m_Registry, std::get<0>(m_MainModelMapping["Plane"]),
-            std::get<1>(m_MainModelMapping["Plane"]));
         ImGui::CloseCurrentPopup();
       }
 
       if (ImGui::Button("Sphere")) {
-        this->m_AddEntitySystem->AddSphereSystem(
-            m_Registry, std::get<0>(m_MainModelMapping["Sphere"]),
-            std::get<1>(m_MainModelMapping["Sphere"]));
         ImGui::CloseCurrentPopup();
       }
 
       if (ImGui::Button("Cylinder")) {
-        this->m_AddEntitySystem->AddCylinderSystem(
-            m_Registry, std::get<0>(m_MainModelMapping["Cylinder"]),
-            std::get<1>(m_MainModelMapping["Cylinder"]));
         ImGui::CloseCurrentPopup();
       }
 

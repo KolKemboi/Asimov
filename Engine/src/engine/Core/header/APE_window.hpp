@@ -43,9 +43,6 @@ private:
   // std::unique_ptr<Engine> m_Engine;
   GLFWwindow *m_Window;
 
-  std::unique_ptr<VertexArray> m_MainVAO;
-  std::unique_ptr<VertexBuffer> m_MainVBO;
-  std::unique_ptr<IndexBuffer> m_MainIBO;
 
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
 
@@ -56,10 +53,6 @@ private:
   entt::registry m_Registry;
 
 private:
-  std::vector<float> m_MainVertexBuffer;
-  std::vector<unsigned int> m_MainIndexBuffer;
-  std::unordered_map<std::string, std::tuple<unsigned int, unsigned int>>
-      m_MainModelMapping;
 
   void _setUpGLFWContext();
   void _destroyGLFWContext();
