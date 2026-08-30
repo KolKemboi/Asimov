@@ -6,6 +6,7 @@ project(${PROJ_NAME})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 find_package(glfw3 REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
@@ -133,8 +134,28 @@ set_target_properties(
 	IMPORTED_LOCATION "${IMGUI_LIB}"
 	INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/extLibs/imgui"
 )
+#IMGUI FILE DIALOGUE
+set(FILE_DIALOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
+set(FILE_DIALOG_SOURCES
+	${FILE_DIALOG_DIR}/ImGuiFileDialog.cpp
+)
 
+add_library(filedialog STATIC ${FILE_DIALOG_SOURCES})
+target_include_directories(filedialog PUBLIC ${FILE_DIALOG_DIR})
+target_link_libraries(filedialog PUBLIC imgui)
 
+#IMGUI NODE EDITOR
+set(NODE_EDITOR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
+set(NODE_EDITOR_SOURCES
+	${NODE_EDITOR_DIR}/crude_json.cpp
+	${NODE_EDITOR_DIR}/imgui_canvas.cpp
+	${NODE_EDITOR_DIR}/imgui_node_editor.cpp
+	${NODE_EDITOR_DIR}/imgui_node_editor_api.cpp
+)
+
+add_library(node_editor STATIC ${NODE_EDITOR_SOURCES})
+target_include_directories(node_editor PUBLIC ${NODE_EDITOR_DIR})
+target_link_libraries(node_editor PUBLIC imgui)
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/models DESTINATION ${CMAKE_BINARY_DIR})
@@ -165,9 +186,14 @@ target_link_libraries(APE_core PUBLIC APE_renderer)
 target_link_libraries(APE_core PUBLIC APE_ui)
 target_link_libraries(APE_core PUBLIC APE_ecs)
 target_link_libraries(APE_core PUBLIC APE_helpers)
+target_link_libraries(APE_core PUBLIC filedialog)
+target_link_libraries(APE_core PUBLIC node_editor)
+
 
 target_link_libraries(APE_ui PUBLIC imgui)
 target_link_libraries(APE_ui PUBLIC APE_helpers)
+target_link_libraries(APE_ui PUBLIC filedialog)
+target_link_libraries(APE_ui PUBLIC node_editor)
 
 
 target_link_libraries(APE_ecs PUBLIC imgui)

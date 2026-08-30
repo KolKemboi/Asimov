@@ -1,17 +1,19 @@
-#include "APE_ECS.hpp"
+#include "APE_Components.hpp"
 #include "APE_FBO.hpp"
 #include "APE_meshmakerhelper.hpp"
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
+#include <ImGuiFileDialog.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
 #include <imgui.h>
+#include <imgui_node_editor.h>
+#include <iostream>
 #include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
-#include <utility>
 
 APE_Window::APE_Window(unsigned int windowWidth, unsigned int windowHeight,
                        const char *windowName)
@@ -55,11 +57,24 @@ void APE_Window::_setUpGLFWContext() {
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
-  // this->m_Engine = std::make_unique<Engine>();
 
-  this->m_MeshMaker =
-      std::make_unique<MeshMakerHelper>("models/primitives/Cylinder.obj");
+  this->_setUpPrimitives();
   this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
+
+  // this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
+  //                                            std::get<0>(_CylinderPrimitive),
+  //                                            std::get<1>(_CylinderPrimitive));
+
+  // this->m_AddEntitySystem->AddSphereSystem(
+  //     m_Registry, std::get<0>(_SpherePrimitive),
+  //     std::get<1>(_SpherePrimitive));
+
+  this->m_AddEntitySystem->AddCubeSystem(
+      m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
+  // this->m_AddEntitySystem->AddCubeSystem(
+  //     m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
+  // this->m_AddEntitySystem->AddCubeSystem(
+  //     m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
 }
 
 void APE_Window::_run() {
@@ -73,19 +88,33 @@ void APE_Window::_run() {
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
 
+    // auto view = m_Registry.view<Name, ObjectCount>();
+    // for (auto [ent, name, count] : view.each()) {
+    //   printf("%s -> %d \n", name.s_Name.c_str(), count.s_Count);
+    // }
+
     m_MainFrameBuffer->BindFrameBuffer();
 
     glClearColor(0.2, 0.1, 0.3, 1.0f);
-
     glClear(GL_COLOR_BUFFER_BIT);
 
-    auto tup = m_MeshMaker->ReturnObjectData()["Cylinder"];
-    unsigned int vao = std::get<0>(tup);
-    unsigned int idxCount = std::get<1>(tup);
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, idxCount, GL_UNSIGNED_INT, 0);
-
+    auto renderView = m_Registry.view<Renderable>();
+    for (auto [ent, renderData] : renderView.each()) {
+      glBindVertexArray(renderData.s_VAO);
+      glDrawElements(GL_TRIANGLES, renderData.s_IndexCount, GL_UNSIGNED_INT, 0);
+    }
     m_MainFrameBuffer->UnBindFrameBuffer();
+
+    // debug rendering
+    // m_MainFrameBuffer->BindFrameBuffer();
+    // glClearColor(0.2, 0.1, 0.3, 1.0f);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    // auto tup = m_MeshMaker->ReturnObjectData()["Cylinder"];
+    // unsigned int vao = std::get<0>(tup);
+    // unsigned int idxCount = std::get<1>(tup);
+    // glBindVertexArray(vao);
+    // glDrawElements(GL_TRIANGLES, idxCount, GL_UNSIGNED_INT, 0);
+    // m_MainFrameBuffer->UnBindFrameBuffer();
 
     ImGui::Begin("Viewport");
 
@@ -114,84 +143,40 @@ void APE_Window::_run() {
         ImVec2(imageWidth, imageHeight), ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::End();
-    ImGui::Begin("Outliner");
-    auto name_view = m_Registry.view<Name>();
-    for (auto [entity, name] : name_view.each()) {
-      ImGui::Text("%s", name.s_Name.c_str());
-    }
-
-    if (glfwGetKey(this->m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-      if (glfwGetKey(this->m_Window, GLFW_KEY_A) == GLFW_PRESS)
-        ImGui::OpenPopup("Add Object");
-
-    if (ImGui::BeginPopupModal("Add Object", nullptr,
-                               ImGuiWindowFlags_AlwaysAutoResize)) {
-
-      if (ImGui::Button("Cube")) {
-        ImGui::CloseCurrentPopup();
-      }
-
-      if (ImGui::Button("Plane")) {
-        ImGui::CloseCurrentPopup();
-      }
-
-      if (ImGui::Button("Sphere")) {
-        ImGui::CloseCurrentPopup();
-      }
-
-      if (ImGui::Button("Cylinder")) {
-        ImGui::CloseCurrentPopup();
-      }
-
-      ImGui::EndPopup();
-    }
-    ImGui::End();
-    ImGui::Begin("Properties");
-
-    ImGui::Text("Basic Widgets");
-    ImGui::Separator();
-
-    ImGui::Button("Button");
-    ImGui::SameLine();
-    ImGui::SmallButton("Small");
-
-    static bool check = false;
-    ImGui::Checkbox("Enable feature", &check);
-
-    static int radio = 0;
-    ImGui::RadioButton("Option A", &radio, 0);
-    ImGui::RadioButton("Option B", &radio, 1);
-
-    static float value = 50.0f;
-    ImGui::SliderFloat("Slider", &value, 0.0f, 100.0f);
-    ImGui::DragFloat("Drag", &value, 0.5f, 0.0f, 100.0f);
-
-    static char text[256] = {};
-    ImGui::InputText("Name", text, sizeof(text));
-
-    static int combo = 0;
-    const char *options[] = {"First", "Second", "Third"};
-    ImGui::Combo("Options", &combo, options, IM_ARRAYSIZE(options));
-
-    static float color[4] = {1, 0, 0, 1};
-    ImGui::ColorEdit4("Color", color);
-
-    ImGui::ProgressBar(0.7f, ImVec2(250, 0));
-
-    if (ImGui::CollapsingHeader("More")) {
-      ImGui::Text("Extra content");
-      ImGui::BulletText("Item one");
-      ImGui::BulletText("Item two");
-      ImGui::BulletText("Item three");
-    }
-
-    ImGui::End();
 
     this->m_MainInterface->NewRenderIMGUI();
 
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
   }
+}
+
+void APE_Window::_setUpPrimitives() {
+  // load the primitives on start
+  std::vector<std::string> primitives = {
+      "models/primitives/Cylinder.obj",
+      "models/primitives/Cube.obj",
+      "models/primitives/Sphere.obj",
+  };
+
+  for (auto &primitive : primitives) {
+    this->m_MeshMaker = std::make_unique<MeshMakerHelper>(primitive);
+    auto tup = m_MeshMaker->ReturnObjectData();
+    for (auto &data : tup) {
+      if (std::strcmp(data.first.c_str(), "Cube") == 0) {
+        _CubePrimitive = data.second;
+        printf("Found Cube\n");
+      } else if (strcmp(data.first.c_str(), "Cylinder") == 0) {
+        _CylinderPrimitive = data.second;
+        printf("Found Cylinder\n");
+      } else if (std::strcmp(data.first.data(), "Sphere") == 0) {
+        _SpherePrimitive = data.second;
+        printf("Found Spehere\n");
+      }
+    }
+  }
+
+  primitives.clear();
 }
 
 void APE_Window::_emptyWindowVector() {

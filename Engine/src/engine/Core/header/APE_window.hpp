@@ -1,6 +1,7 @@
 #pragma once
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 #ifndef __GLAD_GAURD__
 #include <glad/glad.h>
@@ -42,14 +43,20 @@ private:
   std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::shared_ptr<Shader> m_MainShader;
   std::unique_ptr<Interface> m_MainInterface;
-  // std::unique_ptr<Engine> m_Engine;
   GLFWwindow *m_Window;
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
   std::vector<GLFWwindow *> m_Windows;
   entt::registry m_Registry;
-	std::unique_ptr<MeshMakerHelper> m_MeshMaker;
+  std::unique_ptr<MeshMakerHelper> m_MeshMaker;
 
 private:
+  // VAO,IndexCount
+  std::tuple<unsigned int, unsigned int> _CubePrimitive;
+  std::tuple<unsigned int, unsigned int> _SpherePrimitive;
+  std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
+
+
+	void _setUpPrimitives();
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _miniInputSystem(GLFWwindow *);

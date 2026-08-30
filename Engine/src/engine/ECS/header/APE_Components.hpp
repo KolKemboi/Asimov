@@ -29,12 +29,20 @@ struct Material {
 struct Renderable {
   // need a VAO here
   unsigned int s_IndexCount;
-  unsigned int s_StartIndex;
+  unsigned int s_VAO;
 
-  Renderable(unsigned int startIdx, unsigned int idxCount)
-      : s_IndexCount(idxCount), s_StartIndex(startIdx) {};
+  Renderable(unsigned int VAO, unsigned int idxCount)
+      : s_IndexCount(idxCount), s_VAO(VAO) {};
 };
 
+// name starts as name, next will be name_001 => name + count
 struct Name {
   std::string s_Name;
+};
+
+// so that, add primitive increases this
+// duplicate increases this
+// importing will increase this automatically
+struct ObjectCount {
+  unsigned int s_Count = 0;
 };
