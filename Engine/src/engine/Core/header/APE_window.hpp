@@ -13,6 +13,7 @@
 #include <APE_engine.hpp>
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
+#include <APE_meshmakerhelper.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
 #include <GLFW/glfw3.h>
@@ -46,6 +47,7 @@ private:
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
   std::vector<GLFWwindow *> m_Windows;
   entt::registry m_Registry;
+	std::unique_ptr<MeshMakerHelper> m_MeshMaker;
 
 private:
   void _setUpGLFWContext();

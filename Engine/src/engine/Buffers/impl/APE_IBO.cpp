@@ -6,7 +6,8 @@ void IndexBuffer::GenIndexBuffers(std::vector<unsigned int> &indices,
                                   size_t size) {
   glGenBuffers(1, &this->m_IndexBuffers);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IndexBuffers);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+  printf("--------\n");
 }
 
 void IndexBuffer::Clean() {

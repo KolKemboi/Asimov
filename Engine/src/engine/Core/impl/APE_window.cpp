@@ -1,5 +1,6 @@
 #include "APE_ECS.hpp"
 #include "APE_FBO.hpp"
+#include "APE_meshmakerhelper.hpp"
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
@@ -9,6 +10,7 @@
 #include <imgui.h>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 
 APE_Window::APE_Window(unsigned int windowWidth, unsigned int windowHeight,
@@ -55,6 +57,8 @@ void APE_Window::_setUpGLFWContext() {
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
   // this->m_Engine = std::make_unique<Engine>();
 
+  this->m_MeshMaker =
+      std::make_unique<MeshMakerHelper>("models/primitives/Cylinder.obj");
   this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
 }
 
@@ -68,6 +72,20 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
+
+    m_MainFrameBuffer->BindFrameBuffer();
+
+    glClearColor(0.2, 0.1, 0.3, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    auto tup = m_MeshMaker->ReturnObjectData()["Cylinder"];
+    unsigned int vao = std::get<0>(tup);
+    unsigned int idxCount = std::get<1>(tup);
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, idxCount, GL_UNSIGNED_INT, 0);
+
+    m_MainFrameBuffer->UnBindFrameBuffer();
 
     ImGui::Begin("Viewport");
 
@@ -187,6 +205,7 @@ void APE_Window::_emptyWindowVector() {
 }
 
 void APE_Window::CleanUp() {
+  this->m_MeshMaker->Clean();
   this->m_MainInterface->DestroyIMGUIContext();
   this->m_MainInterface = nullptr;
 

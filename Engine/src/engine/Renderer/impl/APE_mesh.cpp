@@ -6,15 +6,18 @@
 /*
  * when the mesh is called, these are created immediately
  */
+
+
+
 Mesh::Mesh(std::vector<float> &vertices, size_t vertCount,
            std::vector<unsigned int> &indices, size_t indexCount)
     : m_ModelLoader("models/primitives/cube.obj") {
 
-  m_VertexArray.GenVertexArrays();
-  m_VertexArray.BindVertexArray();
-  m_VertexBuffer.GenVertexBuffers(vertices, vertCount);
-  m_IndexBuffer.GenIndexBuffers(indices, indexCount);
-  m_VertexArray.AttribPointerSetUp(); // dont forget to call this
+  // m_VertexArray.GenVertexArrays();
+  // m_VertexArray.BindVertexArray();
+  // m_VertexBuffer.GenVertexBuffers(vertices, vertCount);
+  // m_IndexBuffer.GenIndexBuffers(indices, indexCount);
+  // m_VertexArray.AttribPointerSetUp(); // dont forget to call this
 
 	// Debugging, to see if the APEObject works
   // for (auto &apeObject : m_ModelLoader.m_APEObjects) {

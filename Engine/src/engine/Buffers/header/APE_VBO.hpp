@@ -6,8 +6,8 @@
 #include <glad/glad.h>
 #endif
 #include "APE_VAO.hpp"
-#include <GLFW/glfw3.h>
 #include <APE_types.hpp>
+#include <GLFW/glfw3.h>
 
 class VertexBuffer {
 public:
