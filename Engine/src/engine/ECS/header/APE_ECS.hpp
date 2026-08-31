@@ -20,9 +20,9 @@
 // private:
 // };
 
-class RenderSystem {
-public:
-  std::unique_ptr<FrameBuffer> RenderScene(std::unique_ptr<FrameBuffer>,
-                                           std::unique_ptr<Engine>,
-                                           entt::registry &);
-};
+// class RenderSystem {
+// public:
+//   std::unique_ptr<FrameBuffer> RenderScene(std::unique_ptr<FrameBuffer>,
+//                                            std::unique_ptr<Engine>,
+//                                            entt::registry &);
+// };

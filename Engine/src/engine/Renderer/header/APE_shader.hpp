@@ -13,13 +13,13 @@ public:
 
   unsigned int GetShaderProgram();
 
-	void UseShader();
+  void UseShader();
 
-	void Clean();
+  void Clean();
 
-  void SetMat4(glm::mat4 &, const char *);
-  void SetVec3(glm::vec3 &, const char *);
-  void SetFloat(float &, const char *);
+  void SetMat4(const glm::mat4 &, const char *);
+  void SetVec3(const glm::vec3 &, const char *);
+  void SetFloat(const float &, const char *);
 
 private:
   void _checkShaderCompilation(unsigned int, std::string);

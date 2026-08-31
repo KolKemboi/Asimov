@@ -102,8 +102,9 @@ target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 ##ECS STATIC LIBS
 set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
 set(ECS_SOURCES
-	${ECS_DIR}/impl/APE_ECS.cpp
+	# ${ECS_DIR}/impl/APE_ECS.cpp
 	${ECS_DIR}/impl/APE_AddEntitySystem.cpp
+	${ECS_DIR}/impl/APE_RenderingSystem.cpp
 )
 
 add_library(APE_ecs STATIC ${ECS_SOURCES})

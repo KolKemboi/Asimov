@@ -44,5 +44,5 @@ struct Name {
 // duplicate increases this
 // importing will increase this automatically
 struct ObjectCount {
-  unsigned int s_Count = 0;
+  unsigned int s_Count = 1;
 };

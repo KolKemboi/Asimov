@@ -7,7 +7,8 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   auto entity = reg.create();
   auto view = reg.view<Name, ObjectCount>();
 
-  unsigned int ObjNumber = 0;
+  // the entity has not been created ---yet
+  unsigned int ObjNumber = 1;
 
   for (auto [ent, name, count] : view.each()) {
     if (strcmp(name.s_Name.c_str(), objName) == 0) {
@@ -16,7 +17,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
     }
   }
 
-  reg.emplace<Name>(entity, "Cube");
+  reg.emplace<Name>(entity, objName);
   reg.emplace<Transform>(entity);
   reg.emplace<ObjectCount>(entity, ObjNumber);
   reg.emplace<Material>(entity);
@@ -26,6 +27,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
 void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,
                                     unsigned int count) {
   this->_helperFunction(registry, "Cube", VAO, count);
+  // add 1 to the count
   printf("ADD_CUBE RUN\n");
 }
 void AddEntitySystem::AddSphereSystem(entt::registry &registry,

@@ -59,27 +59,36 @@ void APE_Window::_setUpGLFWContext() {
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
 
   this->_setUpPrimitives();
+
+  // --TODO: FIX THE SMART PTR TO NORMAL
+  // dunno why this is a smart ptr, will fix this
   this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
 
-  // this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
-  //                                            std::get<0>(_CylinderPrimitive),
-  //                                            std::get<1>(_CylinderPrimitive));
+  for (unsigned int i = 0; i < 1; i++) {
+    this->m_AddEntitySystem->AddSphereSystem(m_Registry,
+                                             std::get<0>(_SpherePrimitive),
+                                             std::get<1>(_SpherePrimitive));
 
-  // this->m_AddEntitySystem->AddSphereSystem(
-  //     m_Registry, std::get<0>(_SpherePrimitive),
-  //     std::get<1>(_SpherePrimitive));
+    // this->m_AddEntitySystem->AddCubeSystem(
+    //     m_Registry, std::get<0>(_CubePrimitive),
+    //     std::get<1>(_CubePrimitive));
 
-  this->m_AddEntitySystem->AddCubeSystem(
-      m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
-  // this->m_AddEntitySystem->AddCubeSystem(
-  //     m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
-  // this->m_AddEntitySystem->AddCubeSystem(
-  //     m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
+    this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
+                                               std::get<0>(_CylinderPrimitive),
+                                               std::get<1>(_CylinderPrimitive));
+  }
+  this->m_Camera = std::make_unique<Camera>(m_CamPos, m_CamUp);
 }
 
 void APE_Window::_run() {
 
   this->m_MainShader->UseShader();
+  this->m_MainShader->SetMat4(this->m_Camera->GetViewMatrix(), "view");
+
+  glm::mat4 projection;
+  projection = glm::perspective(
+      glm::radians(45.0f),
+      (float)this->m_WindowWidth / (float)this->m_WindowHeight, 0.1f, 100.0f);
 
   while (!glfwWindowShouldClose(m_Window)) {
     // call the renderer and give it the frame buffer and a vector of objects
@@ -87,34 +96,14 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
+    this->m_MainShader->SetMat4(projection, "projection");
 
     // auto view = m_Registry.view<Name, ObjectCount>();
     // for (auto [ent, name, count] : view.each()) {
     //   printf("%s -> %d \n", name.s_Name.c_str(), count.s_Count);
     // }
 
-    m_MainFrameBuffer->BindFrameBuffer();
-
-    glClearColor(0.2, 0.1, 0.3, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    auto renderView = m_Registry.view<Renderable>();
-    for (auto [ent, renderData] : renderView.each()) {
-      glBindVertexArray(renderData.s_VAO);
-      glDrawElements(GL_TRIANGLES, renderData.s_IndexCount, GL_UNSIGNED_INT, 0);
-    }
-    m_MainFrameBuffer->UnBindFrameBuffer();
-
-    // debug rendering
-    // m_MainFrameBuffer->BindFrameBuffer();
-    // glClearColor(0.2, 0.1, 0.3, 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT);
-    // auto tup = m_MeshMaker->ReturnObjectData()["Cylinder"];
-    // unsigned int vao = std::get<0>(tup);
-    // unsigned int idxCount = std::get<1>(tup);
-    // glBindVertexArray(vao);
-    // glDrawElements(GL_TRIANGLES, idxCount, GL_UNSIGNED_INT, 0);
-    // m_MainFrameBuffer->UnBindFrameBuffer();
+    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry);
 
     ImGui::Begin("Viewport");
 

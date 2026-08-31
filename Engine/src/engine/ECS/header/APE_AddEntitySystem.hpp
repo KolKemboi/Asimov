@@ -9,6 +9,6 @@ public:
   void AddPlaneSystem(entt::registry &, unsigned int, unsigned int);
 
 private:
-  void _helperFunction(entt::registry &, const char *,
-                       unsigned int , unsigned int );
+  void _helperFunction(entt::registry &, const char *, unsigned int,
+                       unsigned int);
 };

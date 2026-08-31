@@ -9,8 +9,10 @@
 #include <APE_AddEntitySystem.hpp>
 #include <APE_FBO.hpp>
 #include <APE_IBO.hpp>
+#include <APE_RenderingSystem.hpp>
 #include <APE_VAO.hpp>
 #include <APE_VBO.hpp>
+#include <APE_camera.hpp>
 #include <APE_engine.hpp>
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
@@ -49,14 +51,20 @@ private:
   entt::registry m_Registry;
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
 
+  RenderSystem m_RenderSystem;
+  std::unique_ptr<Camera> m_Camera;
+
 private:
   // VAO,IndexCount
   std::tuple<unsigned int, unsigned int> _CubePrimitive;
   std::tuple<unsigned int, unsigned int> _SpherePrimitive;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
 
+  glm::vec3 m_CamPos = glm::vec3(-1.0f, 2.0f, -3.0f);
+  glm::vec3 m_CamUp = glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::mat4 m_View = glm::mat4(1.0f);
 
-	void _setUpPrimitives();
+  void _setUpPrimitives();
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _miniInputSystem(GLFWwindow *);
