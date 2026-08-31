@@ -89,8 +89,16 @@ void Shader::Clean() {
  * set the necessary values for this
  * that is mat4, vec3 and float, anything else can be cast into one of these
  */
-void Shader::SetMat4(glm::mat4 &matrix, const char *uniformName) {}
+void Shader::SetMat4(const glm::mat4 &matrix, const char *uniformName) {
+  glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram, uniformName), 1,
+                     GL_FALSE, &matrix[0][0]);
+}
 
-void Shader::SetVec3(glm::vec3 &vector, const char *uniformName) {}
+void Shader::SetVec3(const glm::vec3 &vector, const char *uniformName) {
+  glUniform3fv(glGetUniformLocation(m_ShaderProgram, uniformName), 1,
+               &vector[0]);
+}
 
-void Shader::SetFloat(float &floatValue, const char *uniformName) {}
+void Shader::SetFloat(const float &floatValue, const char *uniformName) {
+  glUniform1f(glGetUniformLocation(m_ShaderProgram, uniformName), floatValue);
+}

@@ -1,15 +1,17 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <string>
 #include <vector>
 
 struct Vertex {
-  glm::vec3 Position;
-  glm::vec3 Normal;
-  glm::vec2 TexCoords;
+  glm::vec3 s_Position;
+  glm::vec3 s_Normal;
+  glm::vec2 s_TexCoords;
 };
 
 struct APEObject {
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
+  std::string s_Name;
+  std::vector<Vertex> s_Vertices;
+  std::vector<unsigned int> s_Indices;
 };

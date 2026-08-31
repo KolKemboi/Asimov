@@ -1,0 +1,30 @@
+#pragma once
+#include <APE_IBO.hpp>
+#include <APE_VAO.hpp>
+#include <APE_VBO.hpp>
+#include <APE_loadmodelhelper.hpp>
+#include <APE_types.hpp>
+#include <tuple>
+#include <unordered_map>
+#include <utility>
+
+class MeshMakerHelper {
+public:
+  MeshMakerHelper(std::string);
+  ModelLoaderHelper m_ModelLoaderHelper;
+
+  void Clean();
+
+  std::unordered_map<std::string, std::tuple<unsigned int, unsigned int>>
+  ReturnObjectData();
+
+private:
+  std::unordered_map<std::string, std::tuple<unsigned int, unsigned int>>
+      m_NameVertexArrayIndexCount;
+
+  void _fillObjectData(APEObject &object);
+
+  std::vector<VertexArray> m_VertexArray;
+  std::vector<VertexBuffer> m_VertexBuffer;
+  std::vector<IndexBuffer> m_IndexBuffer;
+};

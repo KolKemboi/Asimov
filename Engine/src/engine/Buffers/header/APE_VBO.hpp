@@ -6,11 +6,13 @@
 #include <glad/glad.h>
 #endif
 #include "APE_VAO.hpp"
+#include <APE_types.hpp>
 #include <GLFW/glfw3.h>
 
 class VertexBuffer {
 public:
-  void GenVertexBuffers(std::vector<float> &, size_t );
+  VertexBuffer() {}
+  void GenVertexBuffers(std::vector<Vertex> &);
   void Clean();
 
 private:
