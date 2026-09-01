@@ -19,11 +19,13 @@ public:
   ReturnObjectData();
 
 private:
+  // this works well
   std::unordered_map<std::string, std::tuple<unsigned int, unsigned int>>
       m_NameVertexArrayIndexCount;
 
   void _fillObjectData(APEObject &object);
 
+  // these are useless
   std::vector<VertexArray> m_VertexArray;
   std::vector<VertexBuffer> m_VertexBuffer;
   std::vector<IndexBuffer> m_IndexBuffer;

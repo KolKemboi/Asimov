@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+// should get something like a family tree, if root exists
 class ModelLoaderHelper {
 public:
   APEObject m_Object;

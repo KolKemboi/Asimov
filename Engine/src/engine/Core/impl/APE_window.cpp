@@ -148,6 +148,8 @@ void APE_Window::_setUpPrimitives() {
       "models/primitives/Sphere.obj",
   };
 
+  // this logic works well with primitives
+  // Does not need to be changed to fit non primitive
   for (auto &primitive : primitives) {
     this->m_MeshMaker = std::make_unique<MeshMakerHelper>(primitive);
     auto tup = m_MeshMaker->ReturnObjectData();
