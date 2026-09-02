@@ -94,6 +94,7 @@ target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
 set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
 set(UI_SOURCES
 	${UI_DIR}/impl/APE_interface.cpp
+	${UI_DIR}/impl/APE_properties.cpp
 )
 
 add_library(APE_ui STATIC ${UI_SOURCES})
@@ -102,7 +103,6 @@ target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 ##ECS STATIC LIBS
 set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
 set(ECS_SOURCES
-	# ${ECS_DIR}/impl/APE_ECS.cpp
 	${ECS_DIR}/impl/APE_AddEntitySystem.cpp
 	${ECS_DIR}/impl/APE_RenderingSystem.cpp
 )
@@ -195,6 +195,7 @@ target_link_libraries(APE_ui PUBLIC imgui)
 target_link_libraries(APE_ui PUBLIC APE_helpers)
 target_link_libraries(APE_ui PUBLIC filedialog)
 target_link_libraries(APE_ui PUBLIC node_editor)
+target_link_libraries(APE_ui PUBLIC APE_ecs)
 
 
 target_link_libraries(APE_ecs PUBLIC imgui)
