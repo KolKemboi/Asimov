@@ -4,6 +4,7 @@
 #endif
 
 #include "APE_UI_STYLE.hpp"
+#include <APE_properties.hpp>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -16,6 +17,7 @@ public:
   void SetUpIMGUIContext();
   void DestroyIMGUIContext();
   void SetUpDocking();
+  void SetUpProperties(entt::registry &);
   void SetUpNewFrame();
   void NewRenderIMGUI();
 
@@ -27,5 +29,6 @@ private:
   void _newRenderIMGUI();
 
 private:
-	GLFWwindow* m_ImGUIWindow;
+  GLFWwindow *m_ImGUIWindow;
+  Properties m_Properties;
 };

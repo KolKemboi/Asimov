@@ -55,17 +55,14 @@ target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
 
 
 ##RENDERER STATIC LIBS
-set(RENDERER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Renderer)
-set(RENDERER_SOURCES
-	${RENDERER_DIR}/impl/APE_engine.cpp
-	${RENDERER_DIR}/impl/APE_shader.cpp
-	${RENDERER_DIR}/impl/APE_camera.cpp
-	${RENDERER_DIR}/impl/APE_mesh.cpp
-	${RENDERER_DIR}/impl/APE_assetloader.cpp
+set(TOOLBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Toolbox)
+set(TOOLBOX_SOURCES
+	${TOOLBOX_DIR}/impl/APE_shader.cpp
+	${TOOLBOX_DIR}/impl/APE_camera.cpp
 )
 
-add_library(APE_renderer STATIC ${RENDERER_SOURCES})
-target_include_directories(APE_renderer PUBLIC ${RENDERER_DIR}/header)
+add_library(APE_toolbox STATIC ${TOOLBOX_SOURCES})
+target_include_directories(APE_toolbox PUBLIC ${TOOLBOX_DIR}/header)
 
 ##BUFFERS STATIC LIBS
 set(BUFFERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers)
@@ -174,35 +171,43 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
 
 
 # Add the executable and link the libraries
+target_link_libraries(
+	APE_helpers
+	PUBLIC
+	assimp
+	APE_buffers
+)
+target_link_libraries(
+	APE_toolbox
+	PUBLIC
 
-target_link_libraries(APE_helpers PUBLIC assimp)
-target_link_libraries(APE_helpers PUBLIC APE_buffers)
+)
+target_link_libraries(
+	APE_ui
+	PUBLIC
+	imgui
+	APE_helpers
+	filedialog
+	node_editor
+	APE_ecs
+)
 
-target_link_libraries(APE_renderer PUBLIC APE_physics)
-target_link_libraries(APE_renderer PUBLIC APE_buffers)
-target_link_libraries(APE_renderer PUBLIC assimp)
-target_link_libraries(APE_renderer PUBLIC APE_helpers)
+target_link_libraries(
+	APE_core
+	PUBLIC
+	APE_ui
+	APE_toolbox
+	APE_helpers
+	APE_ecs
+)
 
-target_link_libraries(APE_core PUBLIC APE_renderer)
-target_link_libraries(APE_core PUBLIC APE_ui)
-target_link_libraries(APE_core PUBLIC APE_ecs)
-target_link_libraries(APE_core PUBLIC APE_helpers)
-target_link_libraries(APE_core PUBLIC filedialog)
-target_link_libraries(APE_core PUBLIC node_editor)
-
-
-target_link_libraries(APE_ui PUBLIC imgui)
-target_link_libraries(APE_ui PUBLIC APE_helpers)
-target_link_libraries(APE_ui PUBLIC filedialog)
-target_link_libraries(APE_ui PUBLIC node_editor)
-target_link_libraries(APE_ui PUBLIC APE_ecs)
-
-
-target_link_libraries(APE_ecs PUBLIC imgui)
-target_link_libraries(APE_ecs PUBLIC APE_physics)
-target_link_libraries(APE_ecs PUBLIC APE_renderer)
-target_link_libraries(APE_ecs PUBLIC APE_helpers)
-
+target_link_libraries(
+	APE_ecs
+	PUBLIC
+	APE_physics
+	APE_toolbox
+	APE_helpers
+)
 
 target_link_libraries(${PROJ_NAME} 
   imgui
@@ -210,7 +215,7 @@ target_link_libraries(${PROJ_NAME}
 	APE_ecs
 	APE_helpers
 	APE_core
-	APE_renderer
+	APE_toolbox
 	APE_ui
 	APE_physics
   glfw 

@@ -100,6 +100,7 @@ void APE_Window::_run() {
     this->_miniInputSystem(this->m_Window);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
+		this->m_MainInterface->SetUpProperties(m_Registry);
     this->m_MainShader->SetMat4(projection, "projection");
 
     // auto view = m_Registry.view<Name, ObjectCount>();
@@ -143,7 +144,6 @@ void APE_Window::_run() {
 
     ImGui::End();
 
-    m_Properties.MakeProperties(m_Registry);
     m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
 
     this->m_MainInterface->NewRenderIMGUI();

@@ -13,11 +13,9 @@
 #include <APE_VAO.hpp>
 #include <APE_VBO.hpp>
 #include <APE_camera.hpp>
-#include <APE_engine.hpp>
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
-#include <APE_properties.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
 #include <GLFW/glfw3.h>
@@ -53,7 +51,6 @@ private:
 
   RenderSystem m_RenderSystem;
   std::unique_ptr<Camera> m_Camera;
-  Properties m_Properties;
 
 private:
   // VAO,IndexCount

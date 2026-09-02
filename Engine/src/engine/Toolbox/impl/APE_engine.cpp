@@ -1,6 +1,4 @@
-#include "APE_engine.hpp"
 #include "APE_FBO.hpp"
-#include "APE_mesh.hpp"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <cstdlib>
@@ -39,9 +37,9 @@ Engine::Engine() {
                              indices.size() * sizeof(float));
 }
 
-void Engine::RenderBackground(){
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
+void Engine::RenderBackground() {
+  glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
 }
 void Engine::Render() {
 

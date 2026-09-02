@@ -1,5 +1,10 @@
 #include "APE_UI_STYLE.hpp"
+#ifndef __
 #include <APE_interface.hpp>
+#endif
+
+#include <APE_addobjectpopup.hxx>
+#include <APE_menubar.hxx>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <imgui.h>
@@ -11,6 +16,11 @@ void Interface::DestroyIMGUIContext() { this->_destroyIMGUIContext(); }
 void Interface::SetUpDocking() { this->_setUpDocking(); }
 void Interface::SetUpNewFrame() { this->_setUpNewFrame(); }
 void Interface::NewRenderIMGUI() { this->_newRenderIMGUI(); }
+
+void Interface::SetUpProperties(entt::registry &reg) {
+  m_Properties.MakeProperties(reg);
+  SetUpPopUp(m_ImGUIWindow, reg);
+}
 
 Interface::Interface(GLFWwindow *&window) {
   this->m_ImGUIWindow = window;
@@ -69,6 +79,7 @@ void Interface::_setUpNewFrame() {
   ImGui_ImplGlfw_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
+  SetUpMenuBar(m_ImGUIWindow);
 }
 void Interface::_newRenderIMGUI() {
   ImGui::Render();
