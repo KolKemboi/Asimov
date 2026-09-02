@@ -53,6 +53,7 @@ void APE_Window::_setUpGLFWContext() {
   // set up shader and framebuffer
   this->m_MainShader = std::make_shared<Shader>(
       "shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
+
   this->m_MainFrameBuffer =
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
@@ -69,14 +70,16 @@ void APE_Window::_setUpGLFWContext() {
                                              std::get<0>(_SpherePrimitive),
                                              std::get<1>(_SpherePrimitive));
 
-    // this->m_AddEntitySystem->AddCubeSystem(
-    //     m_Registry, std::get<0>(_CubePrimitive),
-    //     std::get<1>(_CubePrimitive));
+    this->m_AddEntitySystem->AddCubeSystem(
+        m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
 
     this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
                                                std::get<0>(_CylinderPrimitive),
                                                std::get<1>(_CylinderPrimitive));
   }
+  this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
+                                             std::get<0>(_CylinderPrimitive),
+                                             std::get<1>(_CylinderPrimitive));
   this->m_Camera = std::make_unique<Camera>(m_CamPos, m_CamUp);
 }
 
@@ -86,9 +89,10 @@ void APE_Window::_run() {
   this->m_MainShader->SetMat4(this->m_Camera->GetViewMatrix(), "view");
 
   glm::mat4 projection;
-  projection = glm::perspective(
-      glm::radians(45.0f),
-      (float)this->m_WindowWidth / (float)this->m_WindowHeight, 0.1f, 100.0f);
+
+  projection = glm::perspective(glm::radians(45.0f),
+                                (float)m_WindowWidth / (float)m_WindowHeight,
+                                0.1f, 100.0f);
 
   while (!glfwWindowShouldClose(m_Window)) {
     // call the renderer and give it the frame buffer and a vector of objects
@@ -103,35 +107,44 @@ void APE_Window::_run() {
     //   printf("%s -> %d \n", name.s_Name.c_str(), count.s_Count);
     // }
 
-    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry);
-
     ImGui::Begin("Viewport");
 
     ImVec2 avail = ImGui::GetContentRegionAvail();
 
-    // Desired aspect ratio (16:9)
-    const float aspect = 16.0f / 9.0f;
-
     // Compute the largest image that fits while preserving the aspect ratio
-    float imageWidth = avail.x;
-    float imageHeight = imageWidth / aspect;
+    unsigned int imageWidth = (unsigned int)avail.x;
+    unsigned int imageHeight = (unsigned int)avail.y;
 
-    if (imageHeight > avail.y) {
-      imageHeight = avail.y;
-      imageWidth = imageHeight * aspect;
+    if (imageWidth != m_MainFrameBuffer->windowWidth ||
+        imageHeight != m_MainFrameBuffer->windowHeight) {
+      // resize framebuffer
+      this->m_MainFrameBuffer->Clean();
+      this->m_MainFrameBuffer =
+          std::make_unique<FrameBuffer>(imageWidth, imageHeight);
+      m_MainFrameBuffer->windowWidth = imageWidth;
+      m_MainFrameBuffer->windowHeight = imageHeight;
     }
 
-    // Center the image in the viewport
-    ImVec2 cursor = ImGui::GetCursorPos();
+    glViewport(0, 0, m_MainFrameBuffer->windowWidth,
+               m_MainFrameBuffer->windowHeight);
+    const float aspect = (float)imageWidth / (float)imageHeight;
 
-    ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
-                               cursor.y + (avail.y - imageHeight) * 0.5f));
+    projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    // // Center the image in the viewport
+    // ImVec2 cursor = ImGui::GetCursorPos();
+    //
+    // ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
+    //                            cursor.y + (avail.y - imageHeight) * 0.5f));
 
     ImGui::Image(
         (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
-        ImVec2(imageWidth, imageHeight), ImVec2(0, 1), ImVec2(1, 0));
+        avail, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::End();
+
+    m_Properties.MakeProperties(m_Registry);
+    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
 
     this->m_MainInterface->NewRenderIMGUI();
 
@@ -184,9 +197,8 @@ void APE_Window::CleanUp() {
   this->m_MeshMaker->Clean();
   this->m_MainInterface->DestroyIMGUIContext();
   this->m_MainInterface = nullptr;
-
+  this->m_MainFrameBuffer->Clean();
   this->_emptyWindowVector();
-
   this->_destroyGLFWContext();
   printf("APE_WINDOW::CLEANED\n");
 }

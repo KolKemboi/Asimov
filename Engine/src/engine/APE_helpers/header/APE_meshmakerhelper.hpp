@@ -25,7 +25,8 @@ private:
 
   void _fillObjectData(APEObject &object);
 
-  // these are useless
+  // these are useless -> actually, these are what are to be cleaned later,
+  // like a dustbin of sorts, that holds the VAO, VBO and IBO for cleaning
   std::vector<VertexArray> m_VertexArray;
   std::vector<VertexBuffer> m_VertexBuffer;
   std::vector<IndexBuffer> m_IndexBuffer;

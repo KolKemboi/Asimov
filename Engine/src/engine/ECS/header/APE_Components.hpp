@@ -5,6 +5,7 @@
 #include <APE_shader.hpp>
 #include <entt/entt.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 
@@ -15,15 +16,22 @@ struct Transform {
 
   glm::mat4 GetModelMatrix() const {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, s_Position);
+    modelMatrix = glm::scale(modelMatrix, s_Scale);
 
     return modelMatrix;
   }
 };
 
+enum class Type {
+  LIGHT,
+  MESH,
+};
 struct Material {
   glm::vec3 s_Color;
+  Type s_Type; //
 
-  Material(glm::vec3 color = glm::vec3(0.5f, 0.5f, 0.5f)) : s_Color(color) {};
+  Material(glm::vec3 color, Type type) : s_Color(color), s_Type(type) {};
 };
 
 struct Renderable {

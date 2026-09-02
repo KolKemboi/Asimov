@@ -1,8 +1,9 @@
 #include <APE_FBO.hpp>
 #include <cstdio>
 
-FrameBuffer::FrameBuffer(unsigned int &windowWidth,
-                         unsigned int &windowHeight) {
+FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
+    : windowWidth(Width), windowHeight(Height) {
+
   glGenFramebuffers(1, &m_FrameBuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 
@@ -31,9 +32,20 @@ FrameBuffer::FrameBuffer(unsigned int &windowWidth,
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+// returns the color texture, for Imgui presentation
 unsigned int FrameBuffer::ReturnColorTexture() { return this->m_ColorTexture; }
 
+// binds the FBO
 void FrameBuffer::BindFrameBuffer() {
   glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 }
+// unbinds the FBO
 void FrameBuffer::UnBindFrameBuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
+// cleans the FBO and reports it has been cleaned
+void FrameBuffer::Clean() {
+  glDeleteFramebuffers(1, &m_FrameBuffer);
+  glDeleteTextures(1, &m_ColorTexture);
+  glDeleteRenderbuffers(1, &m_RenderBufferObject);
+  printf("FBO::CLEANED\n");
+}

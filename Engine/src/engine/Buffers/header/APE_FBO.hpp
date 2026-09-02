@@ -5,7 +5,7 @@
 
 class FrameBuffer {
 public:
-  FrameBuffer(unsigned int&, unsigned int&);
+  FrameBuffer(unsigned int, unsigned int);
 
   unsigned int ReturnFrameBuffer();
 
@@ -16,6 +16,7 @@ public:
 
   void Clean();
 
+	unsigned int windowWidth, windowHeight;
 private:
   unsigned int m_FrameBuffer, m_ColorTexture, m_RenderBufferObject;
 

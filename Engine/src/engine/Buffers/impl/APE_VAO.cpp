@@ -27,7 +27,6 @@ void VertexArray::AttribPointerSetUp() {
 unsigned int VertexArray::GetVAO() { return this->m_VertexArray; }
 
 void VertexArray::Clean() {
-  printf("VAO::CLEANED\n");
-
   glDeleteVertexArrays(1, &this->m_VertexArray);
+  printf("VAO::CLEANED\n");
 }

@@ -24,7 +24,8 @@ struct RenderRequirement {
 };
 
 void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
-                                  entt::registry &registry) {
+                                  entt::registry &registry,
+                                  std::shared_ptr<Shader> &shader) {
 
   auto view = registry.view<Renderable, Material, Transform>();
 
@@ -81,6 +82,7 @@ void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
     glBindVertexArray(batch.first);
     for (auto renderReq : batch.second) {
       // apply model transforms
+      shader->SetMat4(renderReq.s_Transform.GetModelMatrix(), "model");
       glDrawElements(GL_TRIANGLES, renderReq.s_IndexCount, GL_UNSIGNED_INT, 0);
     }
   }

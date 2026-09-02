@@ -17,13 +17,13 @@
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
+#include <APE_properties.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
 #include <memory>
 #include <optional>
-
 /*
  * APE window is resposible for setting up the openGL context,
  * Provides a framebuffer, to which the renderer will render to
@@ -53,6 +53,7 @@ private:
 
   RenderSystem m_RenderSystem;
   std::unique_ptr<Camera> m_Camera;
+  Properties m_Properties;
 
 private:
   // VAO,IndexCount
@@ -60,7 +61,7 @@ private:
   std::tuple<unsigned int, unsigned int> _SpherePrimitive;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
 
-  glm::vec3 m_CamPos = glm::vec3(-1.0f, 2.0f, -3.0f);
+  glm::vec3 m_CamPos = glm::vec3(0.0f, 5.0f, -10.0f);
   glm::vec3 m_CamUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 m_View = glm::mat4(1.0f);
 

@@ -20,7 +20,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   reg.emplace<Name>(entity, objName);
   reg.emplace<Transform>(entity);
   reg.emplace<ObjectCount>(entity, ObjNumber);
-  reg.emplace<Material>(entity);
+  reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
   reg.emplace<Renderable>(entity, vao, count);
 }
 

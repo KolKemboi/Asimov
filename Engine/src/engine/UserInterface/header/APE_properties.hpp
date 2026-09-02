@@ -1,3 +1,12 @@
+#pragma once
+
+#include <entt/entt.hpp>
+#include <imgui.h>
+
+class Properties {
+public:
+  void MakeProperties(entt::registry &);
+};
 
 // ImGui::Text("Basic Widgets");
 // ImGui::Separator();
