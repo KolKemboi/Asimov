@@ -8,8 +8,14 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+out vec3 normals;
+out vec3 FragPos;
+
 void main() {
   // gl_Position = vec4(VertexPosition, 1.0f);
   // gl_Position = projection * view * vec4(VertexPosition, 1.0f);
   gl_Position = projection * view * model * vec4(VertexPosition, 1.0f);
+  normals = mat3(transpose(inverse(model))) * Normals;
+  gl_PointSize = 30.0f;
+  FragPos = vec3(model * vec4(VertexPosition, 1.0f));
 }

@@ -70,7 +70,7 @@ void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
   // render loop
   frameBuffer->BindFrameBuffer();
   glClearColor(0.2, 0.1, 0.3, 1.0f); // background color
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   /* On render cycle
    * grab the VAO from the std::unordered map, bind,

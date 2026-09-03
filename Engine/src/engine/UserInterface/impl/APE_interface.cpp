@@ -4,6 +4,7 @@
 #endif
 
 #include <APE_addobjectpopup.hxx>
+#include <APE_materialeditor.hxx>
 #include <APE_menubar.hxx>
 #include <GLFW/glfw3.h>
 #include <cstdio>
@@ -19,7 +20,7 @@ void Interface::NewRenderIMGUI() { this->_newRenderIMGUI(); }
 
 void Interface::SetUpProperties(entt::registry &reg) {
   m_Properties.MakeProperties(reg);
-  SetUpPopUp(m_ImGUIWindow, reg);
+  // SetUpPopUp(m_ImGUIWindow, reg);
 }
 
 Interface::Interface(GLFWwindow *&window) {
@@ -80,6 +81,7 @@ void Interface::_setUpNewFrame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
   SetUpMenuBar(m_ImGUIWindow);
+  // MaterialEditor();
 }
 void Interface::_newRenderIMGUI() {
   ImGui::Render();

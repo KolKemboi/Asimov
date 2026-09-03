@@ -12,7 +12,9 @@
 #include <APE_RenderingSystem.hpp>
 #include <APE_VAO.hpp>
 #include <APE_VBO.hpp>
+#include <APE_addobjectpopup.hxx>
 #include <APE_camera.hpp>
+#include <APE_inputsystem.hxx>
 #include <APE_interface.hpp>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
@@ -44,13 +46,15 @@ private:
   std::shared_ptr<Shader> m_MainShader;
   std::unique_ptr<Interface> m_MainInterface;
   GLFWwindow *m_Window;
-  std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
+  AddEntitySystem m_AddEntitySystem;
   std::vector<GLFWwindow *> m_Windows;
   entt::registry m_Registry;
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
 
   RenderSystem m_RenderSystem;
-  std::unique_ptr<Camera> m_Camera;
+  Camera m_Camera;
+  AddObjectPopUp m_AddObjectPopUp;
+  // InputSystem::instance m_InputSystem;
 
 private:
   // VAO,IndexCount
@@ -65,7 +69,6 @@ private:
   void _setUpPrimitives();
   void _setUpGLFWContext();
   void _destroyGLFWContext();
-  void _miniInputSystem(GLFWwindow *);
   void _run();
   void _emptyWindowVector();
 

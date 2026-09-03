@@ -3,31 +3,34 @@
 #include <cstdio>
 
 void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
-                                      unsigned int vao, unsigned int count) {
+                                      unsigned int vao, unsigned int idxCount) {
   auto entity = reg.create();
   auto view = reg.view<Name, ObjectCount>();
 
   // the entity has not been created ---yet
   unsigned int ObjNumber = 1;
+  unsigned int max_count = 0;
 
+  // this is where the bug is
   for (auto [ent, name, count] : view.each()) {
     if (strcmp(name.s_Name.c_str(), objName) == 0) {
-      ObjNumber = count.s_Count + 1;
-      printf("Object count %d\n", ObjNumber);
+      if (count.s_Count > max_count)
+        max_count = count.s_Count;
+      ObjNumber = max_count + 1;
     }
   }
+	printf("Object count %d\n", ObjNumber);
 
   reg.emplace<Name>(entity, objName);
   reg.emplace<Transform>(entity);
   reg.emplace<ObjectCount>(entity, ObjNumber);
   reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
-  reg.emplace<Renderable>(entity, vao, count);
+  reg.emplace<Renderable>(entity, vao, idxCount);
 }
 
 void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,
                                     unsigned int count) {
   this->_helperFunction(registry, "Cube", VAO, count);
-  // add 1 to the count
   printf("ADD_CUBE RUN\n");
 }
 void AddEntitySystem::AddSphereSystem(entt::registry &registry,

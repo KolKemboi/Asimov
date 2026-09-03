@@ -1,5 +1,8 @@
 #include "APE_Components.hpp"
 #include "APE_FBO.hpp"
+#include "APE_camera.hpp"
+#include "APE_inputsystem.hxx"
+#include "APE_interface.hpp"
 #include "APE_meshmakerhelper.hpp"
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
@@ -7,7 +10,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
+#include <glm/ext/vector_float3.hpp>
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
 #include <imgui_node_editor.h>
 #include <iostream>
 #include <memory>
@@ -49,6 +55,7 @@ void APE_Window::_setUpGLFWContext() {
   }
 
   glViewport(0, 0, (GLsizei)m_WindowWidth, (GLsizei)m_WindowHeight);
+  glEnable(GL_DEPTH_TEST);
 
   // set up shader and framebuffer
   this->m_MainShader = std::make_shared<Shader>(
@@ -57,56 +64,56 @@ void APE_Window::_setUpGLFWContext() {
   this->m_MainFrameBuffer =
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
-  this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
-
   this->_setUpPrimitives();
+  this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive,
+  _CylinderPrimitive,
+                                            _SpherePrimitive);
 
-  // --TODO: FIX THE SMART PTR TO NORMAL
-  // dunno why this is a smart ptr, will fix this
-  this->m_AddEntitySystem = std::make_unique<AddEntitySystem>();
-
-  for (unsigned int i = 0; i < 1; i++) {
-    this->m_AddEntitySystem->AddSphereSystem(m_Registry,
-                                             std::get<0>(_SpherePrimitive),
-                                             std::get<1>(_SpherePrimitive));
-
-    this->m_AddEntitySystem->AddCubeSystem(
-        m_Registry, std::get<0>(_CubePrimitive), std::get<1>(_CubePrimitive));
-
-    this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
-                                               std::get<0>(_CylinderPrimitive),
-                                               std::get<1>(_CylinderPrimitive));
-  }
-  this->m_AddEntitySystem->AddCylinderSystem(m_Registry,
-                                             std::get<0>(_CylinderPrimitive),
-                                             std::get<1>(_CylinderPrimitive));
-  this->m_Camera = std::make_unique<Camera>(m_CamPos, m_CamUp);
+  // for (unsigned int i = 0; i < 10; i++) {
+  //   this->m_AddEntitySystem.AddCubeSystem(
+  //       m_Registry, std::get<0>(_CubePrimitive),
+  //       std::get<1>(_CubePrimitive));
+  // }
+  // m_MainInterface->SetUpIMGUIContext();
+  // ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+  m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
+  // m_InputSystem.SetVars(m_Camera);
+  InputSystem::instance().SetVars(m_Camera);
+  glfwSetKeyCallback(m_Window, InputSystem::KeyCallbackFunc);
+  glfwSetMouseButtonCallback(m_Window, InputSystem::MouseButtonCallbackFunc);
+  glfwSetCursorPosCallback(m_Window, InputSystem::MouseCallbackFunc);
+  glfwSetScrollCallback(m_Window, InputSystem::ScrollCallbackFunc);
+  this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
 }
-
 void APE_Window::_run() {
 
   this->m_MainShader->UseShader();
-  this->m_MainShader->SetMat4(this->m_Camera->GetViewMatrix(), "view");
 
   glm::mat4 projection;
 
   projection = glm::perspective(glm::radians(45.0f),
                                 (float)m_WindowWidth / (float)m_WindowHeight,
                                 0.1f, 100.0f);
+  float deltaTime = 0.0f;
+  float timeScale = 0.5f;
+  float lastTime = glfwGetTime();
+  m_Camera.SetTarget(glm::vec3(0.0f));
+  m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
 
   while (!glfwWindowShouldClose(m_Window)) {
+
+    this->m_MainShader->SetMat4(this->m_Camera.GetViewMatrix(), "view");
     // call the renderer and give it the frame buffer and a vector of objects
     // with the renderable component to render
-    this->_miniInputSystem(this->m_Window);
+    float currTime = glfwGetTime();
+    deltaTime = currTime - lastTime;
+    lastTime = currTime;
+    m_Camera.ResetViewSmooth(deltaTime);
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-		this->m_MainInterface->SetUpProperties(m_Registry);
+    this->m_MainInterface->SetUpProperties(m_Registry);
     this->m_MainShader->SetMat4(projection, "projection");
-
-    // auto view = m_Registry.view<Name, ObjectCount>();
-    // for (auto [ent, name, count] : view.each()) {
-    //   printf("%s -> %d \n", name.s_Name.c_str(), count.s_Count);
-    // }
+    this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
 
     ImGui::Begin("Viewport");
 
@@ -132,11 +139,11 @@ void APE_Window::_run() {
 
     projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    // // Center the image in the viewport
-    // ImVec2 cursor = ImGui::GetCursorPos();
-    //
-    // ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
-    //                            cursor.y + (avail.y - imageHeight) * 0.5f));
+    // Center the image in the viewport
+    ImVec2 cursor = ImGui::GetCursorPos();
+
+    ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
+                               cursor.y + (avail.y - imageHeight) * 0.5f));
 
     ImGui::Image(
         (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
@@ -206,11 +213,6 @@ void APE_Window::CleanUp() {
 void APE_Window::RunEngine() { this->_run(); }
 
 void APE_Window::_destroyGLFWContext() { glfwTerminate(); }
-
-void APE_Window::_miniInputSystem(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_CAPS_LOCK) == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
-}
 
 std::optional<GLFWwindow *> APE_Window::_createWindow(unsigned int width,
                                                       unsigned int height,
