@@ -65,24 +65,16 @@ void APE_Window::_setUpGLFWContext() {
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->_setUpPrimitives();
-  this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive,
-  _CylinderPrimitive,
+  this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive, _CylinderPrimitive,
                                             _SpherePrimitive);
 
-  // for (unsigned int i = 0; i < 10; i++) {
-  //   this->m_AddEntitySystem.AddCubeSystem(
-  //       m_Registry, std::get<0>(_CubePrimitive),
-  //       std::get<1>(_CubePrimitive));
-  // }
-  // m_MainInterface->SetUpIMGUIContext();
-  // ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
   m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
-  // m_InputSystem.SetVars(m_Camera);
   InputSystem::instance().SetVars(m_Camera);
   glfwSetKeyCallback(m_Window, InputSystem::KeyCallbackFunc);
   glfwSetMouseButtonCallback(m_Window, InputSystem::MouseButtonCallbackFunc);
   glfwSetCursorPosCallback(m_Window, InputSystem::MouseCallbackFunc);
   glfwSetScrollCallback(m_Window, InputSystem::ScrollCallbackFunc);
+
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
 }
 void APE_Window::_run() {

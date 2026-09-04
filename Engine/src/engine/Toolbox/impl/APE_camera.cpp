@@ -56,7 +56,7 @@ void Camera::ProcessOrbit(float xOffset, float yOffset) {
 void Camera::ProcessPan(float xOffset, float yOffset) {
   float panSpeed = 0.005f;
 
-  glm::vec3 panRight = -m_Right * (xOffset * panSpeed);
+  glm::vec3 panRight = m_Right * (-xOffset * panSpeed);
   glm::vec3 panUp = m_Up * (-yOffset * panSpeed);
 
   m_Position += panRight + panUp;
@@ -89,9 +89,9 @@ void Camera::ResetViewSmooth(float deltaTime) {
     float t = glm::clamp(deltaTime * speed, 0.0f, 1.0f);
 
     m_Position = glm::lerp(m_Position, m_InitialPosition, t);
-    m_Target   = glm::lerp(m_Target, m_InitialTarget, t);
-    m_Yaw      = glm::lerp(m_Yaw, m_InitialYaw, t);
-    m_Pitch    = glm::lerp(m_Pitch, m_InitialPitch, t);
+    m_Target = glm::lerp(m_Target, m_InitialTarget, t);
+    m_Yaw = glm::lerp(m_Yaw, m_InitialYaw, t);
+    m_Pitch = glm::lerp(m_Pitch, m_InitialPitch, t);
 
     _updateCameVectors();
 

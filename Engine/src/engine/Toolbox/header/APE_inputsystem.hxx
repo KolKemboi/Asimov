@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <memory>
 
+// making a singleton
 class InputSystem {
 private:
   InputSystem() = default;
