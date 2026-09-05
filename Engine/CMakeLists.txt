@@ -91,7 +91,6 @@ target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
 set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
 set(UI_SOURCES
 	${UI_DIR}/impl/APE_interface.cpp
-	${UI_DIR}/impl/APE_properties.cpp
 )
 
 add_library(APE_ui STATIC ${UI_SOURCES})
@@ -171,6 +170,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
 
 
 # Add the executable and link the libraries
+target_link_libraries(
+	APE_ecs
+	PUBLIC
+	imgui
+
+)
 target_link_libraries(
 	APE_helpers
 	PUBLIC

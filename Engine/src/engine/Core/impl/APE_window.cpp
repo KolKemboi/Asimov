@@ -98,9 +98,15 @@ void APE_Window::_run() {
   m_Camera.SetTarget(glm::vec3(0.0f));
   m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
 
+  // DUMMY DATA FOR LIGHTS
+  glm::vec3 lightColor = glm::vec3(1.0f);
+  // this->m_MainShader->SetVec3(lightColor, "lightColor");
+
   while (!glfwWindowShouldClose(m_Window)) {
 
     this->m_MainShader->SetMat4(this->m_Camera.GetViewMatrix(), "view");
+    this->m_MainShader->SetVec3(m_Camera.GetPosition(), "viewPos");
+    this->m_MainShader->SetVec3(m_Camera.GetPosition(), "lightPos");
     // call the renderer and give it the frame buffer and a vector of objects
     // with the renderable component to render
     float currTime = glfwGetTime();
@@ -111,45 +117,12 @@ void APE_Window::_run() {
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-    this->m_MainInterface->SetUpProperties(m_Registry);
+    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
     this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
-		m_Viewport.View(this->m_MainFrameBuffer, projection);
+    m_Viewport.View(this->m_MainFrameBuffer, projection, m_Camera,m_Registry);
 
-
-    // // this needs to be moved
-    // ImGui::Begin("Viewport");
-    //
-    // ImVec2 avail = ImGui::GetContentRegionAvail();
-    //
-    // // Compute the largest image that fits while preserving the aspect ratio
-    // unsigned int imageWidth = (unsigned int)avail.x;
-    // unsigned int imageHeight = (unsigned int)avail.y;
-    //
-    // if (imageWidth != m_MainFrameBuffer->windowWidth ||
-    //     imageHeight != m_MainFrameBuffer->windowHeight) {
-    //   // resize framebuffer
-    //   this->m_MainFrameBuffer->Clean();
-    //   this->m_MainFrameBuffer->ResizeFBO(imageWidth, imageHeight);
-    // }
-    //
-    // glViewport(0, 0, m_MainFrameBuffer->windowWidth,
-    //            m_MainFrameBuffer->windowHeight);
-    // const float aspect = (float)imageWidth / (float)imageHeight;
-    //
-    // projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-    //
-    // // Center the image in the viewport
-    // ImVec2 cursor = ImGui::GetCursorPos();
-    //
-    // ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
-    //                            cursor.y + (avail.y - imageHeight) * 0.5f));
-    //
-    // ImGui::Image(
-    //     (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
-    //     avail, ImVec2(0, 1), ImVec2(1, 0));
-    //
-    // ImGui::End();
+    m_Selection.Selection(m_Registry);
 
     m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
 

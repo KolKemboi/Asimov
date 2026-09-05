@@ -1,16 +1,26 @@
 #pragma once
 
 #include "APE_FBO.hpp"
+#include "APE_camera.hpp"
+#include <APE_Components.hpp>
+#include <ImGuizmo.h>
+#include <entt/entt.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <memory>
 
 class Viewport {
 public:
-  void View(std::unique_ptr<FrameBuffer> &framebuffer, glm::mat4 &projection) {
+  void View(std::unique_ptr<FrameBuffer> &framebuffer, glm::mat4 &projection,
+            Camera &camera, entt::registry &reg) {
+    ImGuizmo::BeginFrame();
     ImGui::Begin("Viewport");
 
+    ImVec2 Pos = ImGui::GetWindowPos();
     ImVec2 avail = ImGui::GetContentRegionAvail();
 
     unsigned int imguiWidth = (unsigned int)avail.x;
@@ -36,6 +46,45 @@ public:
 
     ImGui::Image((ImTextureID)(intptr_t)framebuffer->ReturnColorTexture(),
                  avail, ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(Pos.x, Pos.y, avail.x, avail.y);
+
+    static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
+
+    if (ImGui::IsKeyPressed(ImGuiKey_W))
+      operation = ImGuizmo::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_E))
+      operation = ImGuizmo::ROTATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_R))
+      operation = ImGuizmo::SCALE;
+
+    glm::mat4 view = camera.GetViewMatrix();
+
+    auto selected = reg.view<Selected>();
+
+    ImGuizmo::MODE mode = ImGuizmo::WORLD;
+
+    for (auto entity : selected) {
+      auto &transform = reg.get<Transform>(entity);
+
+      glm::mat4 model = transform.GetModelMatrix();
+
+      ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
+                           operation, mode, glm::value_ptr(model));
+
+      if (ImGuizmo::IsUsing()) {
+        float pos[3];
+        float rot[3];
+        float sca[3];
+        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model), pos, rot,
+                                              sca);
+
+        transform.s_Position = glm::vec3(pos[0], pos[1], pos[2]);
+        transform.s_Rotation = glm::vec3((rot[0]), rot[1], rot[2]);
+        transform.s_Scale = glm::vec3(sca[0], sca[1], sca[2]);
+      }
+    }
 
     ImGui::End();
   }

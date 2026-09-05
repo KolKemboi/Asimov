@@ -7,6 +7,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
+#include <glm/trigonometric.hpp>
 
 struct Transform {
   glm::vec3 s_Position = glm::vec3(0.0f);
@@ -15,7 +16,16 @@ struct Transform {
 
   glm::mat4 GetModelMatrix() const {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+
     modelMatrix = glm::translate(modelMatrix, s_Position);
+
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.x),
+                              glm::vec3(1.0, 0.0, 1.0));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.y),
+                              glm::vec3(0.0, 1.0, 1.0));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.z),
+                              glm::vec3(0.0, 0.0, 1.0));
+
     modelMatrix = glm::scale(modelMatrix, s_Scale);
 
     return modelMatrix;
@@ -53,3 +63,5 @@ struct Name {
 struct ObjectCount {
   unsigned int s_Count = 0;
 };
+
+struct Selected {};

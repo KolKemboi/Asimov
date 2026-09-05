@@ -19,10 +19,7 @@ void Interface::SetUpDocking() { this->_setUpDocking(); }
 void Interface::SetUpNewFrame() { this->_setUpNewFrame(); }
 void Interface::NewRenderIMGUI() { this->_newRenderIMGUI(); }
 
-void Interface::SetUpProperties(entt::registry &reg) {
-  m_Properties.MakeProperties(reg);
-  // SetUpPopUp(m_ImGUIWindow, reg);
-}
+
 
 Interface::Interface(GLFWwindow *&window) {
   this->m_ImGUIWindow = window;

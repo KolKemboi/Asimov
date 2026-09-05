@@ -9,7 +9,7 @@
 
 class Shader {
 public:
-	// doesnt really need to have a contructor
+  // doesnt really need to have a contructor
   Shader(const char *, const char *);
 
   unsigned int GetShaderProgram();

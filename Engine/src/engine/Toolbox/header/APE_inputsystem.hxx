@@ -110,8 +110,8 @@ public:
     }
 
     // for quick exiting, on release, this will be commented out
-    if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
-      glfwSetWindowShouldClose(window, true);
-    }
+    // if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
+    //   glfwSetWindowShouldClose(window, true);
+    // }
   }
 };

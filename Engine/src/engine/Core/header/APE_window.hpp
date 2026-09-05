@@ -1,4 +1,5 @@
 #pragma once
+#include "APE_properties.hxx"
 #include "APE_viewport.hpp"
 #include <tuple>
 #include <unordered_map>
@@ -11,6 +12,7 @@
 #include <APE_FBO.hpp>
 #include <APE_IBO.hpp>
 #include <APE_RenderingSystem.hpp>
+#include <APE_SelectionSystem.hxx>
 #include <APE_VAO.hpp>
 #include <APE_VBO.hpp>
 #include <APE_addobjectpopup.hxx>
@@ -46,7 +48,10 @@ private:
   std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::shared_ptr<Shader> m_MainShader;
   std::unique_ptr<Interface> m_MainInterface;
-	Viewport m_Viewport;
+  Viewport m_Viewport;
+  Properties m_Properties;
+
+  SelectionSystem m_Selection;
 
   // Window specifics
   GLFWwindow *m_Window;
