@@ -15,9 +15,10 @@
 
 class Viewport {
 public:
-  void View(std::unique_ptr<FrameBuffer> &framebuffer, glm::mat4 &projection,
-            Camera &camera, entt::registry &reg) {
+  void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
+            entt::registry &reg, std::shared_ptr<Shader> &shader) {
     ImGuizmo::BeginFrame();
+
     ImGui::Begin("Viewport");
 
     ImVec2 Pos = ImGui::GetWindowPos();
@@ -34,9 +35,13 @@ public:
     }
 
     glViewport(0, 0, framebuffer->windowWidth, framebuffer->windowHeight);
+
     const float aspect = (float)imguiWidth / (float)imguiHeight;
 
+    glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    shader->SetMat4(projection, "projection");
 
     // Center the image in the viewport
     ImVec2 cursor = ImGui::GetCursorPos();
@@ -63,7 +68,7 @@ public:
 
     auto selected = reg.view<Selected>();
 
-    ImGuizmo::MODE mode = ImGuizmo::WORLD;
+    ImGuizmo::MODE mode = ImGuizmo::LOCAL;
 
     for (auto entity : selected) {
       auto &transform = reg.get<Transform>(entity);

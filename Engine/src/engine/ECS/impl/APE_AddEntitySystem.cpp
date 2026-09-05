@@ -19,7 +19,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
       ObjNumber = max_count + 1;
     }
   }
-	printf("Object count %d\n", ObjNumber);
+  printf("Object count %d\n", ObjNumber);
 
   reg.emplace<Name>(entity, objName);
   reg.emplace<Transform>(entity);
@@ -47,4 +47,15 @@ void AddEntitySystem::AddPlaneSystem(entt::registry &registry, unsigned int VAO,
                                      unsigned int count) {
   this->_helperFunction(registry, "Plane", VAO, count);
   printf("ADD_PLANE RUN\n");
+}
+void AddEntitySystem::AddCapsuleSystem(entt::registry &registry,
+                                       unsigned int VAO, unsigned int count) {
+  this->_helperFunction(registry, "Capsule", VAO, count);
+  printf("ADD_CAPSULE RUN\n");
+}
+void AddEntitySystem::AddConvexMeshSystem(entt::registry &registry,
+                                          unsigned int VAO,
+                                          unsigned int count) {
+  this->_helperFunction(registry, "ConvexMesh", VAO, count);
+  printf("ADD_CONVEXMESH RUN\n");
 }

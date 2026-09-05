@@ -65,7 +65,8 @@ void APE_Window::_setUpGLFWContext() {
 
   this->_setUpPrimitives();
   this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive, _CylinderPrimitive,
-                                            _SpherePrimitive);
+                                            _SpherePrimitive, _CapsulePrimitive,
+                                            _ConvexMeshPrimitive);
 
   m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
 
@@ -85,10 +86,7 @@ void APE_Window::_run() {
   // will probably use one shader
   this->m_MainShader->UseShader();
 
-  glm::mat4 projection;
-  projection = glm::perspective(glm::radians(45.0f),
-                                (float)m_WindowWidth / (float)m_WindowHeight,
-                                0.1f, 100.0f);
+  // 0.1f, 100.0f);
   // probably need a better time tracking
   // chrono maybe
   float deltaTime = 0.0f;
@@ -118,9 +116,11 @@ void APE_Window::_run() {
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
     m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
-    this->m_MainShader->SetMat4(projection, "projection");
+
+    // this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
-    m_Viewport.View(this->m_MainFrameBuffer, projection, m_Camera,m_Registry);
+    m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry,
+                    m_MainShader);
 
     m_Selection.Selection(m_Registry);
 
@@ -136,9 +136,10 @@ void APE_Window::_run() {
 void APE_Window::_setUpPrimitives() {
   // load the primitives on start
   std::vector<std::string> primitives = {
-      "models/primitives/Cylinder.obj",
-      "models/primitives/Cube.obj",
-      "models/primitives/Sphere.obj",
+      "models/primitives/Cylinder.obj", "models/primitives/Cube.obj",
+      "models/primitives/Sphere.obj",   "models/primitives/ConvexMesh.obj",
+      "models/primitives/Capsule.obj",
+
   };
 
   // this logic works well with primitives
@@ -155,7 +156,13 @@ void APE_Window::_setUpPrimitives() {
         printf("Found Cylinder\n");
       } else if (std::strcmp(data.first.data(), "Sphere") == 0) {
         _SpherePrimitive = data.second;
-        printf("Found Spehere\n");
+        printf("Found Sphere\n");
+      } else if (strcmp(data.first.c_str(), "Capsule") == 0) {
+        _CapsulePrimitive = data.second;
+        printf("Found Capsule\n");
+      } else if (std::strcmp(data.first.data(), "ConvexMesh") == 0) {
+        _ConvexMeshPrimitive = data.second;
+        printf("Found ConvexMesh\n");
       }
     }
   }

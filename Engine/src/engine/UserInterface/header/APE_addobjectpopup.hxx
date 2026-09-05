@@ -8,11 +8,17 @@ class AddObjectPopUp {
 public:
   void SetUpPrimitiveData(std::tuple<unsigned int, unsigned int> &cubeData,
                           std::tuple<unsigned int, unsigned int> &cylinderData,
-                          std::tuple<unsigned int, unsigned int> &sphereData) {
+                          std::tuple<unsigned int, unsigned int> &sphereData,
+                          std::tuple<unsigned int, unsigned int> &capsuleData,
+                          std::tuple<unsigned int, unsigned int> &convexMeshData
+
+  ) {
 
     this->_CubePrimitiveData = cubeData;
     this->_CylinderPrimitiveData = cylinderData;
     this->_SpherePrimitiveData = sphereData;
+    this->_CapsulePrimitiveData = capsuleData;
+    this->_ConvexMeshPrimitiveData = convexMeshData;
   }
 
   inline void SetUpPopUp(GLFWwindow *window, entt::registry &reg) {
@@ -51,6 +57,19 @@ public:
         ImGui::CloseCurrentPopup();
       }
 
+      if (ImGui::Button("Capsule")) {
+        m_AddEntitySystem.AddCapsuleSystem(reg,
+                                           std::get<0>(_CapsulePrimitiveData),
+                                           std::get<1>(_CapsulePrimitiveData));
+        ImGui::CloseCurrentPopup();
+      }
+      if (ImGui::Button("Convex Mesh")) {
+        m_AddEntitySystem.AddConvexMeshSystem(
+            reg, std::get<0>(_ConvexMeshPrimitiveData),
+            std::get<1>(_ConvexMeshPrimitiveData));
+        ImGui::CloseCurrentPopup();
+      }
+
       ImGui::EndPopup();
     }
   }
@@ -60,4 +79,6 @@ private:
   std::tuple<unsigned int, unsigned int> _CubePrimitiveData;
   std::tuple<unsigned int, unsigned int> _SpherePrimitiveData;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitiveData;
+  std::tuple<unsigned int, unsigned int> _CapsulePrimitiveData;
+  std::tuple<unsigned int, unsigned int> _ConvexMeshPrimitiveData;
 };

@@ -76,6 +76,8 @@ private:
   std::tuple<unsigned int, unsigned int> _CubePrimitive;
   std::tuple<unsigned int, unsigned int> _SpherePrimitive;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
+  std::tuple<unsigned int, unsigned int> _ConvexMeshPrimitive;
+  std::tuple<unsigned int, unsigned int> _CapsulePrimitive;
 
   // initial camera positions and view setting
   glm::vec3 m_CamPos = glm::vec3(0.0f, 5.0f, -10.0f);
