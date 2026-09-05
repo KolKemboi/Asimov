@@ -16,21 +16,6 @@ set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
-
-###DOCUMENTATION ---->VERY important
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    add_custom_target(docs
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Generating Doxygen documentation"
-        VERBATIM
-    )
-endif()
-
-
-
 ####### SETTING UP APE static libs
 
 ##HELPERS STATIC LIBS
@@ -87,14 +72,6 @@ set(PHYSICS_SOURCES
 add_library(APE_physics STATIC ${PHYSICS_SOURCES})
 target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
 
-##UI_STATIC LIBS
-set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
-set(UI_SOURCES
-	${UI_DIR}/impl/APE_interface.cpp
-)
-
-add_library(APE_ui STATIC ${UI_SOURCES})
-target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 
 ##ECS STATIC LIBS
 set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
@@ -131,6 +108,15 @@ set_target_properties(
 	IMPORTED_LOCATION "${IMGUI_LIB}"
 	INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/extLibs/imgui"
 )
+
+##UI_STATIC LIBS
+set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
+# set(UI_SOURCES
+# )
+#
+# add_library(APE_ui STATIC ${UI_SOURCES})
+include_directories(${UI_DIR}/header)
+
 #IMGUI FILE DIALOGUE
 set(FILE_DIALOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
 set(FILE_DIALOG_SOURCES
@@ -163,18 +149,26 @@ add_executable(${PROJ_NAME}
 )
 
 target_include_directories(${PROJ_NAME} PUBLIC ${GLAD_DIR})
+target_include_directories(${PROJ_NAME} PUBLIC ${IMGUI_DIR})
 
 # Include directories
 include_directories(include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Toolbox/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Physics/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
 
 # Add the executable and link the libraries
 target_link_libraries(
 	APE_ecs
 	PUBLIC
 	imgui
-
 )
 target_link_libraries(
 	APE_helpers
@@ -187,21 +181,13 @@ target_link_libraries(
 	PUBLIC
 
 )
-target_link_libraries(
-	APE_ui
-	PUBLIC
-	imgui
-	APE_helpers
-	filedialog
-	node_editor
-	APE_ecs
-)
 
 target_link_libraries(
 	APE_core
 	PUBLIC
-	APE_ui
 	APE_toolbox
+	filedialog
+	node_editor
 	APE_helpers
 	APE_ecs
 )
@@ -221,7 +207,6 @@ target_link_libraries(${PROJ_NAME}
 	APE_helpers
 	APE_core
 	APE_toolbox
-	APE_ui
 	APE_physics
   glfw 
   GL

@@ -83,7 +83,7 @@ void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
     for (auto renderReq : batch.second) {
       // apply model transforms
       shader->SetMat4(renderReq.s_Transform.GetModelMatrix(), "model");
-			shader->SetVec3(renderReq.s_Material.s_Color, "color");
+      shader->SetVec3(renderReq.s_Material.s_Color, "color");
       glDrawElements(GL_TRIANGLES, renderReq.s_IndexCount, GL_UNSIGNED_INT, 0);
     }
   }

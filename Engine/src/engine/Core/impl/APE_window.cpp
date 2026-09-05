@@ -1,7 +1,7 @@
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
 #include "APE_inputsystem.hxx"
-#include "APE_interface.hpp"
+#include "APE_interface.hxx"
 #include "APE_meshmakerhelper.hpp"
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
@@ -86,7 +86,10 @@ void APE_Window::_run() {
   // will probably use one shader
   this->m_MainShader->UseShader();
 
-  // 0.1f, 100.0f);
+  glm::mat4 projection;
+  projection = glm::perspective(glm::radians(45.0f),
+                                (float)m_WindowWidth / (float)m_WindowHeight,
+                                0.1f, 100.0f);
   // probably need a better time tracking
   // chrono maybe
   float deltaTime = 0.0f;
@@ -116,8 +119,7 @@ void APE_Window::_run() {
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
     m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
-
-    // this->m_MainShader->SetMat4(projection, "projection");
+    this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
     m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry,
                     m_MainShader);
@@ -136,10 +138,9 @@ void APE_Window::_run() {
 void APE_Window::_setUpPrimitives() {
   // load the primitives on start
   std::vector<std::string> primitives = {
-      "models/primitives/Cylinder.obj", "models/primitives/Cube.obj",
-      "models/primitives/Sphere.obj",   "models/primitives/ConvexMesh.obj",
-      "models/primitives/Capsule.obj",
-
+      "models/primitives/Cylinder.obj",   "models/primitives/Cube.obj",
+      "models/primitives/Sphere.obj",     "models/primitives/Capsule.obj",
+      "models/primitives/ConvexMesh.obj",
   };
 
   // this logic works well with primitives

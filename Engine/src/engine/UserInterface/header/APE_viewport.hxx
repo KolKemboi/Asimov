@@ -4,6 +4,7 @@
 #include "APE_camera.hpp"
 #include <APE_Components.hpp>
 #include <ImGuizmo.h>
+#include <cstdio>
 #include <entt/entt.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -15,6 +16,7 @@
 
 class Viewport {
 public:
+  bool isComplete = false;
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
             entt::registry &reg, std::shared_ptr<Shader> &shader) {
     ImGuizmo::BeginFrame();
@@ -56,6 +58,7 @@ public:
     ImGuizmo::SetRect(Pos.x, Pos.y, avail.x, avail.y);
 
     static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
+    ImGuizmo::MODE mode = ImGuizmo::LOCAL;
 
     if (ImGui::IsKeyPressed(ImGuiKey_W))
       operation = ImGuizmo::TRANSLATE;
@@ -64,14 +67,29 @@ public:
     if (ImGui::IsKeyPressed(ImGuiKey_R))
       operation = ImGuizmo::SCALE;
 
+    if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
+        ImGui::IsKeyPressed(ImGuiKey_RightShift)) {
+
+      if (ImGui::IsKeyPressed(ImGuiKey_G)) {
+        mode = ImGuizmo::WORLD;
+        printf("SWITCHED TO GLOBAL\n");
+      }
+
+      if (ImGui::IsKeyPressed(ImGuiKey_L)) {
+
+        mode = ImGuizmo::LOCAL;
+        printf("SWITCHED TO LOCAL\n");
+      }
+    }
+
     glm::mat4 view = camera.GetViewMatrix();
 
     auto selected = reg.view<Selected>();
 
-    ImGuizmo::MODE mode = ImGuizmo::LOCAL;
-
     for (auto entity : selected) {
       auto &transform = reg.get<Transform>(entity);
+      auto &name = reg.get<Name>(entity);
+      auto &count = reg.get<ObjectCount>(entity);
 
       glm::mat4 model = transform.GetModelMatrix();
 
@@ -88,6 +106,16 @@ public:
         transform.s_Position = glm::vec3(pos[0], pos[1], pos[2]);
         transform.s_Rotation = glm::vec3((rot[0]), rot[1], rot[2]);
         transform.s_Scale = glm::vec3(sca[0], sca[1], sca[2]);
+        isComplete = true;
+      } else if (!ImGuizmo::IsUsing() && isComplete) {
+        printf("Transformed! %s_%d\n", name.s_Name.c_str(), count.s_Count);
+        printf("NEW POS=> %f %f %f\n", transform.s_Position.x,
+               transform.s_Position.y, transform.s_Position.z);
+        printf("NEW ROT=> %f %f %f\n", transform.s_Rotation.x,
+               transform.s_Rotation.y, transform.s_Rotation.z);
+        printf("NEW SCA=> %f %f %f\n", transform.s_Scale.x, transform.s_Scale.y,
+               transform.s_Scale.z);
+        isComplete = false;
       }
     }
 

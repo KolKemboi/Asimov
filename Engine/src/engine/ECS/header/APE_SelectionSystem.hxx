@@ -13,7 +13,6 @@ public:
 
     auto view = reg.view<Name, ObjectCount>();
 
-
     for (auto [ent, name, count] : view.each()) {
       bool isSelected = reg.all_of<Selected>(ent);
       std::string title = name.s_Name + std::to_string(count.s_Count);

@@ -4,10 +4,11 @@
 #include <glad/glad.h>
 #endif
 #include <APE_FBO.hpp>
-#include <entt/entt.hpp>
 #include <APE_shader.hpp>
+#include <entt/entt.hpp>
 
 class RenderSystem {
 public:
-  void RenderEntities(std::unique_ptr<FrameBuffer> &, entt::registry &, std::shared_ptr<Shader>&);
+  void RenderEntities(std::unique_ptr<FrameBuffer> &, entt::registry &,
+                      std::shared_ptr<Shader> &);
 };

@@ -1,9 +1,7 @@
 #pragma once
 #include "APE_properties.hxx"
-#include "APE_viewport.hpp"
+#include "APE_viewport.hxx"
 #include <tuple>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 #ifndef __GLAD_GAURD__
 #include <glad/glad.h>
@@ -18,12 +16,11 @@
 #include <APE_addobjectpopup.hxx>
 #include <APE_camera.hpp>
 #include <APE_inputsystem.hxx>
-#include <APE_interface.hpp>
+#include <APE_interface.hxx>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
-#include <APE_viewport.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
 #include <memory>
