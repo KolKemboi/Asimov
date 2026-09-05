@@ -32,6 +32,14 @@ FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void FrameBuffer::ResizeFBO(unsigned int windowWidth,
+                            unsigned int windowHeight) {
+  FrameBuffer(windowWidth, windowHeight);
+  this->windowWidth = windowWidth;
+  this->windowHeight = windowHeight;
+  printf("NEW FBO\n");
+}
+
 // returns the color texture, for Imgui presentation
 unsigned int FrameBuffer::ReturnColorTexture() { return this->m_ColorTexture; }
 

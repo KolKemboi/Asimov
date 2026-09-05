@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <utility>
 
+// this is for primitives
 class MeshMakerHelper {
 public:
   MeshMakerHelper(std::string);

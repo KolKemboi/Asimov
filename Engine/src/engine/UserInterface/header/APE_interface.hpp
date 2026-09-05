@@ -1,4 +1,5 @@
 #pragma once
+#include "APE_viewport.hpp"
 #ifndef __GLAD_GUARD__
 #include <glad/glad.h>
 #endif
@@ -12,6 +13,8 @@
 
 class Interface {
 public:
+  // I can remove the default constructor, and use a member func to set the
+  // variable, so that I dont need to use smart ptrs
   Interface(GLFWwindow *&);
 
   void SetUpIMGUIContext();
@@ -31,4 +34,5 @@ private:
 private:
   GLFWwindow *m_ImGUIWindow;
   Properties m_Properties;
+  // Viewport m_Viewport;
 };

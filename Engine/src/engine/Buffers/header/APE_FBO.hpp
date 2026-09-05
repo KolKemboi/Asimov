@@ -7,16 +7,19 @@ class FrameBuffer {
 public:
   FrameBuffer(unsigned int, unsigned int);
 
+  void ResizeFBO(unsigned int, unsigned int);
+
   unsigned int ReturnFrameBuffer();
 
-	unsigned int ReturnColorTexture();
+  unsigned int ReturnColorTexture();
 
   void BindFrameBuffer();
   void UnBindFrameBuffer();
 
   void Clean();
 
-	unsigned int windowWidth, windowHeight;
+  unsigned int windowWidth, windowHeight;
+
 private:
   unsigned int m_FrameBuffer, m_ColorTexture, m_RenderBufferObject;
 

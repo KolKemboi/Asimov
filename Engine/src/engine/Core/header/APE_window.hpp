@@ -1,4 +1,5 @@
 #pragma once
+#include "APE_viewport.hpp"
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -20,6 +21,7 @@
 #include <APE_meshmakerhelper.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
+#include <APE_viewport.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
 #include <memory>
@@ -40,38 +42,50 @@ public:
   void CleanUp();
 
 private:
-  unsigned int m_WindowWidth, m_WindowHeight;
-  const char *m_WindowName;
+  // this is for viewport rendering
   std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
   std::shared_ptr<Shader> m_MainShader;
   std::unique_ptr<Interface> m_MainInterface;
-  GLFWwindow *m_Window;
-  AddEntitySystem m_AddEntitySystem;
-  std::vector<GLFWwindow *> m_Windows;
-  entt::registry m_Registry;
-  std::unique_ptr<MeshMakerHelper> m_MeshMaker;
+	Viewport m_Viewport;
 
+  // Window specifics
+  GLFWwindow *m_Window;
+  std::vector<GLFWwindow *> m_Windows;
+  unsigned int m_WindowWidth, m_WindowHeight;
+  const char *m_WindowName;
+
+  // ECS stuff
+  entt::registry m_Registry;
   RenderSystem m_RenderSystem;
+
   Camera m_Camera;
+
+  // for primitives
+  std::unique_ptr<MeshMakerHelper> m_MeshMaker;
+  AddEntitySystem m_AddEntitySystem;
   AddObjectPopUp m_AddObjectPopUp;
-  // InputSystem::instance m_InputSystem;
 
 private:
-  // VAO,IndexCount
+  // I can guarantee these, the primitives will be in a specific order
+  // add other prims -> plane, capsule,
   std::tuple<unsigned int, unsigned int> _CubePrimitive;
   std::tuple<unsigned int, unsigned int> _SpherePrimitive;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
 
+  // initial camera positions and view setting
   glm::vec3 m_CamPos = glm::vec3(0.0f, 5.0f, -10.0f);
   glm::vec3 m_CamUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 m_View = glm::mat4(1.0f);
 
   void _setUpPrimitives();
+
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _run();
+
   void _emptyWindowVector();
 
+  // for making windows, only one window needs to exist, others can fail
   std::optional<GLFWwindow *> _createWindow(unsigned int, unsigned int,
                                             const char *);
 };

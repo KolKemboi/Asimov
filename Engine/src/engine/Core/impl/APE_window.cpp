@@ -1,4 +1,3 @@
-#include "APE_Components.hpp"
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
 #include "APE_inputsystem.hxx"
@@ -10,17 +9,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <functional>
 #include <glm/ext/vector_float3.hpp>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_node_editor.h>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
 
+// set up window data given and set up GLFW context
 APE_Window::APE_Window(unsigned int windowWidth, unsigned int windowHeight,
                        const char *windowName)
     : m_WindowWidth(windowWidth), m_WindowHeight(windowHeight),
@@ -41,7 +39,7 @@ void APE_Window::_setUpGLFWContext() {
     this->m_Window = *window;
     this->m_Windows.push_back(this->m_Window);
   } else {
-    printf("ERROR::WINDOW_CREATION\n");
+    printf("ERROR::WINDOW_CREATION\n"); // read on SPDLOG
     this->_destroyGLFWContext();
     std::exit(1);
   }
@@ -57,6 +55,7 @@ void APE_Window::_setUpGLFWContext() {
   glViewport(0, 0, (GLsizei)m_WindowWidth, (GLsizei)m_WindowHeight);
   glEnable(GL_DEPTH_TEST);
 
+  // these dont need to be in the context set up
   // set up shader and framebuffer
   this->m_MainShader = std::make_shared<Shader>(
       "shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
@@ -69,26 +68,33 @@ void APE_Window::_setUpGLFWContext() {
                                             _SpherePrimitive);
 
   m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
+
+  // input system -> set up everything required for the singleton
   InputSystem::instance().SetVars(m_Camera);
   glfwSetKeyCallback(m_Window, InputSystem::KeyCallbackFunc);
   glfwSetMouseButtonCallback(m_Window, InputSystem::MouseButtonCallbackFunc);
   glfwSetCursorPosCallback(m_Window, InputSystem::MouseCallbackFunc);
   glfwSetScrollCallback(m_Window, InputSystem::ScrollCallbackFunc);
 
+  // ensure this runs after the Callback functions
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
 }
+
 void APE_Window::_run() {
 
+  // will probably use one shader
   this->m_MainShader->UseShader();
 
   glm::mat4 projection;
-
   projection = glm::perspective(glm::radians(45.0f),
                                 (float)m_WindowWidth / (float)m_WindowHeight,
                                 0.1f, 100.0f);
+  // probably need a better time tracking
+  // chrono maybe
   float deltaTime = 0.0f;
   float timeScale = 0.5f;
   float lastTime = glfwGetTime();
+
   m_Camera.SetTarget(glm::vec3(0.0f));
   m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
 
@@ -101,47 +107,49 @@ void APE_Window::_run() {
     deltaTime = currTime - lastTime;
     lastTime = currTime;
     m_Camera.ResetViewSmooth(deltaTime);
+
+    // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
     this->m_MainInterface->SetUpProperties(m_Registry);
     this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
+		m_Viewport.View(this->m_MainFrameBuffer, projection);
 
-    ImGui::Begin("Viewport");
 
-    ImVec2 avail = ImGui::GetContentRegionAvail();
-
-    // Compute the largest image that fits while preserving the aspect ratio
-    unsigned int imageWidth = (unsigned int)avail.x;
-    unsigned int imageHeight = (unsigned int)avail.y;
-
-    if (imageWidth != m_MainFrameBuffer->windowWidth ||
-        imageHeight != m_MainFrameBuffer->windowHeight) {
-      // resize framebuffer
-      this->m_MainFrameBuffer->Clean();
-      this->m_MainFrameBuffer =
-          std::make_unique<FrameBuffer>(imageWidth, imageHeight);
-      m_MainFrameBuffer->windowWidth = imageWidth;
-      m_MainFrameBuffer->windowHeight = imageHeight;
-    }
-
-    glViewport(0, 0, m_MainFrameBuffer->windowWidth,
-               m_MainFrameBuffer->windowHeight);
-    const float aspect = (float)imageWidth / (float)imageHeight;
-
-    projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-
-    // Center the image in the viewport
-    ImVec2 cursor = ImGui::GetCursorPos();
-
-    ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
-                               cursor.y + (avail.y - imageHeight) * 0.5f));
-
-    ImGui::Image(
-        (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
-        avail, ImVec2(0, 1), ImVec2(1, 0));
-
-    ImGui::End();
+    // // this needs to be moved
+    // ImGui::Begin("Viewport");
+    //
+    // ImVec2 avail = ImGui::GetContentRegionAvail();
+    //
+    // // Compute the largest image that fits while preserving the aspect ratio
+    // unsigned int imageWidth = (unsigned int)avail.x;
+    // unsigned int imageHeight = (unsigned int)avail.y;
+    //
+    // if (imageWidth != m_MainFrameBuffer->windowWidth ||
+    //     imageHeight != m_MainFrameBuffer->windowHeight) {
+    //   // resize framebuffer
+    //   this->m_MainFrameBuffer->Clean();
+    //   this->m_MainFrameBuffer->ResizeFBO(imageWidth, imageHeight);
+    // }
+    //
+    // glViewport(0, 0, m_MainFrameBuffer->windowWidth,
+    //            m_MainFrameBuffer->windowHeight);
+    // const float aspect = (float)imageWidth / (float)imageHeight;
+    //
+    // projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+    //
+    // // Center the image in the viewport
+    // ImVec2 cursor = ImGui::GetCursorPos();
+    //
+    // ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imageWidth) * 0.5f,
+    //                            cursor.y + (avail.y - imageHeight) * 0.5f));
+    //
+    // ImGui::Image(
+    //     (ImTextureID)(intptr_t)this->m_MainFrameBuffer->ReturnColorTexture(),
+    //     avail, ImVec2(0, 1), ImVec2(1, 0));
+    //
+    // ImGui::End();
 
     m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
 

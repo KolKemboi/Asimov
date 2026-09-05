@@ -25,7 +25,7 @@ public:
   bool isMiddleMouseDown = false;
   bool isShiftDown = false;
   GLFWwindow *window;
-  Camera *camera; // use a ptr,
+  Camera *camera; // Use a specific camera -> take the location in memory
 
   void SetVars(Camera &cam) { camera = &cam; }
 
@@ -109,8 +109,9 @@ public:
       camera->StartResetSmooth();
     }
 
-    // if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
-    //   glfwSetWindowShouldClose(window, true);
-    // }
+    // for quick exiting, on release, this will be commented out
+    if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, true);
+    }
   }
 };

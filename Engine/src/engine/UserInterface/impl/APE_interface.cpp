@@ -6,6 +6,7 @@
 #include <APE_addobjectpopup.hxx>
 #include <APE_materialeditor.hxx>
 #include <APE_menubar.hxx>
+#include <APE_viewport.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <imgui.h>
