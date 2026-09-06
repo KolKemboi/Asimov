@@ -1,6 +1,7 @@
 #include "APE_Components.hpp"
 #include <APE_AddEntitySystem.hpp>
 #include <cstdio>
+#include <string>
 
 void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
                                       unsigned int vao, unsigned int idxCount) {
@@ -13,10 +14,17 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
 
   // this is where the bug is
   for (auto [ent, name, count] : view.each()) {
+    // name and count
     if (strcmp(name.s_Name.c_str(), objName) == 0) {
       if (count.s_Count > max_count)
         max_count = count.s_Count;
       ObjNumber = max_count + 1;
+    }
+    // default selection
+    bool isSelected = reg.all_of<Selected>(ent);
+    auto selectedView = reg.view<Selected>();
+    for (auto [selectedEntity] : selectedView.each()) {
+      reg.remove<Selected>(selectedEntity);
     }
   }
   printf("Object count %d\n", ObjNumber);
@@ -26,6 +34,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   reg.emplace<ObjectCount>(entity, ObjNumber);
   reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
   reg.emplace<Renderable>(entity, vao, idxCount);
+	reg.emplace<Selected>(entity);
 }
 
 void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,

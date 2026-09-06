@@ -115,6 +115,14 @@ void APE_Window::_run() {
     lastTime = currTime;
     m_Camera.ResetViewSmooth(deltaTime);
 
+    if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
+        ImGui::IsKeyPressed(ImGuiKey_RightShift)) {
+
+      if (ImGui::IsKeyPressed(ImGuiKey_D)) {
+        m_DuplicateSystem.AddDuplicate(m_Registry);
+      }
+    }
+
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();

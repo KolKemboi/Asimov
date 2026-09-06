@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #endif
 #include <APE_AddEntitySystem.hpp>
+#include <APE_DuplicateSystem.hxx>
 #include <APE_FBO.hpp>
 #include <APE_IBO.hpp>
 #include <APE_RenderingSystem.hpp>
@@ -49,6 +50,7 @@ private:
   Properties m_Properties;
 
   SelectionSystem m_Selection;
+	DuplicateMeshSystem m_DuplicateSystem;
 
   // Window specifics
   GLFWwindow *m_Window;

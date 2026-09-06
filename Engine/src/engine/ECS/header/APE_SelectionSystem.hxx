@@ -15,7 +15,7 @@ public:
 
     for (auto [ent, name, count] : view.each()) {
       bool isSelected = reg.all_of<Selected>(ent);
-      std::string title = name.s_Name + std::to_string(count.s_Count);
+      std::string title = name.s_Name + "_" + std::to_string(count.s_Count);
 
       if (ImGui::Selectable(title.c_str(), isSelected)) {
         auto selectedView = reg.view<Selected>();

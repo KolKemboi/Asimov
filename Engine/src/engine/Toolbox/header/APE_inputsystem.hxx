@@ -2,6 +2,7 @@
 #include <APE_camera.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
+#include <entt/entt.hpp>
 #include <memory>
 
 // making a singleton
