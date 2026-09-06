@@ -2,6 +2,7 @@
 
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
+#include "APE_eventsystem.hxx"
 #include <APE_Components.hpp>
 #include <ImGuizmo.h>
 #include <cstdio>
@@ -18,7 +19,8 @@ class Viewport {
 public:
   bool isComplete = false;
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
-            entt::registry &reg, std::shared_ptr<Shader> &shader) {
+            entt::registry &reg, std::shared_ptr<Shader> &shader,
+            EventSystem &eventSystem) {
     ImGuizmo::BeginFrame();
 
     ImGui::Begin("Viewport");
@@ -60,12 +62,20 @@ public:
     static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
     ImGuizmo::MODE mode = ImGuizmo::LOCAL;
 
-    if (ImGui::IsKeyPressed(ImGuiKey_W))
-      operation = ImGuizmo::TRANSLATE;
-    if (ImGui::IsKeyPressed(ImGuiKey_E))
-      operation = ImGuizmo::ROTATE;
-    if (ImGui::IsKeyPressed(ImGuiKey_R))
-      operation = ImGuizmo::SCALE;
+    for (auto key : eventSystem.m_KeysPressed) {
+      if (key == KeyPress::W)
+        operation = ImGuizmo::TRANSLATE;
+      if (key == KeyPress::E)
+        operation = ImGuizmo::ROTATE;
+      if (key == KeyPress::R)
+        operation = ImGuizmo::SCALE;
+    }
+    //
+    // if (ImGui::IsKeyPressed(ImGuiKey_W))
+    //   if (ImGui::IsKeyPressed(ImGuiKey_E))
+    //     operation = ImGuizmo::ROTATE;
+    // if (ImGui::IsKeyPressed(ImGuiKey_R))
+    //   operation = ImGuizmo::SCALE;
 
     if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
         ImGui::IsKeyPressed(ImGuiKey_RightShift)) {

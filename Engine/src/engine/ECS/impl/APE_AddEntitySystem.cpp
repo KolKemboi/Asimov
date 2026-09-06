@@ -34,7 +34,7 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   reg.emplace<ObjectCount>(entity, ObjNumber);
   reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
   reg.emplace<Renderable>(entity, vao, idxCount);
-	reg.emplace<Selected>(entity);
+  reg.emplace<Selected>(entity);
 }
 
 void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,

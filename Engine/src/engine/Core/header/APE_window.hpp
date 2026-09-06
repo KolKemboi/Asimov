@@ -16,6 +16,7 @@
 #include <APE_VBO.hpp>
 #include <APE_addobjectpopup.hxx>
 #include <APE_camera.hpp>
+#include <APE_eventsystem.hxx>
 #include <APE_inputsystem.hxx>
 #include <APE_interface.hxx>
 #include <APE_loadmodelhelper.hpp>
@@ -50,7 +51,8 @@ private:
   Properties m_Properties;
 
   SelectionSystem m_Selection;
-	DuplicateMeshSystem m_DuplicateSystem;
+  DuplicateMeshSystem m_DuplicateSystem;
+	EventSystem m_EventSystem;
 
   // Window specifics
   GLFWwindow *m_Window;

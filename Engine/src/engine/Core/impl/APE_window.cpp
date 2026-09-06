@@ -1,5 +1,6 @@
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
+#include "APE_eventsystem.hxx"
 #include "APE_inputsystem.hxx"
 #include "APE_interface.hxx"
 #include "APE_meshmakerhelper.hpp"
@@ -71,7 +72,7 @@ void APE_Window::_setUpGLFWContext() {
   m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
 
   // input system -> set up everything required for the singleton
-  InputSystem::instance().SetVars(m_Camera);
+  InputSystem::instance().SetVars(m_Camera, m_EventSystem);
   glfwSetKeyCallback(m_Window, InputSystem::KeyCallbackFunc);
   glfwSetMouseButtonCallback(m_Window, InputSystem::MouseButtonCallbackFunc);
   glfwSetCursorPosCallback(m_Window, InputSystem::MouseCallbackFunc);
@@ -103,7 +104,12 @@ void APE_Window::_run() {
   glm::vec3 lightColor = glm::vec3(1.0f);
   // this->m_MainShader->SetVec3(lightColor, "lightColor");
 
+  unsigned int count = 0;
   while (!glfwWindowShouldClose(m_Window)) {
+    for (auto key : m_EventSystem.m_KeysPressed) {
+      if (key == KeyPress::A) {
+      }
+    }
 
     this->m_MainShader->SetMat4(this->m_Camera.GetViewMatrix(), "view");
     this->m_MainShader->SetVec3(m_Camera.GetPosition(), "viewPos");
@@ -114,6 +120,8 @@ void APE_Window::_run() {
     deltaTime = currTime - lastTime;
     lastTime = currTime;
     m_Camera.ResetViewSmooth(deltaTime);
+
+
 
     if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
         ImGui::IsKeyPressed(ImGuiKey_RightShift)) {
@@ -129,8 +137,8 @@ void APE_Window::_run() {
     m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
     this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
-    m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry,
-                    m_MainShader);
+    m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
+                    m_EventSystem);
 
     m_Selection.Selection(m_Registry);
 
@@ -138,6 +146,7 @@ void APE_Window::_run() {
 
     this->m_MainInterface->NewRenderIMGUI();
 
+    m_EventSystem.m_KeysPressed.clear();
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
   }

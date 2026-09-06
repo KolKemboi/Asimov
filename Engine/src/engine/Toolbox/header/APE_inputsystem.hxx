@@ -1,9 +1,22 @@
 #pragma once
+#include "APE_eventsystem.hxx"
 #include <APE_camera.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <entt/entt.hpp>
 #include <memory>
+
+//--- DEV NOTES
+/*
+ * Event system
+ * in the key call back, call a function that sets keys pressed
+ * theis function can log the keys pressed, like an ENUM of sorts
+ * and mouse key call back also does that
+ * mouse scroll call back also does that, but with a STRUCT, to store x, and y
+ * Have an event system class, which, returns the enum every loop,
+ * and call the key events in this place to set the enums
+ *
+ */
 
 // making a singleton
 class InputSystem {
@@ -27,8 +40,12 @@ public:
   bool isShiftDown = false;
   GLFWwindow *window;
   Camera *camera; // Use a specific camera -> take the location in memory
+  EventSystem *eventSystem;
 
-  void SetVars(Camera &cam) { camera = &cam; }
+  void SetVars(Camera &cam, EventSystem &eventsys) {
+    camera = &cam;
+    eventSystem = &eventsys;
+  }
 
   static void MouseCallbackFunc(GLFWwindow *window, double xPos, double yPos) {
     instance().MouseCallBack(window, xPos, yPos);
@@ -70,6 +87,7 @@ public:
   static void MouseButtonCallbackFunc(GLFWwindow *window, int button,
                                       int action, int mods) {
     instance().MouseButtonCallback(window, button, action, mods);
+    instance().eventSystem->MouseButtonCallback(window, button, action, mods);
   }
 
   void MouseButtonCallback(GLFWwindow *window, int button, int action,
@@ -87,6 +105,7 @@ public:
   static void KeyCallbackFunc(GLFWwindow *window, int key, int scancode,
                               int action, int mods) {
     instance().KeyCallback(window, key, scancode, action, mods);
+    instance().eventSystem->KeyCallback(window, key, scancode, action, mods);
   }
 
   void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
