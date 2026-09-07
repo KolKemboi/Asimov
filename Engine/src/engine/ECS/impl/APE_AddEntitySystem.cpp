@@ -1,6 +1,7 @@
 #include "APE_Components.hpp"
 #include <APE_AddEntitySystem.hpp>
 #include <cstdio>
+#include <cstring>
 #include <string>
 
 void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
@@ -14,12 +15,14 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
 
   // this is where the bug is
   for (auto [ent, name, count] : view.each()) {
+
     // name and count
     if (strcmp(name.s_Name.c_str(), objName) == 0) {
       if (count.s_Count > max_count)
         max_count = count.s_Count;
       ObjNumber = max_count + 1;
     }
+
     // default selection
     bool isSelected = reg.all_of<Selected>(ent);
     auto selectedView = reg.view<Selected>();
@@ -34,12 +37,20 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   reg.emplace<ObjectCount>(entity, ObjNumber);
   reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
   reg.emplace<Renderable>(entity, vao, idxCount);
+
+	if (strcmp(objName, "Cube") == 0)
+		reg.emplace<Shape>(entity, Shape::BOX);
+
+	if (strcmp(objName, "Sphere") == 0)
+		reg.emplace<Shape>(entity, Shape::SPHERE);
+
   reg.emplace<Selected>(entity);
 }
 
 void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,
                                     unsigned int count) {
   this->_helperFunction(registry, "Cube", VAO, count);
+
   printf("ADD_CUBE RUN\n");
 }
 void AddEntitySystem::AddSphereSystem(entt::registry &registry,

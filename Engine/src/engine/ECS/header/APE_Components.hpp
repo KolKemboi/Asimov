@@ -8,6 +8,15 @@
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
+#include <reactphysics3d/body/RigidBody.h>
+#include <reactphysics3d/collision/shapes/BoxShape.h>
+#include <reactphysics3d/collision/shapes/SphereShape.h>
+#include <reactphysics3d/mathematics/Quaternion.h>
+#include <reactphysics3d/mathematics/Vector3.h>
+#include <reactphysics3d/reactphysics3d.h>
+#include <variant>
+
+namespace rp3d = reactphysics3d;
 
 struct Transform {
   glm::vec3 s_Position = glm::vec3(0.0f);
@@ -20,9 +29,9 @@ struct Transform {
     modelMatrix = glm::translate(modelMatrix, s_Position);
 
     modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.x),
-                              glm::vec3(1.0, 0.0, 1.0));
+                              glm::vec3(1.0, 0.0, 0.0));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.y),
-                              glm::vec3(0.0, 1.0, 1.0));
+                              glm::vec3(0.0, 1.0, 0.0));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.z),
                               glm::vec3(0.0, 0.0, 1.0));
 
@@ -36,9 +45,16 @@ enum class Type {
   LIGHT,
   MESH,
 };
+
+enum class Shape {
+  BOX,
+  SPHERE,
+  CYLINDER,
+};
+
 struct Material {
   glm::vec3 s_Color;
-  Type s_Type; //
+  Type s_Type;
 
   Material(glm::vec3 color, Type type) : s_Color(color), s_Type(type) {};
 };
@@ -62,6 +78,21 @@ struct Name {
 // importing will increase this automatically
 struct ObjectCount {
   unsigned int s_Count = 0;
+};
+
+struct PhysicsBody {
+  rp3d::RigidBody *s_Body;
+};
+
+struct PhysicsData {
+  // these three default to meshes transforms, but can be altered
+  rp3d::Vector3 s_Position_C;
+  rp3d::Quaternion s_Rotation_C;
+  rp3d::Vector3 s_Scale_C;
+  rp3d::BodyType s_BodyType; // one of three
+  float s_Mass;
+  rp3d::BoxShape *s_BoxShape;
+  rp3d::SphereShape *s_SphereShape;
 };
 
 struct Selected {};

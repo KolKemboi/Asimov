@@ -1,3 +1,4 @@
+#include "APE_Components.hpp"
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
 #include "APE_eventsystem.hxx"
@@ -16,6 +17,7 @@
 #include <imgui_node_editor.h>
 #include <memory>
 #include <optional>
+#include <reactphysics3d/mathematics/Vector3.h>
 #include <string>
 #include <tuple>
 
@@ -80,6 +82,9 @@ void APE_Window::_setUpGLFWContext() {
 
   // ensure this runs after the Callback functions
   this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
+
+  // physics
+  m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld();
 }
 
 void APE_Window::_run() {
@@ -105,15 +110,21 @@ void APE_Window::_run() {
   // this->m_MainShader->SetVec3(lightColor, "lightColor");
 
   unsigned int count = 0;
+
+  bool worldrun = false;
   while (!glfwWindowShouldClose(m_Window)) {
+
     for (auto key : m_EventSystem.m_KeysPressed) {
-      if (key == KeyPress::A) {
-      }
+      if (key == KeyPress::P)
+        worldrun = false;
+      if (key == KeyPress::C)
+        worldrun = true;
     }
 
     this->m_MainShader->SetMat4(this->m_Camera.GetViewMatrix(), "view");
     this->m_MainShader->SetVec3(m_Camera.GetPosition(), "viewPos");
     this->m_MainShader->SetVec3(m_Camera.GetPosition(), "lightPos");
+
     // call the renderer and give it the frame buffer and a vector of objects
     // with the renderable component to render
     float currTime = glfwGetTime();
@@ -121,24 +132,67 @@ void APE_Window::_run() {
     lastTime = currTime;
     m_Camera.ResetViewSmooth(deltaTime);
 
+    // update it here, check if the transforms arent the same,
+    // I am dumb, I am dumb -> Coll Leclerc
+    if (worldrun) {
+      m_PhysicsWorld->update(deltaTime);
+      auto view = m_Registry.view<Transform, PhysicsBody>();
+      for (auto [entity, transform, body] : view.each()) {
 
+        const rp3d::Transform &newTrans = body.s_Body->getTransform();
+        const rp3d::Vector3 &newPosition = newTrans.getPosition();
 
-    if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
-        ImGui::IsKeyPressed(ImGuiKey_RightShift)) {
+        transform.s_Position.x = newPosition.x;
+        transform.s_Position.y = newPosition.y;
+        transform.s_Position.z = newPosition.z;
 
-      if (ImGui::IsKeyPressed(ImGuiKey_D)) {
-        m_DuplicateSystem.AddDuplicate(m_Registry);
+        printf("%f, %f, %f,\n", newPosition.x, newPosition.y, newPosition.z);
       }
+    }
+
+    // printf("%f %f\n", m_EventSystem.m_MouseOffset.xOffset,
+    //        m_EventSystem.m_MouseOffset.yOffset);
+
+    for (auto key : m_EventSystem.m_KeysPressed) {
+      if (key == KeyPress::D) {
+        for (auto mod : m_EventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            printf("SHIFT\n");
+            m_DuplicateSystem.AddDuplicate(m_Registry);
+          }
+        }
+      }
+      if (key == KeyPress::DELETE) {
+        // auto del = m_ConfirmPopUp.ConfirmDelete(true);
+        // if (m_ConfirmPopUp.ConfirmDelete()) {
+        m_RemoveEntity.RemoveEntity(m_Registry);
+        // }
+      }
+    }
+
+    auto view = m_Registry.view<PhysicsData>();
+    for (auto [ent, data] : view.each()) {
+      printf("MASS => %f\n", data.s_Mass);
+      printf("POS => %f %f %f\n", data.s_Position_C.x, data.s_Position_C.y,
+             data.s_Position_C.z);
+      printf("ROT => %f %f %f\n", data.s_Rotation_C.x, data.s_Rotation_C.y,
+             data.s_Rotation_C.z);
+      printf("SCALE => %f %f %f\n", data.s_Scale_C.x, data.s_Scale_C.y,
+             data.s_Scale_C.z);
     }
 
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
+    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
+                                m_PhysicsWorld, m_PhysicsCommon);
+    m_Properties.MakePhysicsProperties(m_Registry, m_MainShader);
+
     this->m_MainShader->SetMat4(projection, "projection");
-    this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry);
+    this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
+                                      m_PhysicsWorld, m_PhysicsCommon);
     m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
-                    m_EventSystem);
+                    m_EventSystem, m_PhysicsWorld, m_PhysicsCommon);
 
     m_Selection.Selection(m_Registry);
 
@@ -147,6 +201,7 @@ void APE_Window::_run() {
     this->m_MainInterface->NewRenderIMGUI();
 
     m_EventSystem.m_KeysPressed.clear();
+    m_EventSystem.m_ModKeys.clear();
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
   }
@@ -199,6 +254,7 @@ void APE_Window::_emptyWindowVector() {
 }
 
 void APE_Window::CleanUp() {
+  m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
   this->m_MeshMaker->Clean();
   this->m_MainInterface->DestroyIMGUIContext();
   this->m_MainInterface = nullptr;

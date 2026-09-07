@@ -1,4 +1,5 @@
 #pragma once
+#include <APE_AddCollider.hxx>
 #include <APE_AddEntitySystem.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
@@ -21,7 +22,9 @@ public:
     this->_ConvexMeshPrimitiveData = convexMeshData;
   }
 
-  inline void SetUpPopUp(GLFWwindow *window, entt::registry &reg) {
+  inline void SetUpPopUp(GLFWwindow *window, entt::registry &reg,
+                         rp3d::PhysicsWorld *&world,
+                         rp3d::PhysicsCommon &phyCom) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
       if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         ImGui::OpenPopup("Add Object");
@@ -69,6 +72,10 @@ public:
             std::get<1>(_ConvexMeshPrimitiveData));
         ImGui::CloseCurrentPopup();
       }
+      if (ImGui::Button("Add Collider")) {
+        m_AddColliderSystem.AddCollider(world, phyCom, reg);
+            ImGui::CloseCurrentPopup();
+      }
 
       ImGui::EndPopup();
     }
@@ -76,6 +83,7 @@ public:
 
 private:
   AddEntitySystem m_AddEntitySystem;
+  AddColliderSystem m_AddColliderSystem;
   std::tuple<unsigned int, unsigned int> _CubePrimitiveData;
   std::tuple<unsigned int, unsigned int> _SpherePrimitiveData;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitiveData;

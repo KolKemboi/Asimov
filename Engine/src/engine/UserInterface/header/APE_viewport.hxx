@@ -14,13 +14,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <memory>
+#include <reactphysics3d/mathematics/Quaternion.h>
+#include <reactphysics3d/mathematics/Vector3.h>
 
 class Viewport {
 public:
   bool isComplete = false;
+  ImGuizmo::MODE mode = ImGuizmo::WORLD;
+
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
             entt::registry &reg, std::shared_ptr<Shader> &shader,
-            EventSystem &eventSystem) {
+            EventSystem &eventSystem, rp3d::PhysicsWorld *&world,
+            rp3d::PhysicsCommon &physicsCommon) {
     ImGuizmo::BeginFrame();
 
     ImGui::Begin("Viewport");
@@ -60,7 +65,6 @@ public:
     ImGuizmo::SetRect(Pos.x, Pos.y, avail.x, avail.y);
 
     static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
-    ImGuizmo::MODE mode = ImGuizmo::LOCAL;
 
     for (auto key : eventSystem.m_KeysPressed) {
       if (key == KeyPress::W)
@@ -69,26 +73,40 @@ public:
         operation = ImGuizmo::ROTATE;
       if (key == KeyPress::R)
         operation = ImGuizmo::SCALE;
-    }
-    //
-    // if (ImGui::IsKeyPressed(ImGuiKey_W))
-    //   if (ImGui::IsKeyPressed(ImGuiKey_E))
-    //     operation = ImGuizmo::ROTATE;
-    // if (ImGui::IsKeyPressed(ImGuiKey_R))
-    //   operation = ImGuizmo::SCALE;
-
-    if (ImGui::IsKeyPressed(ImGuiKey_LeftShift) ||
-        ImGui::IsKeyPressed(ImGuiKey_RightShift)) {
-
-      if (ImGui::IsKeyPressed(ImGuiKey_G)) {
-        mode = ImGuizmo::WORLD;
-        printf("SWITCHED TO GLOBAL\n");
+      if (key == KeyPress::G) {
+        for (auto mod : eventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            mode = ImGuizmo::WORLD;
+          }
+        }
       }
-
-      if (ImGui::IsKeyPressed(ImGuiKey_L)) {
-
-        mode = ImGuizmo::LOCAL;
-        printf("SWITCHED TO LOCAL\n");
+      if (key == KeyPress::L) {
+        for (auto mod : eventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            mode = ImGuizmo::LOCAL;
+          }
+        }
+      }
+      if (key == KeyPress::X) {
+        for (auto mod : eventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            operation = ImGuizmo::ROTATE_X;
+          }
+        }
+      }
+      if (key == KeyPress::Y) {
+        for (auto mod : eventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            operation = ImGuizmo::ROTATE_Y;
+          }
+        }
+      }
+      if (key == KeyPress::Z) {
+        for (auto mod : eventSystem.m_ModKeys) {
+          if (mod == ModKeys::SHIFT) {
+            operation = ImGuizmo::ROTATE_Z;
+          }
+        }
       }
     }
 
@@ -105,26 +123,53 @@ public:
 
       ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
                            operation, mode, glm::value_ptr(model));
-
       if (ImGuizmo::IsUsing()) {
+
         float pos[3];
         float rot[3];
+
         float sca[3];
         ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model), pos, rot,
                                               sca);
 
         transform.s_Position = glm::vec3(pos[0], pos[1], pos[2]);
-        transform.s_Rotation = glm::vec3((rot[0]), rot[1], rot[2]);
+        transform.s_Rotation = glm::vec3(rot[0], rot[1], rot[2]);
         transform.s_Scale = glm::vec3(sca[0], sca[1], sca[2]);
+
         isComplete = true;
       } else if (!ImGuizmo::IsUsing() && isComplete) {
         printf("Transformed! %s_%d\n", name.s_Name.c_str(), count.s_Count);
+
         printf("NEW POS=> %f %f %f\n", transform.s_Position.x,
                transform.s_Position.y, transform.s_Position.z);
+
         printf("NEW ROT=> %f %f %f\n", transform.s_Rotation.x,
                transform.s_Rotation.y, transform.s_Rotation.z);
+
         printf("NEW SCA=> %f %f %f\n", transform.s_Scale.x, transform.s_Scale.y,
                transform.s_Scale.z);
+
+        if (reg.all_of<PhysicsBody, PhysicsData>(entity)) {
+          auto &body = reg.get<PhysicsBody>(entity);
+          auto &data = reg.get<PhysicsData>(entity);
+          // auto fzxDataView = reg.view<PhysicsData, PhysicsBody>();
+          //
+          // for (auto [ent, data, body] : fzxDataView.each()) {
+          //   data.s_Scale_C.x = transform.s_Scale.x;
+          //   data.s_Scale_C.y = transform.s_Scale.y;
+          //   data.s_Scale_C.z = transform.s_Scale.z;
+          //
+          rp3d::Vector3 newPos =
+              rp3d::Vector3(transform.s_Position.x, transform.s_Position.y,
+                            transform.s_Position.z);
+          rp3d::Quaternion newRot = rp3d::Quaternion::fromEulerAngles(
+              transform.s_Position.x, transform.s_Position.y,
+              transform.s_Position.z);
+
+          rp3d::Transform trans(newPos, newRot);
+          body.s_Body = world->createRigidBody(trans);
+        }
+
         isComplete = false;
       }
     }

@@ -1,13 +1,17 @@
 #pragma once
 #include "APE_properties.hxx"
 #include "APE_viewport.hxx"
+#include <APE_confirmpopup.hxx>
+#include <reactphysics3d/engine/PhysicsCommon.h>
 #include <tuple>
 #include <vector>
 #ifndef __GLAD_GAURD__
 #include <glad/glad.h>
 #endif
+#include <APE_AddCollider.hxx>
 #include <APE_AddEntitySystem.hpp>
 #include <APE_DuplicateSystem.hxx>
+#include <APE_EditRegistrySystem.hxx>
 #include <APE_FBO.hpp>
 #include <APE_IBO.hpp>
 #include <APE_RenderingSystem.hpp>
@@ -36,6 +40,7 @@
  * 	- User Interface Systems
  *
  */
+namespace rp3d = reactphysics3d;
 class APE_Window {
 public:
   APE_Window(unsigned int, unsigned int, const char *);
@@ -49,10 +54,11 @@ private:
   std::unique_ptr<Interface> m_MainInterface;
   Viewport m_Viewport;
   Properties m_Properties;
+  ConfirmPopUp m_ConfirmPopUp;
 
   SelectionSystem m_Selection;
   DuplicateMeshSystem m_DuplicateSystem;
-	EventSystem m_EventSystem;
+  EventSystem m_EventSystem;
 
   // Window specifics
   GLFWwindow *m_Window;
@@ -63,6 +69,7 @@ private:
   // ECS stuff
   entt::registry m_Registry;
   RenderSystem m_RenderSystem;
+  RemoveEntitySystem m_RemoveEntity;
 
   Camera m_Camera;
 
@@ -70,6 +77,11 @@ private:
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
   AddEntitySystem m_AddEntitySystem;
   AddObjectPopUp m_AddObjectPopUp;
+
+  // Physics stuff
+  rp3d::PhysicsCommon m_PhysicsCommon;
+  rp3d::PhysicsWorld *m_PhysicsWorld;
+  // AddColliderSystem m_AddCollider;
 
 private:
   // I can guarantee these, the primitives will be in a specific order
@@ -81,7 +93,7 @@ private:
   std::tuple<unsigned int, unsigned int> _CapsulePrimitive;
 
   // initial camera positions and view setting
-  glm::vec3 m_CamPos = glm::vec3(0.0f, 5.0f, -10.0f);
+  glm::vec3 m_CamPos = glm::vec3(0.0f, 0.0f, -10.0f);
   glm::vec3 m_CamUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 m_View = glm::mat4(1.0f);
 

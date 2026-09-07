@@ -78,6 +78,7 @@ public:
   static void ScrollCallbackFunc(GLFWwindow *window, double xOffset,
                                  double yOffset) {
     instance().ScrollCallback(window, xOffset, yOffset);
+    instance().eventSystem->ScrollCallback(window, xOffset, yOffset);
   }
   void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
 

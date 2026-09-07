@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <vector>
+
 enum class KeyPress {
   Q,
   W,
@@ -30,11 +31,13 @@ enum class KeyPress {
   B,
   N,
   M,
+  HOME,
+  DELETE,
+};
+enum class ModKeys {
   CTRL,
   ALT,
   SHIFT,
-  HOME,
-
 };
 enum class MouseButtonPress {
   LEFT,
@@ -42,9 +45,9 @@ enum class MouseButtonPress {
   MIDDLE,
 };
 
-struct MousePosition {
-  float xPosition;
-  float yPosition;
+struct MouseOffset {
+  float xOffset;
+  float yOffset;
 };
 
 // fill it
@@ -53,17 +56,32 @@ struct MousePosition {
 class EventSystem {
 public:
   std::vector<KeyPress> m_KeysPressed;
+  std::vector<ModKeys> m_ModKeys;
   std::vector<MouseButtonPress> m_MouseButtonPress;
+  MouseOffset m_MouseOffset;
+
+  void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
+    m_MouseOffset.xOffset = xOffset;
+    m_MouseOffset.yOffset = yOffset;
+  }
 
   void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
                    int mods) {
-    if (key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT)
-      if (action == GLFW_PRESS)
-        m_KeysPressed.push_back(KeyPress::SHIFT);
 
-    if (key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL)
+    if (mods == GLFW_MOD_SHIFT)
       if (action == GLFW_PRESS)
-        m_KeysPressed.push_back(KeyPress::CTRL);
+        m_ModKeys.push_back(ModKeys::SHIFT);
+
+    if (mods == GLFW_MOD_ALT)
+      if (action == GLFW_PRESS)
+        m_ModKeys.push_back(ModKeys::ALT);
+
+    if (mods == GLFW_MOD_CONTROL)
+      if (action == GLFW_PRESS)
+        m_ModKeys.push_back(ModKeys::CTRL);
+
+    if (key == GLFW_KEY_DELETE && action == GLFW_PRESS)
+      m_KeysPressed.push_back(KeyPress::DELETE);
 
     if (key == GLFW_KEY_Q && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::Q);
@@ -109,7 +127,7 @@ public:
 
     if (key == GLFW_KEY_G && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::G);
-		
+
     if (key == GLFW_KEY_H && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::H);
 
@@ -149,15 +167,14 @@ public:
 
   void MouseButtonCallback(GLFWwindow *window, int button, int action,
                            int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
       m_MouseButtonPress.push_back(MouseButtonPress::LEFT);
-    
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
+
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
       m_MouseButtonPress.push_back(MouseButtonPress::RIGHT);
-    
-    if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) 
+
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
       m_MouseButtonPress.push_back(MouseButtonPress::MIDDLE);
-   
   }
 
 private:
