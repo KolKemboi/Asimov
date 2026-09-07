@@ -149,33 +149,11 @@ void APE_Window::_run() {
         printf("%f, %f, %f,\n", newPosition.x, newPosition.y, newPosition.z);
       }
     } else {
-      auto view = m_Registry.view<Shape, Transform, PhysicsBody, PhysicsData>();
-      for (auto [entity, shape, transform, body, data] : view.each()) {
+      auto view = m_Registry.view<Transform, PhysicsBody, PhysicsData>();
+      for (auto [entity, transform, body, data] : view.each()) {
         // check if physdata != trans
-        // Update if not similar
-        // forgot about scale
         const rp3d::Transform &newTrans = body.s_Body->getTransform();
         const rp3d::Vector3 &newPosition = newTrans.getPosition();
-
-        if (transform.s_Scale.x != data.s_Scale_C.x ||
-            transform.s_Scale.y != data.s_Scale_C.y ||
-            transform.s_Scale.z != data.s_Scale_C.z) {
-          rp3d::Vector3 scale = rp3d::Vector3(
-              transform.s_Scale.x, transform.s_Scale.y, transform.s_Scale.z);
-
-          rp3d::Collider *bodyCollider;
-
-          if (shape == Shape::BOX) {
-            data.s_BoxShape = m_PhysicsCommon.createBoxShape(scale);
-            bodyCollider = body.s_Body->addCollider(
-                data.s_BoxShape, rp3d::Transform::identity());
-          }
-          // if (shape == Shape::SPHERE) {
-          //   data.s_BoxShape = m_PhysicsCommon.createSphereShape(scale.x);
-          //   bodyCollider = body.s_Body->addCollider(
-          //       data.s_BoxShape, rp3d::Transform::identity());
-          // }
-        }
 
         if (transform.s_Position.x != newPosition.x ||
             transform.s_Position.y != newPosition.y ||
@@ -184,16 +162,20 @@ void APE_Window::_run() {
           rp3d::Vector3 newPos =
               rp3d::Vector3(transform.s_Position.x, transform.s_Position.y,
                             transform.s_Position.z);
-
           rp3d::Quaternion newRot = rp3d::Quaternion::fromEulerAngles(
-              transform.s_Rotation.x, transform.s_Rotation.y,
-              transform.s_Rotation.z);
+              transform.s_Position.x, transform.s_Position.y,
+              transform.s_Position.z);
 
           rp3d::Transform trans(newPos, newRot);
           body.s_Body = m_PhysicsWorld->createRigidBody(trans);
         }
+
+        printf("%f, %f, %f,\n", newPosition.x, newPosition.y, newPosition.z);
       }
     }
+
+    // printf("%f %f\n", m_EventSystem.m_MouseOffset.xOffset,
+    //        m_EventSystem.m_MouseOffset.yOffset);
 
     for (auto key : m_EventSystem.m_KeysPressed) {
       if (key == KeyPress::D) {
@@ -205,22 +187,36 @@ void APE_Window::_run() {
         }
       }
       if (key == KeyPress::DELETE) {
+        // auto del = m_ConfirmPopUp.ConfirmDelete(true);
+        // if (m_ConfirmPopUp.ConfirmDelete()) {
         m_RemoveEntity.RemoveEntity(m_Registry);
+        // }
       }
+    }
+
+    auto view = m_Registry.view<PhysicsData>();
+    for (auto [ent, data] : view.each()) {
+      printf("MASS => %f\n", data.s_Mass);
+      printf("POS => %f %f %f\n", data.s_Position_C.x, data.s_Position_C.y,
+             data.s_Position_C.z);
+      printf("ROT => %f %f %f\n", data.s_Rotation_C.x, data.s_Rotation_C.y,
+             data.s_Rotation_C.z);
+      printf("SCALE => %f %f %f\n", data.s_Scale_C.x, data.s_Scale_C.y,
+             data.s_Scale_C.z);
     }
 
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
-    m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
-                                       m_PhysicsWorld);
+    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
+                                m_PhysicsWorld, m_PhysicsCommon);
+    m_Properties.MakePhysicsProperties(m_Registry, m_MainShader);
 
     this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
                                       m_PhysicsWorld, m_PhysicsCommon);
     m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
-                    m_EventSystem);
+                    m_EventSystem, m_PhysicsWorld, m_PhysicsCommon);
 
     m_Selection.Selection(m_Registry);
 

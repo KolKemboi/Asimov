@@ -27,14 +27,14 @@ public:
       printf("Added Collider\n");
 
       auto &t = registry.get<Transform>(entity);
+      auto &shape = registry.get<Shape>(entity);
 
       physics.s_Position_C =
           rp3d::Vector3(t.s_Position.x, t.s_Position.y, t.s_Position.z);
       physics.s_Rotation_C = rp3d::Quaternion::fromEulerAngles(
           t.s_Rotation.x, t.s_Rotation.y, t.s_Rotation.z);
-      physics.s_Scale_C = rp3d::Vector3(t.s_Scale.x, t.s_Scale.y, t.s_Scale.z);
 
-      auto &shape = registry.get<Shape>(entity);
+      physics.s_Scale_C = rp3d::Vector3(t.s_Scale.x, t.s_Scale.y, t.s_Scale.z);
 
       physics.s_BodyType = rp3d::BodyType::DYNAMIC;
       physics.s_Mass = 1.0;

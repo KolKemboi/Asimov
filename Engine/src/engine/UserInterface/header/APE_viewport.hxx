@@ -24,8 +24,7 @@ public:
 
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
             entt::registry &reg, std::shared_ptr<Shader> &shader,
-            EventSystem &eventSystem, rp3d::PhysicsWorld *&world,
-            rp3d::PhysicsCommon &physicsCommon) {
+            EventSystem &eventSystem) {
     ImGuizmo::BeginFrame();
 
     ImGui::Begin("Viewport");
@@ -148,27 +147,6 @@ public:
 
         printf("NEW SCA=> %f %f %f\n", transform.s_Scale.x, transform.s_Scale.y,
                transform.s_Scale.z);
-
-        if (reg.all_of<PhysicsBody, PhysicsData>(entity)) {
-          auto &body = reg.get<PhysicsBody>(entity);
-          auto &data = reg.get<PhysicsData>(entity);
-          // auto fzxDataView = reg.view<PhysicsData, PhysicsBody>();
-          //
-          // for (auto [ent, data, body] : fzxDataView.each()) {
-          //   data.s_Scale_C.x = transform.s_Scale.x;
-          //   data.s_Scale_C.y = transform.s_Scale.y;
-          //   data.s_Scale_C.z = transform.s_Scale.z;
-          //
-          rp3d::Vector3 newPos =
-              rp3d::Vector3(transform.s_Position.x, transform.s_Position.y,
-                            transform.s_Position.z);
-          rp3d::Quaternion newRot = rp3d::Quaternion::fromEulerAngles(
-              transform.s_Position.x, transform.s_Position.y,
-              transform.s_Position.z);
-
-          rp3d::Transform trans(newPos, newRot);
-          body.s_Body = world->createRigidBody(trans);
-        }
 
         isComplete = false;
       }

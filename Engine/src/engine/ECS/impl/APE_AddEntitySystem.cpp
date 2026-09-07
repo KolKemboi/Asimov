@@ -38,11 +38,11 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   reg.emplace<Material>(entity, glm::vec3(0.5f), Type::MESH);
   reg.emplace<Renderable>(entity, vao, idxCount);
 
-	if (strcmp(objName, "Cube") == 0)
-		reg.emplace<Shape>(entity, Shape::BOX);
+  if (strcmp(objName, "Cube") == 0)
+    reg.emplace<Shape>(entity, Shape::BOX);
 
-	if (strcmp(objName, "Sphere") == 0)
-		reg.emplace<Shape>(entity, Shape::SPHERE);
+  if (strcmp(objName, "Sphere") == 0)
+    reg.emplace<Shape>(entity, Shape::SPHERE);
 
   reg.emplace<Selected>(entity);
 }

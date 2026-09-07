@@ -5,14 +5,15 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 #include <memory>
+#include <reactphysics3d/components/RigidBodyComponents.h>
+#include <reactphysics3d/engine/PhysicsCommon.h>
 #include <string>
 #include <vector>
 
 class Properties {
 public:
   void MakeProperties(entt::registry &reg, std::shared_ptr<Shader> &shader,
-                      glm::vec3 &lightColor, rp3d::PhysicsWorld *&world,
-                      rp3d::PhysicsCommon &physicsCommon) {
+                      glm::vec3 &lightColor) {
 
     auto view = reg.view<Name, ObjectCount, Transform>();
     // glm::vec3 lightColor = glm::vec3(1.0f);
@@ -47,23 +48,40 @@ public:
 
     ImGui::End();
   }
-  void MakePhysicsProperties(entt::registry &reg,
-                             std::shared_ptr<Shader> &shader) {
+  void MakePhysicsProperties(entt::registry &reg, rp3d::PhysicsCommon &phyCom,
+                             rp3d::PhysicsWorld *&world) {
 
-    std::vector<std::string> opts = {"ACTIVE", "STATIC", "KINEMATIC"};
-    static int selected = 0;
     ImGui::Begin("Physics Properties");
-    if (ImGui::BeginCombo("TYPE", opts[selected].c_str())) {
-      for (int i{0}; i < opts.size(); i++) {
-        bool isSelected = (selected == i);
-        if (ImGui::Selectable(opts[i].c_str(), isSelected)) {
-          selected = i;
+
+    auto selectedView = reg.view<Selected>();
+    for (auto entity : selectedView) {
+      static int selected = 0;
+      if (reg.all_of<PhysicsData>(entity)) {
+
+        std::vector<std::string> opts = {"DYNAMIC", "STATIC", "KINEMATIC"};
+
+        if (ImGui::BeginCombo("TYPE", opts[selected].c_str())) {
+          for (int i{0}; i < opts.size(); i++) {
+            bool isSelected = (selected == i);
+            if (ImGui::Selectable(opts[i].c_str(), isSelected)) {
+              selected = i;
+            }
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
         }
-        if (isSelected) {
-          ImGui::SetItemDefaultFocus();
-        }
+
+        auto &fzxData = reg.get<PhysicsData>(entity);
+        auto &fzxBody = reg.get<PhysicsBody>(entity);
+        if (selected == 0)
+          fzxBody.s_Body->setType(rp3d::BodyType::DYNAMIC);
+        if (selected == 1)
+          fzxBody.s_Body->setType(rp3d::BodyType::STATIC);
+        if (selected == 2)
+          fzxBody.s_Body->setType(rp3d::BodyType::KINEMATIC);
       }
-      ImGui::EndCombo();
     }
 
     ImGui::End();

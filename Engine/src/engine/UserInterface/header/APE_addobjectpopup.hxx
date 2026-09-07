@@ -74,7 +74,7 @@ public:
       }
       if (ImGui::Button("Add Collider")) {
         m_AddColliderSystem.AddCollider(world, phyCom, reg);
-            ImGui::CloseCurrentPopup();
+        ImGui::CloseCurrentPopup();
       }
 
       ImGui::EndPopup();
