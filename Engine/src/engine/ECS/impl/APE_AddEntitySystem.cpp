@@ -46,6 +46,15 @@ void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
   if (strcmp(objName, "Sphere") == 0)
     reg.emplace<Shape>(entity, Shape::SPHERE);
 
+  if (strcmp(objName, "Cylinder") == 0)
+    reg.emplace<Shape>(entity, Shape::CYLINDER);
+
+  if (strcmp(objName, "Capsule") == 0)
+    reg.emplace<Shape>(entity, Shape::CAPSULE);
+
+  if (strcmp(objName, "ConvexMesh") == 0)
+    reg.emplace<Shape>(entity, Shape::CONVEXMESH);
+
   reg.emplace<Selected>(entity);
 }
 
@@ -78,11 +87,13 @@ void AddEntitySystem::AddPlaneSystem(entt::registry &registry, unsigned int VAO,
 void AddEntitySystem::AddCapsuleSystem(entt::registry &registry,
                                        unsigned int VAO, unsigned int count) {
   this->_helperFunction(registry, "Capsule", VAO, count);
+  m_LocalDispatcher.Emitter(EventType::OBJECT_ADDED, "Capsule has been added");
   printf("ADD_CAPSULE RUN\n");
 }
 void AddEntitySystem::AddConvexMeshSystem(entt::registry &registry,
                                           unsigned int VAO,
                                           unsigned int count) {
   this->_helperFunction(registry, "ConvexMesh", VAO, count);
+  m_LocalDispatcher.Emitter(EventType::OBJECT_ADDED, "Convex has been added");
   printf("ADD_CONVEXMESH RUN\n");
 }

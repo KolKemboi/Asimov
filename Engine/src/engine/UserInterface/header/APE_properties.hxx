@@ -61,40 +61,57 @@ public:
     ImGui::End();
   }
   void MakePhysicsProperties(entt::registry &reg, rp3d::PhysicsCommon &phyCom,
-                             rp3d::PhysicsWorld *&world) {
+                             rp3d::PhysicsWorld *&world,
+                             Dispatcher &dispatcher) {
 
     ImGui::Begin("Physics Properties");
 
-    // auto selectedView = reg.view<Selected>();
-    // for (auto entity : selectedView) {
-    //   if (reg.all_of<PhysicsData>(entity)) {
-    //
-    //     std::vector<std::string> opts = {"DYNAMIC", "STATIC", "KINEMATIC"};
-    //     static int selected = 0;
-    //
-    //     if (ImGui::BeginCombo("TYPE", opts[selected].c_str())) {
-    //       for (int i{0}; i < opts.size(); i++) {
-    //         bool isSelected = (selected == i);
-    //         if (ImGui::Selectable(opts[i].c_str(), isSelected)) {
-    //           selected = i;
-    //         }
-    //         if (isSelected) {
-    //           ImGui::SetItemDefaultFocus();
-    //         }
-    //       }
-    //       ImGui::EndCombo();
-    //     }
-    //
-    //     auto &fzxData = reg.get<PhysicsData>(entity);
-    //     auto &fzxBody = reg.get<PhysicsBody>(entity);
-    //     if (selected == 0)
-    //       fzxBody.s_Body->setType(rp3d::BodyType::DYNAMIC);
-    //     if (selected == 1)
-    //       fzxBody.s_Body->setType(rp3d::BodyType::STATIC);
-    //     if (selected == 2)
-    //       fzxBody.s_Body->setType(rp3d::BodyType::KINEMATIC);
-    //   }
-    // }
+    auto selectedView = reg.view<Selected>();
+    for (auto entity : selectedView) {
+      static int selected = 1;
+
+      if (reg.all_of<PhysicsData>(entity)) {
+        auto fzxData = reg.get<PhysicsData>(entity);
+        rp3d::BodyType bodyType = fzxData.s_BodyType;
+
+        if (bodyType == rp3d::BodyType::STATIC)
+          selected = 1;
+        if (bodyType == rp3d::BodyType::DYNAMIC)
+          selected = 0;
+        if (bodyType == rp3d::BodyType::KINEMATIC)
+          selected = 2;
+
+        std::vector<std::string> opts = {"DYNAMIC", "STATIC", "KINEMATIC"};
+
+        if (ImGui::BeginCombo("TYPE", opts[selected].c_str())) {
+
+          for (int i{0}; i < opts.size(); i++) {
+            bool isSelected = (selected == i);
+            if (ImGui::Selectable(opts[i].c_str(), isSelected)) {
+              selected = i;
+              printf("collider type changed to %s\n", opts[selected].c_str());
+              // call the update from here
+              dispatcher.Emitter(EventType::COLLIDER_TYPE_MODIFIED,
+                                 opts[selected]);
+            }
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+
+          ImGui::EndCombo();
+        }
+
+        // auto &fzxData = reg.get<PhysicsData>(entity);
+        // auto &fzxBody = reg.get<PhysicsBody>(entity);
+        // if (selected == 0)
+        //   fzxBody.s_Body->setType(rp3d::BodyType::DYNAMIC);
+        // if (selected == 1)
+        //   fzxBody.s_Body->setType(rp3d::BodyType::STATIC);
+        // if (selected == 2)
+        //   fzxBody.s_Body->setType(rp3d::BodyType::KINEMATIC);
+      }
+    }
 
     ImGui::End();
   }

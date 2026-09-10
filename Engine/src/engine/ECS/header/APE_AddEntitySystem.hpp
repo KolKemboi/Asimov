@@ -1,6 +1,6 @@
 #pragma once
-#include <APE_Dispatcher.hpp>
 #include <APE_Components.hpp>
+#include <APE_Dispatcher.hpp>
 
 class AddEntitySystem {
 public:

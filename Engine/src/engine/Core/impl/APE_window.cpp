@@ -179,7 +179,7 @@ void APE_Window::_run() {
     m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
                                 m_Dispatcher);
     m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
-                                       m_PhysicsWorld);
+                                       m_PhysicsWorld, m_Dispatcher);
 
     this->m_MainShader->SetMat4(projection, "projection");
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
@@ -191,7 +191,7 @@ void APE_Window::_run() {
 
     m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
     // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
-    //                                  m_MainShader);
+    // m_MainShader);
 
     this->m_MainInterface->NewRenderIMGUI();
 

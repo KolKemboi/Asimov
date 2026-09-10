@@ -11,14 +11,17 @@
 #include <reactphysics3d/body/RigidBody.h>
 #include <reactphysics3d/collision/Collider.h>
 #include <reactphysics3d/collision/shapes/BoxShape.h>
+#include <reactphysics3d/collision/shapes/CapsuleShape.h>
 #include <reactphysics3d/collision/shapes/SphereShape.h>
 #include <reactphysics3d/mathematics/Quaternion.h>
 #include <reactphysics3d/mathematics/Vector3.h>
 #include <reactphysics3d/reactphysics3d.h>
-#include <variant>
 
 namespace rp3d = reactphysics3d;
 
+// Mesh Transform component
+// has the position rotation and scale
+// Alse returns the model matrix for the shader part
 struct Transform {
   glm::vec3 s_Position = glm::vec3(0.0f);
   glm::vec3 s_Rotation = glm::vec3(0.0f);
@@ -42,17 +45,32 @@ struct Transform {
   }
 };
 
+// this is to set the shader flow,
 enum class Type {
   LIGHT,
   MESH,
 };
 
+// Each body can have one of these three, a static, kinematic or dynamic body
+// type
+enum class PhysicsBodyType {
+  STATIC,
+  DYNAMIC,
+  KINEMATIC,
+};
+
+// This dictates the shape of the collider,
+// whether it is one of these five primitives
 enum class Shape {
   BOX,
   SPHERE,
   CYLINDER,
+  CAPSULE,
+  CONVEXMESH,
 };
 
+// Rendering material
+// s_type is a Mesh or light
 struct Material {
   glm::vec3 s_Color;
   Type s_Type;
@@ -60,8 +78,8 @@ struct Material {
   Material(glm::vec3 color, Type type) : s_Color(color), s_Type(type) {};
 };
 
+// Renderables have this
 struct Renderable {
-  // need a VAO here
   unsigned int s_IndexCount;
   unsigned int s_VAO;
 
@@ -81,6 +99,7 @@ struct ObjectCount {
   unsigned int s_Count = 0;
 };
 
+// this is required to make colliders
 struct PhysicsBody {
   rp3d::RigidBody *s_Body;
   rp3d::Collider *s_Collider;
@@ -91,10 +110,11 @@ struct PhysicsData {
   rp3d::Vector3 s_Position_C;
   rp3d::Quaternion s_Rotation_C;
   rp3d::Vector3 s_Scale_C;
-  rp3d::BodyType s_BodyType; // one of three
+  rp3d::BodyType s_BodyType = rp3d::BodyType::STATIC; // one of three
   float s_Mass;
   rp3d::BoxShape *s_BoxShape;
   rp3d::SphereShape *s_SphereShape;
+  rp3d::CapsuleShape *s_CapsuleShape;
 };
 
 struct Selected {};

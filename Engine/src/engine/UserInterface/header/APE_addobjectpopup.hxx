@@ -42,7 +42,6 @@ public:
 
         m_AddEntitySystem->AddCubeSystem(reg, std::get<0>(_CubePrimitiveData),
                                          std::get<1>(_CubePrimitiveData));
-        // m_AddColliderSystem.AddCollider(world, phyCom, reg);
         ImGui::CloseCurrentPopup();
       }
 
@@ -51,7 +50,6 @@ public:
                                            std::get<0>(_SpherePrimitiveData),
                                            std::get<1>(_SpherePrimitiveData));
 
-        // m_AddColliderSystem.AddCollider(world, phyCom, reg);
         ImGui::CloseCurrentPopup();
       }
 

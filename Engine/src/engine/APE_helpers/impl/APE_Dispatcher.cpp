@@ -5,8 +5,7 @@ void Dispatcher::Subscriber(EventType event, Handler handler) {
   handlers[event].push_back(std::move(handler));
 }
 
-void Dispatcher::Emitter(EventType event,
-                         const std::string &data = {}) {
+void Dispatcher::Emitter(EventType event, const std::string &data = {}) {
   auto iter = handlers.find(event);
   if (iter == handlers.end())
     return;

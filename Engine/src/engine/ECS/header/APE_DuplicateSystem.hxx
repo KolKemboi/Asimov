@@ -13,8 +13,9 @@ public:
     for (auto [entity] : selectedView.each()) {
       entt::entity ent = registry.create();
       const auto &[name, count, trans, mat, renderable, shape] =
-          registry.get<Name, ObjectCount, Transform, Material, Renderable, Shape>(
-              entity);
+          registry
+              .get<Name, ObjectCount, Transform, Material, Renderable, Shape>(
+                  entity);
       printf("%s\n", name.s_Name.c_str());
       printf("%d\n", count.s_Count);
 
@@ -48,8 +49,7 @@ public:
       registry.remove<Selected>(entity);
       registry.emplace<Selected>(ent);
 
-      dispatcher.Emitter(EventType::OBJECT_ADDED,
-                         "Selected object Duplicated");
+      dispatcher.Emitter(EventType::OBJECT_ADDED, "Selected object Duplicated");
     }
   }
 };
