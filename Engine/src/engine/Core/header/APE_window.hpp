@@ -1,4 +1,5 @@
 #pragma once
+#include "APE_Dispatcher.hpp"
 #include "APE_properties.hxx"
 #include "APE_viewport.hxx"
 #include <APE_confirmpopup.hxx>
@@ -9,11 +10,11 @@
 #include <glad/glad.h>
 #endif
 #include <APE_AddCollider.hxx>
-#include <APE_AddEntitySystem.hpp>
 #include <APE_DuplicateSystem.hxx>
 #include <APE_EditRegistrySystem.hxx>
 #include <APE_FBO.hpp>
 #include <APE_IBO.hpp>
+#include <APE_RenderColliderSystem.hxx>
 #include <APE_RenderingSystem.hpp>
 #include <APE_SelectionSystem.hxx>
 #include <APE_VAO.hpp>
@@ -69,19 +70,20 @@ private:
   // ECS stuff
   entt::registry m_Registry;
   RenderSystem m_RenderSystem;
+  RenderColliderSystem m_RenderCollider;
   RemoveEntitySystem m_RemoveEntity;
 
   Camera m_Camera;
+  Dispatcher m_Dispatcher;
 
   // for primitives
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
-  AddEntitySystem m_AddEntitySystem;
   AddObjectPopUp m_AddObjectPopUp;
 
   // Physics stuff
   rp3d::PhysicsCommon m_PhysicsCommon;
   rp3d::PhysicsWorld *m_PhysicsWorld;
-  // AddColliderSystem m_AddCollider;
+  AddColliderSystem m_AddCollider;
 
 private:
   // I can guarantee these, the primitives will be in a specific order

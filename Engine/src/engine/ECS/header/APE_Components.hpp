@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
 #include <reactphysics3d/body/RigidBody.h>
+#include <reactphysics3d/collision/Collider.h>
 #include <reactphysics3d/collision/shapes/BoxShape.h>
 #include <reactphysics3d/collision/shapes/SphereShape.h>
 #include <reactphysics3d/mathematics/Quaternion.h>
@@ -82,6 +83,7 @@ struct ObjectCount {
 
 struct PhysicsBody {
   rp3d::RigidBody *s_Body;
+  rp3d::Collider *s_Collider;
 };
 
 struct PhysicsData {

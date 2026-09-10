@@ -1,5 +1,6 @@
 #pragma once
 
+#include "APE_Dispatcher.hpp"
 #include "APE_FBO.hpp"
 #include "APE_camera.hpp"
 #include "APE_eventsystem.hxx"
@@ -24,7 +25,7 @@ public:
 
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
             entt::registry &reg, std::shared_ptr<Shader> &shader,
-            EventSystem &eventSystem) {
+            EventSystem &eventSystem, Dispatcher &dispatcher) {
     ImGuizmo::BeginFrame();
 
     ImGui::Begin("Viewport");
@@ -137,16 +138,9 @@ public:
 
         isComplete = true;
       } else if (!ImGuizmo::IsUsing() && isComplete) {
-        printf("Transformed! %s_%d\n", name.s_Name.c_str(), count.s_Count);
 
-        printf("NEW POS=> %f %f %f\n", transform.s_Position.x,
-               transform.s_Position.y, transform.s_Position.z);
-
-        printf("NEW ROT=> %f %f %f\n", transform.s_Rotation.x,
-               transform.s_Rotation.y, transform.s_Rotation.z);
-
-        printf("NEW SCA=> %f %f %f\n", transform.s_Scale.x, transform.s_Scale.y,
-               transform.s_Scale.z);
+        dispatcher.Emitter(EventType::OBJECT_MODIFIED,
+                           "Selected objected had been resized");
 
         isComplete = false;
       }

@@ -1,4 +1,5 @@
 #include "APE_Components.hpp"
+#include "APE_Dispatcher.hpp"
 #include <APE_AddEntitySystem.hpp>
 #include <cstdio>
 #include <cstring>
@@ -6,6 +7,7 @@
 
 void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
                                       unsigned int vao, unsigned int idxCount) {
+
   auto entity = reg.create();
   auto view = reg.view<Name, ObjectCount>();
 
@@ -51,11 +53,16 @@ void AddEntitySystem::AddCubeSystem(entt::registry &registry, unsigned int VAO,
                                     unsigned int count) {
   this->_helperFunction(registry, "Cube", VAO, count);
 
+  m_LocalDispatcher.Emitter(EventType::OBJECT_ADDED, "Cube has been added");
+
   printf("ADD_CUBE RUN\n");
 }
 void AddEntitySystem::AddSphereSystem(entt::registry &registry,
                                       unsigned int VAO, unsigned int count) {
   this->_helperFunction(registry, "Sphere", VAO, count);
+
+  m_LocalDispatcher.Emitter(EventType::OBJECT_ADDED, "Sphere has been added");
+
   printf("ADD_SPHERE RUN\n");
 }
 void AddEntitySystem::AddCylinderSystem(entt::registry &registry,

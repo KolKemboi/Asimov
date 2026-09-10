@@ -17,6 +17,7 @@
 #include <imgui_node_editor.h>
 #include <memory>
 #include <optional>
+#include <reactphysics3d/mathematics/Quaternion.h>
 #include <reactphysics3d/mathematics/Vector3.h>
 #include <string>
 #include <tuple>
@@ -67,6 +68,8 @@ void APE_Window::_setUpGLFWContext() {
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->_setUpPrimitives();
+
+  this->m_AddObjectPopUp.SetDispatcher(m_Dispatcher);
   this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive, _CylinderPrimitive,
                                             _SpherePrimitive, _CapsulePrimitive,
                                             _ConvexMeshPrimitive);
@@ -102,6 +105,10 @@ void APE_Window::_run() {
   float timeScale = 0.5f;
   float lastTime = glfwGetTime();
 
+  m_AddCollider.SetColliderRequirements(m_PhysicsWorld, m_PhysicsCommon,
+                                        m_Registry);
+  m_AddCollider.SetDispatcher(m_Dispatcher);
+
   m_Camera.SetTarget(glm::vec3(0.0f));
   m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
 
@@ -135,63 +142,20 @@ void APE_Window::_run() {
     // update it here, check if the transforms arent the same,
     // I am dumb, I am dumb -> Coll Leclerc
     if (worldrun) {
+      // use colider to update positions
       m_PhysicsWorld->update(deltaTime);
-      auto view = m_Registry.view<Transform, PhysicsBody>();
-      for (auto [entity, transform, body] : view.each()) {
+
+      auto view = m_Registry.view<Transform, PhysicsBody, PhysicsData>();
+      for (auto [entity, transform, body, data] : view.each()) {
 
         const rp3d::Transform &newTrans = body.s_Body->getTransform();
         const rp3d::Vector3 &newPosition = newTrans.getPosition();
+
+        data.s_Position_C = newPosition;
 
         transform.s_Position.x = newPosition.x;
         transform.s_Position.y = newPosition.y;
         transform.s_Position.z = newPosition.z;
-
-        printf("%f, %f, %f,\n", newPosition.x, newPosition.y, newPosition.z);
-      }
-    } else {
-      auto view = m_Registry.view<Shape, Transform, PhysicsBody, PhysicsData>();
-      for (auto [entity, shape, transform, body, data] : view.each()) {
-        // check if physdata != trans
-        // Update if not similar
-        // forgot about scale
-        const rp3d::Transform &newTrans = body.s_Body->getTransform();
-        const rp3d::Vector3 &newPosition = newTrans.getPosition();
-
-        if (transform.s_Scale.x != data.s_Scale_C.x ||
-            transform.s_Scale.y != data.s_Scale_C.y ||
-            transform.s_Scale.z != data.s_Scale_C.z) {
-          rp3d::Vector3 scale = rp3d::Vector3(
-              transform.s_Scale.x, transform.s_Scale.y, transform.s_Scale.z);
-
-          rp3d::Collider *bodyCollider;
-
-          if (shape == Shape::BOX) {
-            data.s_BoxShape = m_PhysicsCommon.createBoxShape(scale);
-            bodyCollider = body.s_Body->addCollider(
-                data.s_BoxShape, rp3d::Transform::identity());
-          }
-          // if (shape == Shape::SPHERE) {
-          //   data.s_BoxShape = m_PhysicsCommon.createSphereShape(scale.x);
-          //   bodyCollider = body.s_Body->addCollider(
-          //       data.s_BoxShape, rp3d::Transform::identity());
-          // }
-        }
-
-        if (transform.s_Position.x != newPosition.x ||
-            transform.s_Position.y != newPosition.y ||
-            transform.s_Position.z != newPosition.z) {
-
-          rp3d::Vector3 newPos =
-              rp3d::Vector3(transform.s_Position.x, transform.s_Position.y,
-                            transform.s_Position.z);
-
-          rp3d::Quaternion newRot = rp3d::Quaternion::fromEulerAngles(
-              transform.s_Rotation.x, transform.s_Rotation.y,
-              transform.s_Rotation.z);
-
-          rp3d::Transform trans(newPos, newRot);
-          body.s_Body = m_PhysicsWorld->createRigidBody(trans);
-        }
       }
     }
 
@@ -200,7 +164,7 @@ void APE_Window::_run() {
         for (auto mod : m_EventSystem.m_ModKeys) {
           if (mod == ModKeys::SHIFT) {
             printf("SHIFT\n");
-            m_DuplicateSystem.AddDuplicate(m_Registry);
+            m_DuplicateSystem.AddDuplicate(m_Registry, m_Dispatcher);
           }
         }
       }
@@ -212,7 +176,8 @@ void APE_Window::_run() {
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
-    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor);
+    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
+                                m_Dispatcher);
     m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
                                        m_PhysicsWorld);
 
@@ -220,11 +185,13 @@ void APE_Window::_run() {
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
                                       m_PhysicsWorld, m_PhysicsCommon);
     m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
-                    m_EventSystem);
+                    m_EventSystem, m_Dispatcher);
 
     m_Selection.Selection(m_Registry);
 
     m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
+    // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
+    //                                  m_MainShader);
 
     this->m_MainInterface->NewRenderIMGUI();
 

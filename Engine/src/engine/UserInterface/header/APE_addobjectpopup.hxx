@@ -1,12 +1,18 @@
 #pragma once
+#include "APE_Dispatcher.hpp"
 #include <APE_AddCollider.hxx>
 #include <APE_AddEntitySystem.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
 #include <imgui.h>
+#include <memory>
 
 class AddObjectPopUp {
 public:
+  void SetDispatcher(Dispatcher &dispatcher) {
+    m_AddEntitySystem = std::make_unique<AddEntitySystem>(dispatcher);
+  };
+
   void SetUpPrimitiveData(std::tuple<unsigned int, unsigned int> &cubeData,
                           std::tuple<unsigned int, unsigned int> &cylinderData,
                           std::tuple<unsigned int, unsigned int> &sphereData,
@@ -34,46 +40,38 @@ public:
 
       if (ImGui::Button("Cube")) {
 
-        m_AddEntitySystem.AddCubeSystem(reg, std::get<0>(_CubePrimitiveData),
-                                        std::get<1>(_CubePrimitiveData));
+        m_AddEntitySystem->AddCubeSystem(reg, std::get<0>(_CubePrimitiveData),
+                                         std::get<1>(_CubePrimitiveData));
+        // m_AddColliderSystem.AddCollider(world, phyCom, reg);
         ImGui::CloseCurrentPopup();
       }
 
-      // if (ImGui::Button("Plane")) {
-      //   m_AddEntitySystem.AddSphereSystem(reg,
-      //                                     std::get<0>(_SpherePrimitiveData),
-      //                                     std::get<1>(_SpherePrimitiveData));
-      //   ImGui::CloseCurrentPopup();
-      // }
-
       if (ImGui::Button("Sphere")) {
-        m_AddEntitySystem.AddSphereSystem(reg,
-                                          std::get<0>(_SpherePrimitiveData),
-                                          std::get<1>(_SpherePrimitiveData));
+        m_AddEntitySystem->AddSphereSystem(reg,
+                                           std::get<0>(_SpherePrimitiveData),
+                                           std::get<1>(_SpherePrimitiveData));
+
+        // m_AddColliderSystem.AddCollider(world, phyCom, reg);
         ImGui::CloseCurrentPopup();
       }
 
       if (ImGui::Button("Cylinder")) {
-        m_AddEntitySystem.AddCylinderSystem(
+        m_AddEntitySystem->AddCylinderSystem(
             reg, std::get<0>(_CylinderPrimitiveData),
             std::get<1>(_CylinderPrimitiveData));
         ImGui::CloseCurrentPopup();
       }
 
       if (ImGui::Button("Capsule")) {
-        m_AddEntitySystem.AddCapsuleSystem(reg,
-                                           std::get<0>(_CapsulePrimitiveData),
-                                           std::get<1>(_CapsulePrimitiveData));
+        m_AddEntitySystem->AddCapsuleSystem(reg,
+                                            std::get<0>(_CapsulePrimitiveData),
+                                            std::get<1>(_CapsulePrimitiveData));
         ImGui::CloseCurrentPopup();
       }
       if (ImGui::Button("Convex Mesh")) {
-        m_AddEntitySystem.AddConvexMeshSystem(
+        m_AddEntitySystem->AddConvexMeshSystem(
             reg, std::get<0>(_ConvexMeshPrimitiveData),
             std::get<1>(_ConvexMeshPrimitiveData));
-        ImGui::CloseCurrentPopup();
-      }
-      if (ImGui::Button("Add Collider")) {
-        m_AddColliderSystem.AddCollider(world, phyCom, reg);
         ImGui::CloseCurrentPopup();
       }
 
@@ -82,7 +80,8 @@ public:
   }
 
 private:
-  AddEntitySystem m_AddEntitySystem;
+  std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
+
   AddColliderSystem m_AddColliderSystem;
   std::tuple<unsigned int, unsigned int> _CubePrimitiveData;
   std::tuple<unsigned int, unsigned int> _SpherePrimitiveData;
