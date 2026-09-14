@@ -1,15 +1,16 @@
 #pragma once
 #include <imgui.h>
 
+// DONT TOUCH ANYTHING HERE
 inline void SetupImGuiStyle() {
   // Photoshop style by Derydoca from ImThemes
   ImGuiStyle &style = ImGui::GetStyle();
 
   style.Alpha = 1.0f;
   style.DisabledAlpha = 0.6f;
-  style.WindowPadding = ImVec2(8.0f, 8.0f);
+  style.WindowPadding = ImVec2(4.0f, 4.0f);
   style.WindowRounding = 4.0f;
-  style.WindowBorderSize = 1.0f;
+  style.WindowBorderSize = 0.0f;
   style.WindowMinSize = ImVec2(32.0f, 32.0f);
   style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
   style.WindowMenuButtonPosition = ImGuiDir_Left;

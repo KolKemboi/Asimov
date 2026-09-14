@@ -2,6 +2,7 @@
 #include <APE_Components.hpp>
 #include <APE_RenderingSystem.hpp>
 #include <cstdio>
+#include <glm/ext/vector_float3.hpp>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -24,7 +25,8 @@ struct RenderRequirement {
 };
 
 void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
-                                  entt::registry &registry) {
+                                  entt::registry &registry,
+                                  std::shared_ptr<Shader> &shader) {
 
   auto view = registry.view<Renderable, Material, Transform>();
 
@@ -69,21 +71,49 @@ void RenderSystem::RenderEntities(std::unique_ptr<FrameBuffer> &frameBuffer,
   // render loop
   frameBuffer->BindFrameBuffer();
   glClearColor(0.2, 0.1, 0.3, 1.0f); // background color
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   /* On render cycle
    * grab the VAO from the std::unordered map, bind,
    * render the std::vector
    * repeat
    */
+  glStencilFunc(GL_ALWAYS, 1, 0xFF);
+  glStencilMask(0xFF);
   for (auto batch : batches) {
     // bind VAO
     glBindVertexArray(batch.first);
     for (auto renderReq : batch.second) {
       // apply model transforms
+      shader->SetMat4(renderReq.s_Transform.GetModelMatrix(), "model");
+      shader->SetVec3(renderReq.s_Material.s_Color, "color");
       glDrawElements(GL_TRIANGLES, renderReq.s_IndexCount, GL_UNSIGNED_INT, 0);
     }
   }
+
+  glBindVertexArray(0);
+  // now, draw the  selected object
+  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  glStencilMask(0x00);
+  glDisable(GL_DEPTH_TEST);
+  // now render the selected object
+  //
+  auto selected = registry.view<Selected>();
+  for (auto ent : selected) {
+    auto mat = registry.get<Material>(ent);
+    auto trans = registry.get<Transform>(ent);
+    auto rend = registry.get<Renderable>(ent);
+    glBindVertexArray(rend.s_VAO);
+    trans.s_Scale += 0.1f;
+    shader->SetMat4(trans.GetModelMatrix(), "model");
+    shader->SetVec3(glm::vec3(1.0, 0.0f, 0.0f), "color");
+    glDrawElements(GL_TRIANGLES, rend.s_IndexCount, GL_UNSIGNED_INT, 0);
+  }
+
+  glBindVertexArray(0);
+  glStencilMask(0xFF);
+  glStencilFunc(GL_ALWAYS, 1, 0xFF);
+  glEnable(GL_DEPTH_TEST);
 
   frameBuffer->UnBindFrameBuffer();
   batches.clear();

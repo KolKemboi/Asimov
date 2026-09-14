@@ -1,6 +1,4 @@
 #include "APE_shader.hpp"
-#include "APE_engine.hpp"
-#include "APE_mesh.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>

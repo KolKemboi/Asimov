@@ -1,13 +1,27 @@
 #pragma once
 
 #include <APE_FBO.hpp>
-#include <APE_engine.hpp>
 #include <APE_shader.hpp>
 #include <entt/entt.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
+#include <glm/trigonometric.hpp>
+#include <reactphysics3d/body/RigidBody.h>
+#include <reactphysics3d/collision/Collider.h>
+#include <reactphysics3d/collision/shapes/BoxShape.h>
+#include <reactphysics3d/collision/shapes/CapsuleShape.h>
+#include <reactphysics3d/collision/shapes/SphereShape.h>
+#include <reactphysics3d/mathematics/Quaternion.h>
+#include <reactphysics3d/mathematics/Vector3.h>
+#include <reactphysics3d/reactphysics3d.h>
 
+namespace rp3d = reactphysics3d;
+
+// Mesh Transform component
+// has the position rotation and scale
+// Alse returns the model matrix for the shader part
 struct Transform {
   glm::vec3 s_Position = glm::vec3(0.0f);
   glm::vec3 s_Rotation = glm::vec3(0.0f);
@@ -16,18 +30,56 @@ struct Transform {
   glm::mat4 GetModelMatrix() const {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
 
+    modelMatrix = glm::translate(modelMatrix, s_Position);
+
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.x),
+                              glm::vec3(1.0, 0.0, 0.0));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.y),
+                              glm::vec3(0.0, 1.0, 0.0));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(s_Rotation.z),
+                              glm::vec3(0.0, 0.0, 1.0));
+
+    modelMatrix = glm::scale(modelMatrix, s_Scale);
+
     return modelMatrix;
   }
 };
 
-struct Material {
-  glm::vec3 s_Color;
-
-  Material(glm::vec3 color = glm::vec3(0.5f, 0.5f, 0.5f)) : s_Color(color) {};
+// this is to set the shader flow,
+enum class Type {
+  LIGHT,
+  MESH,
 };
 
+// Each body can have one of these three, a static, kinematic or dynamic body
+// type
+enum class PhysicsBodyType {
+  STATIC,
+  DYNAMIC,
+  KINEMATIC,
+};
+
+// This dictates the shape of the collider,
+// whether it is one of these five primitives
+enum class Shape {
+  BOX,
+  SPHERE,
+  CYLINDER,
+  CAPSULE,
+  CONVEXMESH,
+};
+
+// Rendering material
+// s_type is a Mesh or light
+struct Material {
+  glm::vec3 s_Color;
+  Type s_Type;
+
+  Material(glm::vec3 color, Type type) : s_Color(color), s_Type(type) {};
+};
+
+// Renderables have this
 struct Renderable {
-  // need a VAO here
   unsigned int s_IndexCount;
   unsigned int s_VAO;
 
@@ -44,5 +96,25 @@ struct Name {
 // duplicate increases this
 // importing will increase this automatically
 struct ObjectCount {
-  unsigned int s_Count = 1;
+  unsigned int s_Count = 0;
 };
+
+// this is required to make colliders
+struct PhysicsBody {
+  rp3d::RigidBody *s_Body;
+  rp3d::Collider *s_Collider;
+};
+
+struct PhysicsData {
+  // these three default to meshes transforms, but can be altered
+  rp3d::Vector3 s_Position_C;
+  rp3d::Quaternion s_Rotation_C;
+  rp3d::Vector3 s_Scale_C;
+  rp3d::BodyType s_BodyType = rp3d::BodyType::STATIC; // one of three
+  float s_Mass;
+  rp3d::BoxShape *s_BoxShape;
+  rp3d::SphereShape *s_SphereShape;
+  rp3d::CapsuleShape *s_CapsuleShape;
+};
+
+struct Selected {};

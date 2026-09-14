@@ -5,7 +5,6 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <utility>
 
 MeshMakerHelper::MeshMakerHelper(std::string path) : m_ModelLoaderHelper(path) {
   // check if the model has more than one object
@@ -41,11 +40,19 @@ void MeshMakerHelper::_fillObjectData(APEObject &object) {
   vertArray.BindVertexArray();
   vertBuffer.GenVertexBuffers(object.s_Vertices);
   idxBuffer.GenIndexBuffers(object.s_Indices, object.s_Indices.size());
-  vertArray.AttribPointerSetUp();// I need to stop forgetting to call you
+  vertArray.AttribPointerSetUp(); // I need to stop forgetting to call you
 
+  // should return something like
+  // but primitives only return one -> I can Assert that
+  // {
+  // 		{"cube" : {1}, {36}},
+  // 		{"cube" : {1}, {36}}
+  // }
+  // for non primitives, something different is to be used
   m_NameVertexArrayIndexCount[name] =
       std::make_tuple(vertArray.GetVAO(), object.s_Indices.size());
 
+  // what is the use of these
   m_VertexArray.push_back(vertArray);
   m_VertexBuffer.push_back(vertBuffer);
   m_IndexBuffer.push_back(idxBuffer);

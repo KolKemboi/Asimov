@@ -16,21 +16,6 @@ set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
-
-###DOCUMENTATION ---->VERY important
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    add_custom_target(docs
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Generating Doxygen documentation"
-        VERBATIM
-    )
-endif()
-
-
-
 ####### SETTING UP APE static libs
 
 ##HELPERS STATIC LIBS
@@ -55,17 +40,15 @@ target_include_directories(APE_core PUBLIC ${CORE_DIR}/header)
 
 
 ##RENDERER STATIC LIBS
-set(RENDERER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Renderer)
-set(RENDERER_SOURCES
-	${RENDERER_DIR}/impl/APE_engine.cpp
-	${RENDERER_DIR}/impl/APE_shader.cpp
-	${RENDERER_DIR}/impl/APE_camera.cpp
-	${RENDERER_DIR}/impl/APE_mesh.cpp
-	${RENDERER_DIR}/impl/APE_assetloader.cpp
+set(TOOLBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Toolbox)
+set(TOOLBOX_SOURCES
+	${TOOLBOX_DIR}/impl/APE_shader.cpp
+	${TOOLBOX_DIR}/impl/APE_camera.cpp
+	${TOOLBOX_DIR}/impl/APE_Dispatcher.cpp
 )
 
-add_library(APE_renderer STATIC ${RENDERER_SOURCES})
-target_include_directories(APE_renderer PUBLIC ${RENDERER_DIR}/header)
+add_library(APE_toolbox STATIC ${TOOLBOX_SOURCES})
+target_include_directories(APE_toolbox PUBLIC ${TOOLBOX_DIR}/header)
 
 ##BUFFERS STATIC LIBS
 set(BUFFERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers)
@@ -90,19 +73,10 @@ set(PHYSICS_SOURCES
 add_library(APE_physics STATIC ${PHYSICS_SOURCES})
 target_include_directories(APE_physics PUBLIC ${PHYSICS_DIR}/header)
 
-##UI_STATIC LIBS
-set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
-set(UI_SOURCES
-	${UI_DIR}/impl/APE_interface.cpp
-)
-
-add_library(APE_ui STATIC ${UI_SOURCES})
-target_include_directories(APE_ui PUBLIC ${UI_DIR}/header)
 
 ##ECS STATIC LIBS
 set(ECS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS)
 set(ECS_SOURCES
-	# ${ECS_DIR}/impl/APE_ECS.cpp
 	${ECS_DIR}/impl/APE_AddEntitySystem.cpp
 	${ECS_DIR}/impl/APE_RenderingSystem.cpp
 )
@@ -135,6 +109,15 @@ set_target_properties(
 	IMPORTED_LOCATION "${IMGUI_LIB}"
 	INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/extLibs/imgui"
 )
+
+##UI_STATIC LIBS
+set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface)
+# set(UI_SOURCES
+# )
+#
+# add_library(APE_ui STATIC ${UI_SOURCES})
+include_directories(${UI_DIR}/header)
+
 #IMGUI FILE DIALOGUE
 set(FILE_DIALOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
 set(FILE_DIALOG_SOURCES
@@ -167,41 +150,56 @@ add_executable(${PROJ_NAME}
 )
 
 target_include_directories(${PROJ_NAME} PUBLIC ${GLAD_DIR})
+target_include_directories(${PROJ_NAME} PUBLIC ${IMGUI_DIR})
 
 # Include directories
 include_directories(include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_headers)
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Toolbox/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ECS/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Buffers/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Physics/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UserInterface/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
 
 # Add the executable and link the libraries
+target_link_libraries(
+	APE_ecs
+	PUBLIC
+	imgui
+)
+target_link_libraries(
+	APE_helpers
+	PUBLIC
+	assimp
+	APE_buffers
+)
+target_link_libraries(
+	APE_toolbox
+	PUBLIC
 
-target_link_libraries(APE_helpers PUBLIC assimp)
-target_link_libraries(APE_helpers PUBLIC APE_buffers)
+)
 
-target_link_libraries(APE_renderer PUBLIC APE_physics)
-target_link_libraries(APE_renderer PUBLIC APE_buffers)
-target_link_libraries(APE_renderer PUBLIC assimp)
-target_link_libraries(APE_renderer PUBLIC APE_helpers)
+target_link_libraries(
+	APE_core
+	PUBLIC
+	APE_toolbox
+	filedialog
+	node_editor
+	APE_helpers
+	APE_ecs
+)
 
-target_link_libraries(APE_core PUBLIC APE_renderer)
-target_link_libraries(APE_core PUBLIC APE_ui)
-target_link_libraries(APE_core PUBLIC APE_ecs)
-target_link_libraries(APE_core PUBLIC APE_helpers)
-target_link_libraries(APE_core PUBLIC filedialog)
-target_link_libraries(APE_core PUBLIC node_editor)
-
-
-target_link_libraries(APE_ui PUBLIC imgui)
-target_link_libraries(APE_ui PUBLIC APE_helpers)
-target_link_libraries(APE_ui PUBLIC filedialog)
-target_link_libraries(APE_ui PUBLIC node_editor)
-
-
-target_link_libraries(APE_ecs PUBLIC imgui)
-target_link_libraries(APE_ecs PUBLIC APE_physics)
-target_link_libraries(APE_ecs PUBLIC APE_renderer)
-target_link_libraries(APE_ecs PUBLIC APE_helpers)
-
+target_link_libraries(
+	APE_ecs
+	PUBLIC
+	APE_physics
+	APE_toolbox
+	APE_helpers
+)
 
 target_link_libraries(${PROJ_NAME} 
   imgui
@@ -209,8 +207,7 @@ target_link_libraries(${PROJ_NAME}
 	APE_ecs
 	APE_helpers
 	APE_core
-	APE_renderer
-	APE_ui
+	APE_toolbox
 	APE_physics
   glfw 
   GL
