@@ -1,6 +1,7 @@
 #pragma once
 #include <imgui_node_editor.h>
 
+// this is a node style editor
 inline void MaterialEditor() {
   namespace ed = ax::NodeEditor;
   ed::Config config;

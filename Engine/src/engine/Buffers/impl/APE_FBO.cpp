@@ -1,15 +1,18 @@
 #include <APE_FBO.hpp>
 #include <cstdio>
 
+// this also works,
+// makes an FBO, if it doesnt, you'll see the error message find WARN:
 FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
     : windowWidth(Width), windowHeight(Height) {
-
+  // make framebuffer
   glGenFramebuffers(1, &m_FrameBuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 
+  // make color texture
   glGenTextures(1, &m_ColorTexture);
   glBindTexture(GL_TEXTURE_2D, m_ColorTexture);
-
+  // make the image and mag filters, etc etc etc
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)windowWidth,
                (GLsizei)windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -17,6 +20,7 @@ FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          m_ColorTexture, 0);
 
+  // make render buffer object,
   glGenRenderbuffers(1, &m_RenderBufferObject);
   glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBufferObject);
 
@@ -26,18 +30,21 @@ FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
                             GL_RENDERBUFFER, m_RenderBufferObject);
 
+  // check if it failed
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    //--WARN: if it doesnt work, this will print out
     printf("ERROR::FRAMEBUFFER IS NOT COMPLETE\n");
   }
+  // unbind the FBO
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+// every time viewport is changes or app size is changed
 void FrameBuffer::ResizeFBO(unsigned int windowWidth,
                             unsigned int windowHeight) {
   FrameBuffer(windowWidth, windowHeight);
   this->windowWidth = windowWidth;
   this->windowHeight = windowHeight;
-  printf("NEW FBO\n");
 }
 
 // returns the color texture, for Imgui presentation

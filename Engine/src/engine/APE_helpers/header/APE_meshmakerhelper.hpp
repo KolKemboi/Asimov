@@ -6,12 +6,13 @@
 #include <APE_types.hpp>
 #include <tuple>
 #include <unordered_map>
-#include <utility>
 
 // this is for primitives
 class MeshMakerHelper {
 public:
+  // string is the path, where the model is
   MeshMakerHelper(std::string);
+  //
   ModelLoaderHelper m_ModelLoaderHelper;
 
   void Clean();

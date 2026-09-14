@@ -1,54 +1,10 @@
 #pragma once
 
+#include <APE_Dispatcher.hpp>
+#include <APE_KeyEvents.hpp>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <vector>
-
-enum class KeyPress {
-  Q,
-  W,
-  E,
-  R,
-  T,
-  Y,
-  U,
-  I,
-  O,
-  P,
-  A,
-  S,
-  D,
-  F,
-  G,
-  H,
-  J,
-  K,
-  L,
-  Z,
-  X,
-  C,
-  V,
-  B,
-  N,
-  M,
-  HOME,
-  DELETE,
-};
-enum class ModKeys {
-  CTRL,
-  ALT,
-  SHIFT,
-};
-enum class MouseButtonPress {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-};
-
-struct MouseOffset {
-  float xOffset;
-  float yOffset;
-};
 
 // fill it
 // like return it
@@ -59,6 +15,9 @@ public:
   std::vector<ModKeys> m_ModKeys;
   std::vector<MouseButtonPress> m_MouseButtonPress;
   MouseOffset m_MouseOffset;
+  Dispatcher *m_LocalDispatcher;
+
+  void SetDispatcher(Dispatcher &disp) { m_LocalDispatcher = &disp; }
 
   void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
     m_MouseOffset.xOffset = xOffset;
@@ -69,9 +28,9 @@ public:
                    int mods) {
 
     if (mods == GLFW_MOD_SHIFT)
-      if (action == GLFW_PRESS)
+      if (action == GLFW_PRESS) {
         m_ModKeys.push_back(ModKeys::SHIFT);
-
+      }
     if (mods == GLFW_MOD_ALT)
       if (action == GLFW_PRESS)
         m_ModKeys.push_back(ModKeys::ALT);
@@ -83,8 +42,10 @@ public:
     if (key == GLFW_KEY_DELETE && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::DELETE);
 
-    if (key == GLFW_KEY_Q && action == GLFW_PRESS)
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+      m_LocalDispatcher->KeyEmitter(EventType::KEYPRESS, KeyPress::Q);
       m_KeysPressed.push_back(KeyPress::Q);
+    }
 
     if (key == GLFW_KEY_W && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::W);

@@ -1,5 +1,4 @@
 #pragma once
-#include "APE_viewport.hxx"
 #ifndef __GLAD_GUARD__
 #include <glad/glad.h>
 #endif
@@ -29,17 +28,21 @@ public:
 
 private:
   void _setUpIMGUIContext() {
+    // set up imgui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &m_IO = ImGui::GetIO();
     (void)m_IO;
     m_IO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     m_IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    SetupImGuiStyle();
-    ImGui_ImplGlfw_InitForOpenGL(m_ImGUIWindow, true);
+    SetupImGuiStyle(); // the photoshop style, it is called here
+    ImGui_ImplGlfw_InitForOpenGL(
+        m_ImGUIWindow,
+        true); // passes GLFW events to imgui, never knew that
     ImGui_ImplOpenGL3_Init("#version 460");
   }
   void _destroyIMGUIContext() {
+    // clean the imgui context
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -47,6 +50,7 @@ private:
   }
 
   void _setUpDocking() {
+    // this sets up docking, dont try to understand it
     ImGuiWindowFlags window_flags =
         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
@@ -79,7 +83,7 @@ private:
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
-    SetUpMenuBar(m_ImGUIWindow);
+    SetUpMenuBar(m_ImGUIWindow); // menu bar
     // MaterialEditor();
   }
   void _newRenderIMGUI() {

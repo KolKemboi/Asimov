@@ -41,7 +41,11 @@
  * 	- User Interface Systems
  *
  */
-namespace rp3d = reactphysics3d;
+
+// --INFO: this class should be renamed as Resource Center
+// a monolith of some sort
+namespace rp3d = reactphysics3d; // prevent using reactphysics3d everywhere
+
 class APE_Window {
 public:
   APE_Window(unsigned int, unsigned int, const char *);
@@ -50,31 +54,40 @@ public:
 
 private:
   // this is for viewport rendering
-  std::unique_ptr<FrameBuffer> m_MainFrameBuffer;
+  std::unique_ptr<FrameBuffer>
+      m_MainFrameBuffer; // for rendering to, to place on an IMGUI window
+
+  // prevent multiple program usage, a super shader that
+  // needs to be attached once, and uniforms affect how
+  // it works
   std::shared_ptr<Shader> m_MainShader;
-  std::unique_ptr<Interface> m_MainInterface;
-  Viewport m_Viewport;
-  Properties m_Properties;
+  std::unique_ptr<Interface> m_MainInterface; // Imgui SetUp
+  Viewport m_Viewport;     // for the frame buffer and Imguizmo widgets
+  Properties m_Properties; // stores editable properties of selected models ->
+                           // both physics and render properties
   ConfirmPopUp m_ConfirmPopUp;
 
-  SelectionSystem m_Selection;
-  DuplicateMeshSystem m_DuplicateSystem;
-  EventSystem m_EventSystem;
+  SelectionSystem m_Selection;           // sets up the outliner,
+  DuplicateMeshSystem m_DuplicateSystem; // Shift-D ability, -> blender style
+  EventSystem m_EventSystem; // this event system is more of input events
 
   // Window specifics
   GLFWwindow *m_Window;
-  std::vector<GLFWwindow *> m_Windows;
+  std::vector<GLFWwindow *>
+      m_Windows; // stores ptrs to the windows present, for ease of cleaning
   unsigned int m_WindowWidth, m_WindowHeight;
   const char *m_WindowName;
 
   // ECS stuff
-  entt::registry m_Registry;
+  entt::registry
+      m_Registry; // super registry holding components of every APE entity
   RenderSystem m_RenderSystem;
   RenderColliderSystem m_RenderCollider;
-  RemoveEntitySystem m_RemoveEntity;
+  RemoveEntitySystem m_RemoveEntity; // Delete to remove selected entities
 
-  Camera m_Camera;
-  Dispatcher m_Dispatcher;
+  Camera m_Camera;         // main Engine camera
+  Dispatcher m_Dispatcher; // a super class that calls other functions when
+                           // other functions run
 
   // for primitives
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
@@ -88,7 +101,8 @@ private:
 private:
   // I can guarantee these, the primitives will be in a specific order
   // add other prims -> plane, capsule,
-  std::tuple<unsigned int, unsigned int> _CubePrimitive;
+  std::tuple<unsigned int, unsigned int>
+      _CubePrimitive; // std::get<0>(_CubePrimitive) -> gets you the 1st U_INT
   std::tuple<unsigned int, unsigned int> _SpherePrimitive;
   std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
   std::tuple<unsigned int, unsigned int> _ConvexMeshPrimitive;
@@ -99,8 +113,8 @@ private:
   glm::vec3 m_CamUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 m_View = glm::mat4(1.0f);
 
+  // private methods to set up this class
   void _setUpPrimitives();
-
   void _setUpGLFWContext();
   void _destroyGLFWContext();
   void _run();

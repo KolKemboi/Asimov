@@ -1,6 +1,7 @@
 #pragma once
 #include <imgui.h>
 
+// DONT TOUCH ANYTHING HERE
 inline void SetupImGuiStyle() {
   // Photoshop style by Derydoca from ImThemes
   ImGuiStyle &style = ImGui::GetStyle();

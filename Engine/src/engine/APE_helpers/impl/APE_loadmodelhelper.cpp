@@ -11,6 +11,7 @@ ModelLoaderHelper::ModelLoaderHelper(std::string const &path) {
 }
 
 void ModelLoaderHelper::_loadModel(std::string path) {
+  // create an importer object
   Assimp::Importer importer;
   const aiScene *scene = importer.ReadFile(
       path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
@@ -47,11 +48,13 @@ APEObject ModelLoaderHelper::_processMesh(aiMesh *mesh, const aiScene *scene) {
     Vertex vertex;
     glm::vec3 vector;
 
+    // load the positions
     vector.x = mesh->mVertices[i].x;
     vector.y = mesh->mVertices[i].y;
     vector.z = mesh->mVertices[i].z;
     vertex.s_Position = vector;
 
+    // load the normals else fill the normals with zeros
     if (mesh->HasNormals()) {
       vector.x = mesh->mNormals[i].x;
       vector.y = mesh->mNormals[i].y;
@@ -61,6 +64,7 @@ APEObject ModelLoaderHelper::_processMesh(aiMesh *mesh, const aiScene *scene) {
     } else {
       vertex.s_Normal = glm::vec3(0.0f);
     }
+    // load the texture coords, else, fill it with zeros
     if (mesh->mTextureCoords[0]) {
       glm::vec2 vec;
       vec.x = mesh->mTextureCoords[0][i].x;
@@ -73,6 +77,7 @@ APEObject ModelLoaderHelper::_processMesh(aiMesh *mesh, const aiScene *scene) {
     vertices.push_back(vertex);
   }
 
+  // load the indices
   for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
     aiFace face = mesh->mFaces[i];
     for (unsigned int j = 0; j < face.mNumIndices; j++) {

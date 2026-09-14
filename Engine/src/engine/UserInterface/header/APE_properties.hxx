@@ -89,8 +89,6 @@ public:
             bool isSelected = (selected == i);
             if (ImGui::Selectable(opts[i].c_str(), isSelected)) {
               selected = i;
-              printf("collider type changed to %s\n", opts[selected].c_str());
-              // call the update from here
               dispatcher.Emitter(EventType::COLLIDER_TYPE_MODIFIED,
                                  opts[selected]);
             }
@@ -101,15 +99,6 @@ public:
 
           ImGui::EndCombo();
         }
-
-        // auto &fzxData = reg.get<PhysicsData>(entity);
-        // auto &fzxBody = reg.get<PhysicsBody>(entity);
-        // if (selected == 0)
-        //   fzxBody.s_Body->setType(rp3d::BodyType::DYNAMIC);
-        // if (selected == 1)
-        //   fzxBody.s_Body->setType(rp3d::BodyType::STATIC);
-        // if (selected == 2)
-        //   fzxBody.s_Body->setType(rp3d::BodyType::KINEMATIC);
       }
     }
 

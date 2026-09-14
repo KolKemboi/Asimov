@@ -31,10 +31,13 @@ APE_Window::APE_Window(unsigned int windowWidth, unsigned int windowHeight,
 }
 
 void APE_Window::_setUpGLFWContext() {
+  // set up glfw
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE,
+                 GL_FALSE); // take away the ability to resize the window,
+                            // useful in tiling window managers
 
   // create the window or error, in this case, exit from the app totally
   // app requires a first UI
@@ -57,7 +60,13 @@ void APE_Window::_setUpGLFWContext() {
   }
 
   glViewport(0, 0, (GLsizei)m_WindowWidth, (GLsizei)m_WindowHeight);
-  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST); // for proper 3d rendering
+
+  // for object outlining
+  glDepthFunc(GL_LESS);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   // these dont need to be in the context set up
   // set up shader and framebuffer
@@ -69,6 +78,8 @@ void APE_Window::_setUpGLFWContext() {
 
   this->_setUpPrimitives();
 
+  // Shift->A add primitives
+  // it is an Imgui pop up window
   this->m_AddObjectPopUp.SetDispatcher(m_Dispatcher);
   this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive, _CylinderPrimitive,
                                             _SpherePrimitive, _CapsulePrimitive,
@@ -105,9 +116,11 @@ void APE_Window::_run() {
   float timeScale = 0.5f;
   float lastTime = glfwGetTime();
 
+  // sets up rp3d ptrs to the main world and physics common, and a ptr to the
+  // registry
   m_AddCollider.SetColliderRequirements(m_PhysicsWorld, m_PhysicsCommon,
                                         m_Registry);
-  m_AddCollider.SetDispatcher(m_Dispatcher);
+  m_AddCollider.SetDispatcher(m_Dispatcher); // event dispatcher
 
   m_Camera.SetTarget(glm::vec3(0.0f));
   m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
@@ -121,6 +134,7 @@ void APE_Window::_run() {
   bool worldrun = false;
   while (!glfwWindowShouldClose(m_Window)) {
 
+    // activate physics, should be a UI thing
     for (auto key : m_EventSystem.m_KeysPressed) {
       if (key == KeyPress::P)
         worldrun = false;
@@ -128,73 +142,105 @@ void APE_Window::_run() {
         worldrun = true;
     }
 
-    this->m_MainShader->SetMat4(this->m_Camera.GetViewMatrix(), "view");
-    this->m_MainShader->SetVec3(m_Camera.GetPosition(), "viewPos");
-    this->m_MainShader->SetVec3(m_Camera.GetPosition(), "lightPos");
+    this->m_MainShader->SetMat4(
+        this->m_Camera.GetViewMatrix(),
+        "view"); // view matrix setup, Model View Projection matrix
+    this->m_MainShader->SetVec3(m_Camera.GetPosition(),
+                                "viewPos"); // for some type of phong shading
+    this->m_MainShader->SetVec3(
+        m_Camera.GetPosition(),
+        "lightPos"); // set lightpos to be cam pos, blender style
 
-    // call the renderer and give it the frame buffer and a vector of objects
-    // with the renderable component to render
+    // delta time calculation
     float currTime = glfwGetTime();
     deltaTime = currTime - lastTime;
     lastTime = currTime;
-    m_Camera.ResetViewSmooth(deltaTime);
+    m_Camera.ResetViewSmooth(deltaTime); // HOME key enables cam to return to
+                                         // original pos, using glm::lerp
 
     // update it here, check if the transforms arent the same,
-    // I am dumb, I am dumb -> Coll Leclerc
+    // I am stupid, I am stupid -> Coll Leclerc
     if (worldrun) {
       // use colider to update positions
       m_PhysicsWorld->update(deltaTime);
 
+      // grab transform, physics body and physics data, update the physics body
+      // using physics grab the new transform, retrieve the position, then
+      // update the physics body and mesh position
       auto view = m_Registry.view<Transform, PhysicsBody, PhysicsData>();
-      for (auto [entity, transform, body, data] : view.each()) {
+      for (auto [entity, transform, fzxBody, fzxData] : view.each()) {
 
-        const rp3d::Transform &newTrans = body.s_Body->getTransform();
+        // grab new pos
+        const rp3d::Transform &newTrans = fzxBody.s_Body->getTransform();
         const rp3d::Vector3 &newPosition = newTrans.getPosition();
 
-        data.s_Position_C = newPosition;
+        // update physics data pos
+        fzxData.s_Position_C = newPosition;
 
+        // update mesh position
+        // mesh pos is a glm::vec3 while new transform is a rp3d::Vector3 hence
+        // the value wise update, anywhere rp3d::Vector3 and glm::vec3 will need
+        // an interchange of data, this will be the format,
         transform.s_Position.x = newPosition.x;
         transform.s_Position.y = newPosition.y;
         transform.s_Position.z = newPosition.z;
       }
     }
 
+    // probably should be moved somewhere else
+    // meanwhile, delete and duplicate abilities
     for (auto key : m_EventSystem.m_KeysPressed) {
       if (key == KeyPress::D) {
         for (auto mod : m_EventSystem.m_ModKeys) {
           if (mod == ModKeys::SHIFT) {
-            printf("SHIFT\n");
-            m_DuplicateSystem.AddDuplicate(m_Registry, m_Dispatcher);
+            m_DuplicateSystem.AddDuplicate(m_Registry,
+                                           m_Dispatcher); // duplicate
           }
         }
       }
       if (key == KeyPress::DELETE) {
-        m_RemoveEntity.RemoveEntity(m_Registry);
+        m_RemoveEntity.RemoveEntity(m_Registry); // delete
       }
     }
 
     // USER interface
     this->m_MainInterface->SetUpNewFrame();
     this->m_MainInterface->SetUpDocking();
+
+    // 			properties window
+    // Render properties
     m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
                                 m_Dispatcher);
+    // physics properties
     m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
                                        m_PhysicsWorld, m_Dispatcher);
 
-    this->m_MainShader->SetMat4(projection, "projection");
+    // set up the projection matrix,
+    // this->m_MainShader->SetMat4(projection, "projection");
+
+    // needs to be changed -> use dispatcher to call this when Shift->A is
+    // called
     this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
                                       m_PhysicsWorld, m_PhysicsCommon);
+
+    // render call -> render first, then blit the framebuffer, so that the
+    // rendered buffer is shown immediately, not the previous buffer as
+    // originally put
+    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
+
+    // the viewport setup
     m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
                     m_EventSystem, m_Dispatcher);
 
+    // selection system -> outliner section
     m_Selection.Selection(m_Registry);
 
-    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
     // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
     // m_MainShader);
 
-    this->m_MainInterface->NewRenderIMGUI();
+    this->m_MainInterface->NewRenderIMGUI(); // render the imgui windows
 
+    // clear the vectors in the input event system
     m_EventSystem.m_KeysPressed.clear();
     m_EventSystem.m_ModKeys.clear();
     glfwSwapBuffers(this->m_Window);
@@ -212,6 +258,7 @@ void APE_Window::_setUpPrimitives() {
 
   // this logic works well with primitives
   // Does not need to be changed to fit non primitive
+  // DONT TOUCH THIS!!!!
   for (auto &primitive : primitives) {
     this->m_MeshMaker = std::make_unique<MeshMakerHelper>(primitive);
     auto tup = m_MeshMaker->ReturnObjectData();
@@ -238,16 +285,19 @@ void APE_Window::_setUpPrimitives() {
   primitives.clear();
 }
 
+// clean windows
 void APE_Window::_emptyWindowVector() {
-
   for (GLFWwindow *&window : this->m_Windows) {
     glfwDestroyWindow(window);
     window = nullptr;
+    // should be replaced by spdLOG
     printf("DELETED::WINDOW::%d\n", (int)this->m_Windows.size());
   }
   this->m_Windows.clear();
 }
 
+// I am not sure I have cleaned everything, but, VALGRIND tells me no memory
+// leaks, so maybe RAII???
 void APE_Window::CleanUp() {
   m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
   this->m_MeshMaker->Clean();
@@ -263,6 +313,7 @@ void APE_Window::RunEngine() { this->_run(); }
 
 void APE_Window::_destroyGLFWContext() { glfwTerminate(); }
 
+// make a window, if not made, return a nullptr
 std::optional<GLFWwindow *> APE_Window::_createWindow(unsigned int width,
                                                       unsigned int height,
                                                       const char *name) {

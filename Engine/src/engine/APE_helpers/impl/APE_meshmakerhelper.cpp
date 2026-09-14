@@ -5,7 +5,6 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <utility>
 
 MeshMakerHelper::MeshMakerHelper(std::string path) : m_ModelLoaderHelper(path) {
   // check if the model has more than one object

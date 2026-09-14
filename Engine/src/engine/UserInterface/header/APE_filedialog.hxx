@@ -2,6 +2,7 @@
 #include <ImGuiFileDialog.h>
 #include <imgui.h>
 
+// scafolding for a file dialog
 inline void SetUpFileDialog() {
   if (ImGui::Button("")) {
     ImGuiFileDialog::Instance()->OpenDialog("ChooseFile", "Open File",

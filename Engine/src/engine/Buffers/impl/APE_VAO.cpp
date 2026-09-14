@@ -12,13 +12,16 @@ void VertexArray::GenVertexArrays() {
 void VertexArray::BindVertexArray() { glBindVertexArray(this->m_VertexArray); }
 
 void VertexArray::AttribPointerSetUp() {
+  // positions
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
+  // normals
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)offsetof(Vertex, s_Normal));
   glEnableVertexAttribArray(1);
 
+  // texture coords
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)offsetof(Vertex, s_TexCoords));
   glEnableVertexAttribArray(2);

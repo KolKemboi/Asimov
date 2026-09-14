@@ -88,6 +88,7 @@ public:
     // creates an instance of physics data to be filled for the ECS
     PhysicsData fzxData;
 
+    // set type, defaults to static
     if (bodyType == "STATIC")
       fzxData.s_BodyType = rp3d::BodyType::STATIC;
     if (bodyType == "KINEMATIC")
@@ -109,11 +110,12 @@ public:
           rp3d::Vector3(t.s_Position.x, t.s_Position.y, t.s_Position.z);
       fzxData.s_Rotation_C = rp3d::Quaternion::fromEulerAngles(
           glm::radians(t.s_Rotation.x), glm::radians(t.s_Rotation.y),
-          glm::radians(t.s_Rotation.z));
+          glm::radians(
+              t.s_Rotation.z)); // glm::radians, idk why rp3d docs dont make
+                                // this clear, but radians is the way to go
 
       // mass of the collider,
       fzxData.s_Mass = 1.0;
-      //
       // sets  transform
       rp3d::Transform transform(fzxData.s_Position_C, fzxData.s_Rotation_C);
 
@@ -125,7 +127,6 @@ public:
 
       // BOX shape type
       if (shape == Shape::BOX) {
-        // fzxData.s_BodyType = rp3d::BodyType::STATIC;
         fzxData.s_Scale_C =
             rp3d::Vector3(t.s_Scale.x / 2, t.s_Scale.y / 2, t.s_Scale.z / 2);
         fzxData.s_BoxShape =
@@ -137,7 +138,6 @@ public:
 
       // SPHERE shape type
       if (shape == Shape::SPHERE) {
-        // fzxData.s_BodyType = rp3d::BodyType::DYNAMIC;
         fzxData.s_Scale_C =
             rp3d::Vector3(t.s_Scale.x, t.s_Scale.y, t.s_Scale.z);
         fzxData.s_SphereShape =
@@ -149,7 +149,6 @@ public:
 
       // CONVEXMESH shape type used a shape primitive
       if (shape == Shape::CONVEXMESH) {
-        // fzxData.s_BodyType = rp3d::BodyType::DYNAMIC;
         fzxData.s_Scale_C =
             rp3d::Vector3(t.s_Scale.x, t.s_Scale.y, t.s_Scale.z);
         fzxData.s_SphereShape =
@@ -161,7 +160,6 @@ public:
 
       // CAPSULE shape type
       if (shape == Shape::CAPSULE) {
-        // fzxData.s_BodyType = rp3d::BodyType::DYNAMIC;
         fzxData.s_Scale_C =
             rp3d::Vector3(t.s_Scale.x, t.s_Scale.y, t.s_Scale.z);
         fzxData.s_CapsuleShape = m_LocalPhysicsCommon->createCapsuleShape(

@@ -9,10 +9,14 @@
 
 class AddObjectPopUp {
 public:
+  // smart ptr so that I manage when the object is created
+  // will be destroyed when this goes off scope -> RAII
   void SetDispatcher(Dispatcher &dispatcher) {
     m_AddEntitySystem = std::make_unique<AddEntitySystem>(dispatcher);
+    m_LocalDispatcher = &dispatcher; //  set up a ptr to the main dispatcher
   };
 
+  // DONT TOUCH THIS
   void SetUpPrimitiveData(std::tuple<unsigned int, unsigned int> &cubeData,
                           std::tuple<unsigned int, unsigned int> &cylinderData,
                           std::tuple<unsigned int, unsigned int> &sphereData,
@@ -31,10 +35,13 @@ public:
   inline void SetUpPopUp(GLFWwindow *window, entt::registry &reg,
                          rp3d::PhysicsWorld *&world,
                          rp3d::PhysicsCommon &phyCom) {
+    // dispatcher.Subscibe("KEY_PRESS", "SHIFT_A")
+    // m_LocalDispatcher->Subscriber(KEY_PRESS, );
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
       if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         ImGui::OpenPopup("Add Object");
 
+    // SHIFT A pop up window for primitives addition
     if (ImGui::BeginPopupModal("Add Object", nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize)) {
 
@@ -79,6 +86,7 @@ public:
 
 private:
   std::unique_ptr<AddEntitySystem> m_AddEntitySystem;
+  Dispatcher *m_LocalDispatcher;
 
   AddColliderSystem m_AddColliderSystem;
   std::tuple<unsigned int, unsigned int> _CubePrimitiveData;

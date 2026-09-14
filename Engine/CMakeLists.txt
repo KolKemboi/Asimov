@@ -23,7 +23,6 @@ set(HELPERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers)
 set(HELPERS_SOURCES
 	${HELPERS_DIR}/impl/APE_loadmodelhelper.cpp
 	${HELPERS_DIR}/impl/APE_meshmakerhelper.cpp
-	${HELPERS_DIR}/impl/APE_Dispatcher.cpp
 )
 
 add_library(APE_helpers STATIC ${HELPERS_SOURCES})
@@ -45,6 +44,7 @@ set(TOOLBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/Toolbox)
 set(TOOLBOX_SOURCES
 	${TOOLBOX_DIR}/impl/APE_shader.cpp
 	${TOOLBOX_DIR}/impl/APE_camera.cpp
+	${TOOLBOX_DIR}/impl/APE_Dispatcher.cpp
 )
 
 add_library(APE_toolbox STATIC ${TOOLBOX_SOURCES})

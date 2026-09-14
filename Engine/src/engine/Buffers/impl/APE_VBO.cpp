@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <vector>
 
+// bro, it works, okay
 void VertexBuffer::GenVertexBuffers(std::vector<Vertex> &vertices) {
   glGenBuffers(1, &this->m_VertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
