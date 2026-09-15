@@ -6,8 +6,7 @@
 class RemoveEntitySystem {
 public:
   // delete selected object
-  void RemoveEntity(entt::registry &registry, 
-                    rp3d::PhysicsWorld *&world) {
+  void RemoveEntity(entt::registry &registry, rp3d::PhysicsWorld *&world) {
     // need to remove collider in the cache
     auto selectedView = registry.view<Selected>();
     for (auto entity : selectedView) {
