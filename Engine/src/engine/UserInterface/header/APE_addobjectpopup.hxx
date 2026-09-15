@@ -1,8 +1,10 @@
 #pragma once
 #include "APE_Dispatcher.hpp"
+#include "APE_KeyEvents.hpp"
 #include <APE_AddCollider.hxx>
 #include <APE_AddEntitySystem.hpp>
 #include <GLFW/glfw3.h>
+#include <cstdio>
 #include <entt/entt.hpp>
 #include <imgui.h>
 #include <memory>

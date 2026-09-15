@@ -41,6 +41,11 @@ enum class MouseButtonPress {
   MIDDLE,
 };
 
+struct KeyData {
+  KeyPress key;
+  ModKeys mod;
+};
+
 struct MouseOffset {
   float xOffset;
   float yOffset;

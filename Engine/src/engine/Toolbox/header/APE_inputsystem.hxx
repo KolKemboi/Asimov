@@ -1,10 +1,11 @@
 #pragma once
-#include "APE_eventsystem.hxx"
+#ifndef __
 #include <APE_camera.hpp>
+#endif
+#include "APE_eventsystem.hxx"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <entt/entt.hpp>
-#include <memory>
 
 //--- DEV NOTES
 /*

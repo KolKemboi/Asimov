@@ -14,19 +14,9 @@ void Dispatcher::Emitter(EventType event, const std::string &data = {}) {
     handler(data);
   }
 }
-
-void Dispatcher::KeySubscriber(EventType event, KeyHandler handler) {
-  keyHandlers[event].push_back(std::move(handler));
-}
-
-void Dispatcher::KeyEmitter(EventType event,
-                            std::variant<KeyPress, ModKeys> keypress) {
-
-  auto iter = keyHandlers.find(event);
-  if (iter == keyHandlers.end())
-    return;
-
-  for (auto &handler : iter->second) {
-    handler(keypress);
-  }
-}
+/*
+ * there is a struct, with A, and thing with mod A
+ * if with mod, call x, if without mod, call X
+ *
+ *
+ */

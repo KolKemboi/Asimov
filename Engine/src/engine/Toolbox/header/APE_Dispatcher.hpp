@@ -4,7 +4,6 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
-#include <variant>
 #include <vector>
 
 // add more events
@@ -21,7 +20,6 @@ public:
   // string
   using Handler = std::function<void(const std::string &)>;
 
-  using KeyHandler = std::function<void(std::variant<KeyPress, ModKeys>)>;
   // listen for input event, and the event be A with shift mod
   // so emitter should be, event type, key pressed
 
@@ -29,11 +27,7 @@ public:
   void Subscriber(EventType, Handler);
   void Emitter(EventType, const std::string &);
 
-  void KeyEmitter(EventType, std::variant<KeyPress, ModKeys>);
-  void KeySubscriber(EventType, KeyHandler);
 
 private:
   std::unordered_map<EventType, std::vector<Handler>> handlers;
-
-  std::unordered_map<EventType, std::vector<KeyHandler>> keyHandlers;
 };
