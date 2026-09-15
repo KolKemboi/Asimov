@@ -63,10 +63,10 @@ void APE_Window::_setUpGLFWContext() {
   glEnable(GL_DEPTH_TEST); // for proper 3d rendering
 
   // for object outlining
-  glDepthFunc(GL_LESS);
-  glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  // glDepthFunc(GL_LESS);
+  // glEnable(GL_STENCIL_TEST);
+  // glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  // glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   // these dont need to be in the context set up
   // set up shader and framebuffer
@@ -199,7 +199,8 @@ void APE_Window::_run() {
         }
       }
       if (key == KeyPress::DELETE) {
-        m_RemoveEntity.RemoveEntity(m_Registry); // delete
+        // bug was here, now fixed
+        m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
       }
     }
 
