@@ -186,6 +186,9 @@ void APE_Window::_run() {
         transform.s_Position.z = newPosition.z;
       }
     }
+    // USER interface
+    this->m_MainInterface->SetUpNewFrame();
+    this->m_MainInterface->SetUpDocking();
 
     // probably should be moved somewhere else
     // meanwhile, delete and duplicate abilities
@@ -199,14 +202,12 @@ void APE_Window::_run() {
         }
       }
       if (key == KeyPress::DELETE) {
-        // bug was here, now fixed
-        m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
+        ImGui::OpenPopup("Delete Object");
       }
     }
-
-    // USER interface
-    this->m_MainInterface->SetUpNewFrame();
-    this->m_MainInterface->SetUpDocking();
+    if (m_ConfirmPopUp.ConfirmDelete())
+      //     // bug was here, now fixed
+      m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
 
     // 			properties window
     // Render properties

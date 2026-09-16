@@ -130,10 +130,5 @@ public:
     if (key == GLFW_KEY_HOME && action == GLFW_PRESS) {
       camera->StartResetSmooth();
     }
-
-    // for quick exiting, on release, this will be commented out
-    // if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
-    //   glfwSetWindowShouldClose(window, true);
-    // }
   }
 };
