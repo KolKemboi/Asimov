@@ -5,6 +5,7 @@
 #include "APE_inputsystem.hxx"
 #include "APE_interface.hxx"
 #include "APE_meshmakerhelper.hpp"
+#include <APE_menubar.hxx>
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog.h>
@@ -99,6 +100,9 @@ void APE_Window::_setUpGLFWContext() {
 
   // physics
   m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld();
+
+  // robots
+  this->m_RobotMaker = std::make_unique<RobotMaker>(this->m_Dispatcher);
 }
 
 void APE_Window::_run() {
@@ -208,6 +212,8 @@ void APE_Window::_run() {
     if (m_ConfirmPopUp.ConfirmDelete())
       //     // bug was here, now fixed
       m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
+
+    SetUpMenuBar(m_Window, m_Dispatcher);
 
     // 			properties window
     // Render properties

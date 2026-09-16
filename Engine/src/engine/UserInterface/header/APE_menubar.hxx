@@ -1,10 +1,12 @@
 #pragma once
 
+#include "APE_Dispatcher.hpp"
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog.h>
+#include <cstdio>
 #include <imgui.h>
 
-inline void SetUpMenuBar(GLFWwindow *window) {
+inline void SetUpMenuBar(GLFWwindow *window, Dispatcher &dispatcher) {
   if (ImGui::BeginMainMenuBar()) {
 
     if (ImGui::BeginMenu("File")) {
@@ -13,8 +15,8 @@ inline void SetUpMenuBar(GLFWwindow *window) {
       }
 
       if (ImGui::MenuItem("Open", "Ctrl+O")) {
-        ImGuiFileDialog::Instance()->OpenDialog("ChooseFile", "Open File",
-                                                ".txt,.cpp,.h,.hpp,.json");
+        ImGuiFileDialog::Instance()->OpenDialog(
+            "ChooseFile", "Open File", ".txt,.cpp,.h,.hpp,.json,.urdf,.xacro");
       }
 
       if (ImGui::MenuItem("Save", "Ctrl+S")) {
@@ -24,6 +26,7 @@ inline void SetUpMenuBar(GLFWwindow *window) {
       ImGui::Separator();
 
       if (ImGui::MenuItem("Exit")) {
+        // dispatch window close
         glfwSetWindowShouldClose(window, true);
       }
 
@@ -67,14 +70,12 @@ inline void SetUpMenuBar(GLFWwindow *window) {
     ImGui::EndMainMenuBar();
   }
 
-  if (ImGuiFileDialog::Instance()->Display("ChooseFile")) {
-    ImGui::SetWindowSize(ImVec2(800.0f, 500.0f));
+  if (ImGuiFileDialog::Instance()->Display(
+          "ChooseFile", ImGuiWindowFlags_NoCollapse, ImVec2(800.0f, 500.0f),
+          ImVec2(800.0f, 500.0f))) {
     if (ImGuiFileDialog::Instance()->IsOk()) {
       std::string path = ImGuiFileDialog::Instance()->GetFilePathName();
-
-      // Open file here
-      // Example:
-      // LoadFile(path);
+      dispatcher.Emitter(EventType::ROBOTLOADED, path);
     }
 
     ImGuiFileDialog::Instance()->Close();

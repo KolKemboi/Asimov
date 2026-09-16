@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<robot name="3dof_robot_arm">
+
+  <!-- Materials -->
+  <material name="base_color">
+    <color rgba="0.2 0.6 0.8 1.0"/>
+  </material>
+  <material name="link1_color">
+    <color rgba="0.8 0.3 0.3 1.0"/>
+  </material>
+  <material name="link2_color">
+    <color rgba="0.3 0.8 0.3 1.0"/>
+  </material>
+  <material name="link3_color">
+    <color rgba="0.3 0.3 0.8 1.0"/>
+  </material>
+  <material name="gripper_color">
+    <color rgba="0.8 0.8 0.2 1.0"/>
+  </material>
+
+  <!-- Base Link (fixed to world) -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.3 0.3 0.1"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="base_color"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.3 0.1"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 1: Base to Link1 (rotation around Z) -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14159" upper="3.14159" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <!-- Link 1 -->
+  <link name="link1">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.4"/>
+      </geometry>
+      <origin xyz="0 0 0.2" rpy="0 0 0"/>
+      <material name="link1_color"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.4"/>
+      </geometry>
+      <origin xyz="0 0 0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 2: Link1 to Link2 (rotation around Y) -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 0 0.4" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0" upper="2.0" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <!-- Link 2 -->
+  <link name="link2">
+    <visual>
+      <geometry>
+        <box size="0.08 0.08 0.35"/>
+      </geometry>
+      <origin xyz="0 0 0.175" rpy="0 0 0"/>
+      <material name="link2_color"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.08 0.08 0.35"/>
+      </geometry>
+      <origin xyz="0 0 0.175" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.4"/>
+      <inertia ixx="0.008" ixy="0" ixz="0" iyy="0.008" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 3: Link2 to Link3 (rotation around Y) -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 0.35" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0" upper="2.0" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <!-- Link 3 (End effector) -->
+  <link name="link3">
+    <visual>
+      <geometry>
+        <box size="0.06 0.06 0.2"/>
+      </geometry>
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <material name="link3_color"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.06 0.06 0.2"/>
+      </geometry>
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Optional: Gripper tip for visualization -->
+  <link name="gripper_tip">
+    <visual>
+      <geometry>
+        <box size="0.04 0.08 0.04"/>
+      </geometry>
+      <origin xyz="0 0 0.2" rpy="0 0 0"/>
+      <material name="gripper_color"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.08 0.04"/>
+      </geometry>
+      <origin xyz="0 0 0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Fixed joint for gripper tip -->
+  <joint name="gripper_joint" type="fixed">
+    <parent link="link3"/>
+    <child link="gripper_tip"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+</robot>
