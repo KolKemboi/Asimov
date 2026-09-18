@@ -83,7 +83,7 @@ private:
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
-    SetUpMenuBar(m_ImGUIWindow); // menu bar
+    // SetUpMenuBar(m_ImGUIWindow); // menu bar
     // MaterialEditor();
   }
   void _newRenderIMGUI() {

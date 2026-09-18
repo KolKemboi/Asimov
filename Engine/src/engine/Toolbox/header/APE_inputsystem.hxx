@@ -1,10 +1,11 @@
 #pragma once
-#include "APE_eventsystem.hxx"
+#ifndef __
 #include <APE_camera.hpp>
+#endif
+#include "APE_eventsystem.hxx"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <entt/entt.hpp>
-#include <memory>
 
 //--- DEV NOTES
 /*
@@ -129,10 +130,5 @@ public:
     if (key == GLFW_KEY_HOME && action == GLFW_PRESS) {
       camera->StartResetSmooth();
     }
-
-    // for quick exiting, on release, this will be commented out
-    // if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
-    //   glfwSetWindowShouldClose(window, true);
-    // }
   }
 };

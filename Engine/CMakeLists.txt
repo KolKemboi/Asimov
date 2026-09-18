@@ -11,6 +11,7 @@ set(CMAKE_BUILD_TYPE Debug)
 find_package(glfw3 REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
 find_package(assimp REQUIRED)
+find_package(urdfdom REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -45,6 +46,7 @@ set(TOOLBOX_SOURCES
 	${TOOLBOX_DIR}/impl/APE_shader.cpp
 	${TOOLBOX_DIR}/impl/APE_camera.cpp
 	${TOOLBOX_DIR}/impl/APE_Dispatcher.cpp
+	${TOOLBOX_DIR}/impl/APE_robotmaker.cpp
 )
 
 add_library(APE_toolbox STATIC ${TOOLBOX_SOURCES})
@@ -143,6 +145,7 @@ target_link_libraries(node_editor PUBLIC imgui)
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/models DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/assets/robots DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/imgui.ini DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
@@ -181,6 +184,7 @@ target_link_libraries(
 target_link_libraries(
 	APE_toolbox
 	PUBLIC
+	urdfdom_model
 
 )
 
@@ -203,6 +207,7 @@ target_link_libraries(
 )
 
 target_link_libraries(${PROJ_NAME} 
+	urdfdom_model
   imgui
 	assimp
 	APE_ecs

@@ -43,7 +43,7 @@ public:
       m_KeysPressed.push_back(KeyPress::DELETE);
 
     if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-      m_LocalDispatcher->KeyEmitter(EventType::KEYPRESS, KeyPress::Q);
+
       m_KeysPressed.push_back(KeyPress::Q);
     }
 
@@ -74,8 +74,9 @@ public:
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::P);
 
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
       m_KeysPressed.push_back(KeyPress::A);
+    }
 
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
       m_KeysPressed.push_back(KeyPress::S);

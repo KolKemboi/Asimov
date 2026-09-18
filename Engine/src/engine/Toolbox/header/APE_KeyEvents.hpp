@@ -1,4 +1,5 @@
 #pragma once
+
 enum class KeyPress {
   Q,
   W,
@@ -38,6 +39,11 @@ enum class MouseButtonPress {
   LEFT,
   RIGHT,
   MIDDLE,
+};
+
+struct KeyData {
+  KeyPress key;
+  ModKeys mod;
 };
 
 struct MouseOffset {

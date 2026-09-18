@@ -5,30 +5,41 @@
 
 class ConfirmPopUp {
 public:
-  bool ConfirmDelete(bool del) {
-
+  bool ConfirmDelete() {
     bool res = false;
-
-		if(del)
-    { ImGui::OpenPopup("Delete Object"); }
 
     if (ImGui::BeginPopupModal("Delete Object", nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize)) {
+      ImGui::TextUnformatted("Are you sure you want to delete?");
 
-      if (ImGui::Button("Yes")) {
+      ImGui::Spacing();
+      // ImGui::Separator();
+      ImGui::Spacing();
+
+      // Buttons
+      const float buttonWidth = 80.0f;
+
+      if (ImGui::Button("Yes", ImVec2(buttonWidth, 0))) {
         res = true;
         ImGui::CloseCurrentPopup();
       }
 
       ImGui::SameLine();
 
-      if (ImGui::Button("No")) {
-        res = false;
+      // Push No button toward the right
+      float availableWidth = ImGui::GetContentRegionAvail().x;
+      float noButtonWidth = buttonWidth;
+
+      ImGui::SetCursorPosX(ImGui::GetCursorPosX() + availableWidth -
+                           noButtonWidth);
+
+      if (ImGui::Button("No", ImVec2(buttonWidth, 0))) {
         ImGui::CloseCurrentPopup();
       }
 
       ImGui::EndPopup();
     }
+
     return res;
   }
 };

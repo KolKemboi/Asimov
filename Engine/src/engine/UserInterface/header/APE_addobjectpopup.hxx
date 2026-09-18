@@ -1,8 +1,10 @@
 #pragma once
 #include "APE_Dispatcher.hpp"
+#include "APE_KeyEvents.hpp"
 #include <APE_AddCollider.hxx>
 #include <APE_AddEntitySystem.hpp>
 #include <GLFW/glfw3.h>
+#include <cstdio>
 #include <entt/entt.hpp>
 #include <imgui.h>
 #include <memory>
@@ -44,15 +46,24 @@ public:
     // SHIFT A pop up window for primitives addition
     if (ImGui::BeginPopupModal("Add Object", nullptr,
                                ImGuiWindowFlags_AlwaysAutoResize)) {
+      ImGui::TextUnformatted("Select an object to add:");
+      ImGui::Spacing();
 
-      if (ImGui::Button("Cube")) {
+      ImGui::Separator();
+      ImGui::Spacing();
 
+      const float buttonWidth = 180.0f;
+
+      if (ImGui::Button("Cube", ImVec2(buttonWidth, 0))) {
         m_AddEntitySystem->AddCubeSystem(reg, std::get<0>(_CubePrimitiveData),
                                          std::get<1>(_CubePrimitiveData));
+
         ImGui::CloseCurrentPopup();
       }
 
-      if (ImGui::Button("Sphere")) {
+      ImGui::Spacing();
+
+      if (ImGui::Button("Sphere", ImVec2(buttonWidth, 0))) {
         m_AddEntitySystem->AddSphereSystem(reg,
                                            std::get<0>(_SpherePrimitiveData),
                                            std::get<1>(_SpherePrimitiveData));
@@ -60,23 +71,31 @@ public:
         ImGui::CloseCurrentPopup();
       }
 
-      if (ImGui::Button("Cylinder")) {
-        m_AddEntitySystem->AddCylinderSystem(
-            reg, std::get<0>(_CylinderPrimitiveData),
-            std::get<1>(_CylinderPrimitiveData));
-        ImGui::CloseCurrentPopup();
-      }
+      ImGui::Spacing();
 
-      if (ImGui::Button("Capsule")) {
+      if (ImGui::Button("Capsule", ImVec2(buttonWidth, 0))) {
         m_AddEntitySystem->AddCapsuleSystem(reg,
                                             std::get<0>(_CapsulePrimitiveData),
                                             std::get<1>(_CapsulePrimitiveData));
+
         ImGui::CloseCurrentPopup();
       }
-      if (ImGui::Button("Convex Mesh")) {
+
+      ImGui::Spacing();
+
+      if (ImGui::Button("Convex Mesh", ImVec2(buttonWidth, 0))) {
         m_AddEntitySystem->AddConvexMeshSystem(
             reg, std::get<0>(_ConvexMeshPrimitiveData),
             std::get<1>(_ConvexMeshPrimitiveData));
+
+        ImGui::CloseCurrentPopup();
+      }
+
+      ImGui::Spacing();
+      ImGui::Separator();
+      ImGui::Spacing();
+
+      if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0))) {
         ImGui::CloseCurrentPopup();
       }
 

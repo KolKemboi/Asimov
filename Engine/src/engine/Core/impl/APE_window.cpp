@@ -5,6 +5,7 @@
 #include "APE_inputsystem.hxx"
 #include "APE_interface.hxx"
 #include "APE_meshmakerhelper.hpp"
+#include <APE_menubar.hxx>
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog.h>
@@ -63,10 +64,10 @@ void APE_Window::_setUpGLFWContext() {
   glEnable(GL_DEPTH_TEST); // for proper 3d rendering
 
   // for object outlining
-  glDepthFunc(GL_LESS);
-  glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  // glDepthFunc(GL_LESS);
+  // glEnable(GL_STENCIL_TEST);
+  // glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  // glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   // these dont need to be in the context set up
   // set up shader and framebuffer
@@ -99,6 +100,9 @@ void APE_Window::_setUpGLFWContext() {
 
   // physics
   m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld();
+
+  // robots
+  this->m_RobotMaker = std::make_unique<RobotMaker>(this->m_Dispatcher);
 }
 
 void APE_Window::_run() {
@@ -186,6 +190,9 @@ void APE_Window::_run() {
         transform.s_Position.z = newPosition.z;
       }
     }
+    // USER interface
+    this->m_MainInterface->SetUpNewFrame();
+    this->m_MainInterface->SetUpDocking();
 
     // probably should be moved somewhere else
     // meanwhile, delete and duplicate abilities
@@ -199,13 +206,14 @@ void APE_Window::_run() {
         }
       }
       if (key == KeyPress::DELETE) {
-        m_RemoveEntity.RemoveEntity(m_Registry); // delete
+        ImGui::OpenPopup("Delete Object");
       }
     }
+    if (m_ConfirmPopUp.ConfirmDelete())
+      //     // bug was here, now fixed
+      m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
 
-    // USER interface
-    this->m_MainInterface->SetUpNewFrame();
-    this->m_MainInterface->SetUpDocking();
+    SetUpMenuBar(m_Window, m_Dispatcher);
 
     // 			properties window
     // Render properties

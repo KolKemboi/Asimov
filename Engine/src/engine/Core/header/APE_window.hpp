@@ -26,6 +26,7 @@
 #include <APE_interface.hxx>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
+#include <APE_robotmaker.hpp>
 #include <APE_shader.hpp>
 #include <APE_types.hpp>
 #include <GLFW/glfw3.h>
@@ -92,6 +93,9 @@ private:
   // for primitives
   std::unique_ptr<MeshMakerHelper> m_MeshMaker;
   AddObjectPopUp m_AddObjectPopUp;
+
+  // Robot stuff
+  std::unique_ptr<RobotMaker> m_RobotMaker;
 
   // Physics stuff
   rp3d::PhysicsCommon m_PhysicsCommon;

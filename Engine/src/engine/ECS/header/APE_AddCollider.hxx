@@ -40,16 +40,26 @@ public:
           for (entt::entity entity : selectedView) {
             // ensures there world and physics common do not have the previous
             // colliders in the system
-            auto body = m_LocalRegistry->get<PhysicsBody>(entity);
+            PhysicsBody fzxbody = m_LocalRegistry->get<PhysicsBody>(entity);
             rp3d::PhysicsWorld *newWorld = *m_LocalWorld;
-            body.s_Body->removeCollider(body.s_Collider);
-            newWorld->destroyRigidBody(body.s_Body);
+            fzxbody.s_Body->removeCollider(fzxbody.s_Collider);
+            newWorld->destroyRigidBody(fzxbody.s_Body);
+            // check the original s_BodyType, then, set that as default
+            std::string bodyType = "STATIC"; // defaults to static
+            PhysicsData fzxdata = m_LocalRegistry->get<PhysicsData>(entity);
+            if (fzxdata.s_BodyType == rp3d::BodyType::STATIC)
+              bodyType = "STATIC";
+            if (fzxdata.s_BodyType == rp3d::BodyType::DYNAMIC)
+              bodyType = "DYNAMIC";
+            if (fzxdata.s_BodyType == rp3d::BodyType::KINEMATIC)
+              bodyType = "KINEMATIC";
 
             // clears the registry of the Physics Data and Physics body, then
             // adds a new collider
             m_LocalRegistry->remove<PhysicsData>(entity);
             m_LocalRegistry->remove<PhysicsBody>(entity);
-            AddCollider();
+            // call the collider addtion
+            AddCollider(bodyType);
           }
         });
     dispatcher.Subscriber(
