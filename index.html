@@ -1,329 +1,1004 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>A.P.E. — Asimov Physics Engine</title>
+	<meta name="description"
+		content="A.P.E. (Asimov Physics Engine) — a C++ real-time physics and simulation engine for robotics, built for integration with ROS.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+		rel="stylesheet">
+	<style>
+		:root {
+			--bg: #0a0c10;
+			--bg-2: #0f1319;
+			--surface: #141922;
+			--surface-2: #1a2029;
+			--border: #262d38;
+			--border-2: #333c4a;
+			--text: #e8edf4;
+			--muted: #8b96a8;
+			--muted-2: #6b7688;
+			--accent: #5eead4;
+			--accent-2: #38bdf8;
+			--accent-3: #a78bfa;
+			--glow: rgba(94, 234, 212, 0.15);
+		}
 
-    <title>My Project</title>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+		html {
+			scroll-behavior: smooth;
+			scroll-padding-top: 80px;
+		}
 
-        html {
-            scroll-behavior: smooth;
-        }
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			background: var(--bg);
+			color: var(--text);
+			line-height: 1.65;
+			-webkit-font-smoothing: antialiased;
+			overflow-x: hidden;
+		}
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            padding: 40px;
-        }
+		/* Ambient background glow */
+		body::before {
+			content: "";
+			position: fixed;
+			top: -30%;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 900px;
+			height: 900px;
+			background: radial-gradient(circle, var(--glow) 0%, transparent 60%);
+			pointer-events: none;
+			z-index: 0;
+			opacity: 0.6;
+		}
 
-        /* =========================
-           SIDE PROJECT BAR
-        ========================= */
+		a {
+			color: var(--accent);
+			text-decoration: none;
+			transition: color 0.15s;
+		}
 
-        .project-nav {
-            position: fixed;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
+		a:hover {
+			color: var(--accent-2);
+		}
 
-            width: 190px;
+		code,
+		pre {
+			font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+		}
 
-            background: white;
-            padding: 15px;
+		/* ---------- Header ---------- */
+		header {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			background: rgba(10, 12, 16, 0.82);
+			backdrop-filter: blur(14px) saturate(180%);
+			-webkit-backdrop-filter: blur(14px) saturate(180%);
+			border-bottom: 1px solid var(--border);
+		}
 
-            border-radius: 15px;
+		nav {
+			max-width: 1080px;
+			margin: 0 auto;
+			padding: 0.85rem 1.5rem;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+		}
 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			font-weight: 800;
+			font-size: 1.05rem;
+			letter-spacing: -0.01em;
+		}
 
-            z-index: 1000;
-        }
+		.brand .logo {
+			width: 28px;
+			height: 28px;
+			border-radius: 7px;
+			background: linear-gradient(135deg, var(--accent), var(--accent-2));
+			display: grid;
+			place-items: center;
+			font-size: 0.7rem;
+			font-weight: 800;
+			color: #0a0c10;
+		}
 
-        .project-nav h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+		.brand small {
+			color: var(--muted-2);
+			font-weight: 500;
+			font-size: 0.78rem;
+			margin-left: 0.4rem;
+			letter-spacing: 0;
+		}
 
-        .project-nav a {
-            display: block;
+		nav ul {
+			display: flex;
+			gap: 1.4rem;
+			list-style: none;
+		}
 
-            text-decoration: none;
-            color: #444;
+		nav ul a {
+			color: var(--muted);
+			font-size: 0.88rem;
+			font-weight: 500;
+		}
 
-            padding: 12px 15px;
-            margin-bottom: 8px;
+		nav ul a:hover {
+			color: var(--text);
+		}
 
-            border-radius: 8px;
+		/* ---------- Layout ---------- */
+		main {
+			max-width: 1080px;
+			margin: 0 auto;
+			padding: 0 1.5rem 5rem;
+			position: relative;
+			z-index: 1;
+		}
 
-            transition: all 0.3s ease;
-        }
+		section {
+			padding: 3.5rem 0;
+		}
 
-        .project-nav a:hover {
-            background-color: #3498db;
-            color: white;
+		section+section {
+			border-top: 1px solid var(--border);
+		}
 
-            padding-left: 20px;
-        }
+		.eyebrow {
+			font-size: 0.78rem;
+			font-weight: 600;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			color: var(--accent);
+			margin-bottom: 0.75rem;
+		}
 
+		h2 {
+			font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: 1rem;
+		}
 
-        /* =========================
-           MAIN CONTENT
-        ========================= */
+		h3 {
+			font-size: 1.05rem;
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+		}
 
-				.container {
-						width: calc(100% - 280px);
-						max-width: none;
+		p {
+			color: var(--muted);
+			max-width: 72ch;
+			margin-bottom: 1rem;
+		}
 
-						margin-left: 250px;
-						margin-right: 30px;
-				}
+		p.lead {
+			font-size: 1.08rem;
+			color: var(--text);
+		}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 36px;
-        }
+		/* ---------- Hero ---------- */
+		.hero {
+			padding: 5.5rem 0 4rem;
+			border-bottom: 1px solid var(--border);
+			position: relative;
+		}
 
+		.hero .badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.35rem 0.85rem;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			font-size: 0.78rem;
+			font-weight: 500;
+			color: var(--muted);
+			margin-bottom: 1.5rem;
+		}
 
-        /* =========================
-           PROJECT CARDS
-        ========================= */
+		.hero .badge .dot {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: var(--accent);
+			box-shadow: 0 0 8px var(--accent);
+			animation: pulse 2s ease-in-out infinite;
+		}
 
-        .image-card {
-            background-color: white;
+		@keyframes pulse {
 
-            margin-bottom: 40px;
+			0%,
+			100% {
+				opacity: 1;
+			}
 
-            border-radius: 12px;
+			50% {
+				opacity: 0.4;
+			}
+		}
 
-            overflow: hidden;
+		.hero h1 {
+			font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+			font-weight: 800;
+			line-height: 1.08;
+			letter-spacing: -0.035em;
+			margin-bottom: 1.25rem;
+			max-width: 22ch;
+		}
 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		.hero h1 .grad {
+			background: linear-gradient(120deg, var(--accent), var(--accent-2) 60%, var(--accent-3));
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
 
-            /* Keeps the title from hiding underneath anything */
-            scroll-margin-top: 40px;
-        }
+		.hero p {
+			font-size: 1.15rem;
+			color: var(--muted);
+			max-width: 62ch;
+			margin-bottom: 2.25rem;
+		}
 
-        .image-card img {
-            width: 100%;
-            height: 450px;
+		.buttons {
+			display: flex;
+			gap: 0.75rem;
+			flex-wrap: wrap;
+		}
 
-            object-fit: cover;
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.7rem 1.3rem;
+			border-radius: 9px;
+			font-size: 0.92rem;
+			font-weight: 600;
+			border: 1px solid var(--border-2);
+			color: var(--text);
+			transition: all 0.18s ease;
+			cursor: pointer;
+		}
 
-            display: block;
-        }
+		.btn:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+			text-decoration: none;
+			transform: translateY(-1px);
+		}
 
-        .image-content {
-            padding: 25px;
-        }
+		.btn.primary {
+			background: var(--accent);
+			color: #0a0c10;
+			border-color: var(--accent);
+			box-shadow: 0 0 24px rgba(94, 234, 212, 0.25);
+		}
 
-        .image-content h2 {
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
+		.btn.primary:hover {
+			color: #0a0c10;
+			filter: brightness(1.08);
+			box-shadow: 0 0 32px rgba(94, 234, 212, 0.4);
+		}
 
-        .image-content p {
-            font-size: 17px;
-            line-height: 1.7;
-            color: #666;
-        }
+		/* ---------- Hero image ---------- */
+		.hero-image {
+			margin-top: 3.5rem;
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			overflow: hidden;
+			background: var(--surface);
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+			position: relative;
+		}
 
+		.hero-image::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, transparent 70%, rgba(10, 12, 16, 0.5));
+			pointer-events: none;
+			z-index: 2;
+		}
 
-        /* =========================
-           MOBILE
-        ========================= */
+		.hero-image img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
 
-        @media (max-width: 800px) {
+		.hero-image .caption {
+			padding: 0.8rem 1.2rem;
+			border-top: 1px solid var(--border);
+			font-size: 0.82rem;
+			color: var(--muted-2);
+			font-family: 'JetBrains Mono', monospace;
+		}
 
-            body {
-                padding: 20px;
-            }
+		/* ---------- Feature grid ---------- */
+		.grid {
+			display: grid;
+			gap: 1rem;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			margin-top: 1.75rem;
+		}
 
-            /* Turn sidebar into a horizontal bar */
-            .project-nav {
-                position: sticky;
+		.card {
+			background: linear-gradient(180deg, var(--surface), var(--bg-2));
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 1.4rem;
+			transition: all 0.2s ease;
+			position: relative;
+			overflow: hidden;
+		}
 
-                top: 15px;
-                left: auto;
-                transform: none;
+		.card::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, var(--accent), transparent);
+			opacity: 0;
+			transition: opacity 0.2s;
+		}
 
-                width: 100%;
+		.card:hover {
+			border-color: var(--border-2);
+			transform: translateY(-3px);
+			box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+		}
 
-                margin-bottom: 30px;
+		.card:hover::before {
+			opacity: 1;
+		}
 
-                display: flex;
+		.card .icon {
+			width: 36px;
+			height: 36px;
+			border-radius: 9px;
+			background: var(--surface-2);
+			border: 1px solid var(--border);
+			display: grid;
+			place-items: center;
+			margin-bottom: 0.9rem;
+			color: var(--accent);
+		}
 
-                overflow-x: auto;
+		.card h3 {
+			color: var(--text);
+		}
 
-                gap: 8px;
-            }
+		.card p {
+			font-size: 0.9rem;
+			margin: 0;
+		}
 
-            .project-nav h3 {
-                display: none;
-            }
+		/* ---------- Feature showcase (with image) ---------- */
+		.showcase {
+			display: grid;
+			gap: 2rem;
+			align-items: center;
+			grid-template-columns: 1fr;
+			padding: 1.75rem 0;
+		}
 
-            .project-nav a {
-                white-space: nowrap;
-                margin-bottom: 0;
-            }
+		@media (min-width: 800px) {
+			.showcase {
+				grid-template-columns: 1fr 1.3fr;
+			}
 
-            .container {
-                margin: auto;
-            }
+			.showcase.reverse {
+				grid-template-columns: 1.3fr 1fr;
+			}
 
-            .image-card img {
-                height: 280px;
-            }
+			.showcase.reverse .showcase-text {
+				order: 2;
+			}
 
-            h1 {
-                font-size: 28px;
-            }
+			.showcase.reverse .showcase-media {
+				order: 1;
+			}
+		}
 
-            .image-content h2 {
-                font-size: 23px;
-            }
-        }
-    </style>
+		.showcase-text h3 {
+			font-size: 1.25rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: 0.6rem;
+			color: var(--text);
+		}
+
+		.showcase-text p {
+			font-size: 0.95rem;
+			margin: 0;
+		}
+
+		.showcase-media {
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			overflow: hidden;
+			background: var(--surface);
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+		}
+
+		.showcase-media img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+
+		/* ---------- Features list ---------- */
+		ul.features {
+			list-style: none;
+			margin-top: 1.5rem;
+			display: grid;
+			gap: 0.6rem;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+		}
+
+		ul.features li {
+			padding: 0.85rem 1rem 0.85rem 2.4rem;
+			position: relative;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 9px;
+			color: var(--muted);
+			font-size: 0.93rem;
+			transition: all 0.15s;
+		}
+
+		ul.features li:hover {
+			border-color: var(--border-2);
+			color: var(--text);
+		}
+
+		ul.features li::before {
+			content: "→";
+			position: absolute;
+			left: 1rem;
+			color: var(--accent);
+			font-weight: 700;
+			font-family: 'JetBrains Mono', monospace;
+		}
+
+		/* ---------- Tech stack table ---------- */
+		.stack-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1.5rem;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			overflow: hidden;
+			font-size: 0.92rem;
+		}
+
+		.stack-table th,
+		.stack-table td {
+			padding: 0.85rem 1.15rem;
+			text-align: left;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.stack-table th {
+			background: var(--surface);
+			color: var(--muted-2);
+			font-weight: 600;
+			font-size: 0.78rem;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.stack-table td {
+			color: var(--text);
+		}
+
+		.stack-table td:first-child {
+			color: var(--muted);
+		}
+
+		.stack-table tr:last-child td {
+			border-bottom: none;
+		}
+
+		.stack-table tr:hover td {
+			background: var(--bg-2);
+		}
+
+		.tag {
+			display: inline-block;
+			padding: 0.15rem 0.5rem;
+			background: var(--surface-2);
+			border: 1px solid var(--border);
+			border-radius: 5px;
+			font-family: 'JetBrains Mono', monospace;
+			font-size: 0.82rem;
+			color: var(--accent-2);
+		}
+
+		.tag.planned {
+			color: var(--accent-3);
+			border-style: dashed;
+		}
+
+		/* ---------- Architecture diagram ---------- */
+		.diagram {
+			margin-top: 1.5rem;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			overflow: hidden;
+			background: var(--surface);
+		}
+
+		.diagram img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+
+		/* ---------- Goals list ---------- */
+		.goals {
+			display: grid;
+			gap: 0.75rem;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			margin-top: 1.5rem;
+		}
+
+		.goal {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.75rem;
+			padding: 1rem 1.15rem;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			font-size: 0.93rem;
+			color: var(--muted);
+		}
+
+		.goal .check {
+			flex-shrink: 0;
+			width: 18px;
+			height: 18px;
+			border-radius: 50%;
+			border: 1.5px solid var(--border-2);
+			display: grid;
+			place-items: center;
+			margin-top: 2px;
+			color: var(--accent-3);
+		}
+
+		/* ---------- Footer ---------- */
+		footer {
+			border-top: 1px solid var(--border);
+			padding: 2.5rem 1.5rem;
+			text-align: center;
+			color: var(--muted-2);
+			font-size: 0.88rem;
+			position: relative;
+			z-index: 1;
+		}
+
+		footer .footer-links {
+			display: flex;
+			gap: 1.5rem;
+			justify-content: center;
+			margin-bottom: 1rem;
+			flex-wrap: wrap;
+		}
+
+		footer a {
+			color: var(--muted);
+		}
+
+		footer a:hover {
+			color: var(--accent);
+		}
+
+		footer .quote {
+			font-style: italic;
+			color: var(--muted-2);
+			max-width: 50ch;
+			margin: 0 auto 1.25rem;
+			font-size: 0.85rem;
+		}
+
+		/* ---------- Responsive ---------- */
+		@media (max-width: 640px) {
+			nav ul li:not(:last-child) {
+				display: none;
+			}
+
+			.hero {
+				padding: 3.5rem 0 2.5rem;
+			}
+
+			section {
+				padding: 2.5rem 0;
+			}
+		}
+	</style>
 </head>
 
 <body>
 
+	<header>
+		<nav>
+			<div class="brand">
+				<div class="logo">A.P.E</div>
+				Asimov <small>Physics Engine</small>
+			</div>
+			<ul>
+				<li><a href="#overview">Overview</a></li>
+				<li><a href="#architecture">Architecture</a></li>
+				<li><a href="#features">Features</a></li>
+				<li><a href="#stack">Stack</a></li>
+				<li><a href="https://github.com/KolKemboi/Asimov" target="_blank" rel="noopener">GitHub ↗</a></li>
+			</ul>
+		</nav>
+	</header>
 
-    <!-- =========================
-         SIDE NAVIGATION
-    ========================== -->
+	<main>
 
-    <nav class="project-nav">
+		<!-- ============ HERO ============ -->
+		<section class="hero">
+			<div class="badge"><span class="dot"></span> In active development · C++ / OpenGL </div>
+			<h1>A real-time physics engine for <span class="grad">robotics simulation</span>.</h1>
+			<p>
+				<strong>A.P.E. (Asimov Physics Engine)</strong> is a C++-based real-time physics and simulation engine
+				named after Isaac Asimov. It combines an Entity Component System, real-time rendering, rigid-body
+				physics, and an integrated editor — built to work alongside <strong>ROS (Robot Operating System)</strong>.
+			</p>
+			<div class="buttons">
+				<a class="btn primary" href="https://github.com/KolKemboi/Asimov" target="_blank" rel="noopener">
+					View on GitHub
+					<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+						<path
+							d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+					</svg>
+				</a>
+				<a class="btn" href="#overview">Explore the Engine</a>
+			</div>
 
-        <h3>My Projects</h3>
+			<div class="hero-image">
+				<img
+					src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/Engine.png"
+					alt="A.P.E. editor running a physics scene">
+				<div class="caption">A.P.E. editor — scene viewport with real-time physics simulation</div>
+			</div>
+		</section>
 
-        <a href="#project1">
-            Project One
-        </a>
+		<!-- ============ OVERVIEW / MOTIVATION ============ -->
+		<section id="overview">
+			<div class="eyebrow">Overview</div>
+			<h2>Bridging game-engine simulation and robotics development</h2>
+			<p class="lead">
+				The project aims to bridge the gap between game-engine-style real-time simulation and robotics development.
+			</p>
+			<p>
+				By combining physics simulation with ROS, A.P.E. provides an environment for experimenting with robotic
+				systems, sensors, rigid-body dynamics, collision detection, and simulated environments — before deploying
+				them to physical hardware.
+			</p>
+			<p>
+				Modularity is a core design principle: individual systems such as the renderer, physics engine, ECS, and
+				ROS integration can evolve independently while communicating through a common engine architecture.
+			</p>
 
-        <a href="#project2">
-            Project Two
-        </a>
+			<div class="eyebrow" style="margin-top: 2.5rem;">Long-term vision</div>
+			<h3 style="color: var(--text); font-size: 1.1rem; margin-bottom: 0.5rem;">A lightweight, extensible simulation
+				platform for:</h3>
+			<ul class="features">
+				<li>Robotics simulation</li>
+				<li>Physics experimentation</li>
+				<li>ROS-based development</li>
+				<li>Autonomous systems</li>
+				<li>Sensor simulation</li>
+				<li>Robot visualization</li>
+				<li>Real-time environment prototyping</li>
+				<li>Game and simulation development</li>
+			</ul>
+		</section>
 
-        <a href="#project3">
-            Project Three
-        </a>
+		<!-- ============ ARCHITECTURE ============ -->
+		<section id="architecture">
+			<div class="eyebrow">Architecture</div>
+			<h2>Engine subsystems</h2>
+			<p>
+				A.P.E. is divided into several major subsystems, each responsible for a specific part of the runtime
+				and editor. They communicate through shared scene and entity data, keeping the engine extensible.
+			</p>
 
-        <a href="#project4">
-            Project Four
-        </a>
+			<div class="diagram">
+				<img
+					src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/Asimov.drawio.png"
+					alt="A.P.E. engine architecture diagram">
+			</div>
 
-    </nav>
+			<div class="grid" style="margin-top: 2rem;">
+				<div class="card">
+					<div class="icon">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="2" />
+							<path d="M3 9h18M9 21V9" />
+						</svg>
+					</div>
+					<h3>User Interface</h3>
+					<p>Built with <strong>Dear ImGui</strong> (docking branch) for a flexible, rearrangeable editor workflow —
+						inspecting scene hierarchy, editing components, and interacting with files.</p>
+				</div>
+				<div class="card">
+					<div class="icon">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="3" />
+							<circle cx="5" cy="5" r="2" />
+							<circle cx="19" cy="5" r="2" />
+							<circle cx="5" cy="19" r="2" />
+							<circle cx="19" cy="19" r="2" />
+							<path d="M6.5 6.5l3 3M17.5 6.5l-3 3M6.5 17.5l3-3M17.5 17.5l-3-3" />
+						</svg>
+					</div>
+					<h3>Entity Component System</h3>
+					<p>Powered by <strong>EnTT</strong>. Separates entities from the data associated with them, keeping engine
+						systems decoupled and modular. Components represent transforms, rendering, or physics properties.</p>
+				</div>
+				<div class="card">
+					<div class="icon">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round">
+							<path d="M12 2L2 7l10 5 10-5-10-5z" />
+							<path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+						</svg>
+					</div>
+					<h3>Renderer</h3>
+					<p>Currently <strong>OpenGL</strong> with <strong>GLFW</strong> for window/input and <strong>GLAD</strong> for
+						function loading. A <strong>Vulkan backend via Rust</strong> is planned for a lower-level alternative.</p>
+				</div>
+				<div class="card">
+					<div class="icon">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="9" />
+							<path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4" />
+						</svg>
+					</div>
+					<h3>Physics</h3>
+					<p>Simulation via <strong>ReactPhysics3D</strong>. Provides collision detection and rigid-body simulation,
+						plus an editor collider-selection interface for configuring collision geometry.</p>
+				</div>
+			</div>
 
+			<p style="margin-top: 2rem;">
+				The <strong>editor sits on top</strong> of these systems, providing an interactive interface for inspecting and
+				modifying the current engine state. Rendering systems consume rendering components; the physics system operates
+				on entities with physical properties — all sharing the same ECS data model.
+			</p>
+		</section>
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
+		<!-- ============ FEATURES ============ -->
+		<section id="features">
+			<div class="eyebrow">Editor Features</div>
+			<h2>An editor-driven workflow</h2>
+			<p>
+				A.P.E. ships with an integrated editor designed to make scene construction and physics experimentation
+				interactive — no code changes required.
+			</p>
 
-    <div class="container">
+			<!-- Scene Outliner -->
+			<div class="showcase">
+				<div class="showcase-text">
+					<h3>Scene Outliner</h3>
+					<p>
+						A hierarchical view of all objects currently present in a scene. Quickly inspect the scene and
+						select individual entities for further editing — the central navigation point for managing objects
+						in the editor.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/outliner.png"
+						alt="Scene Outliner panel">
+				</div>
+			</div>
 
-        <h1>My Project Gallery</h1>
+			<!-- Properties Editor -->
+			<div class="showcase reverse">
+				<div class="showcase-text">
+					<h3>Properties Editor</h3>
+					<p>
+						Inspect and modify the components attached to a selected entity. Rather than requiring property
+						changes directly in code, the editor exposes relevant component data through the UI — making scene
+						construction and experimentation interactive.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/PropertiesEditor.png"
+						alt="Properties Editor panel">
+				</div>
+			</div>
 
+			<!-- Add Object -->
+			<div class="showcase">
+				<div class="showcase-text">
+					<h3>Add Object</h3>
+					<p>
+						Create new entities directly from the editor. A straightforward workflow for constructing scenes
+						and testing combinations of rendering and physics components — without manually creating every
+						object in code.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/AddObject.png"
+						alt="Add Object dialog">
+				</div>
+			</div>
 
-        <!-- PROJECT 1 -->
+			<!-- Delete Object -->
+			<div class="showcase reverse">
+				<div class="showcase-text">
+					<h3>Delete Object</h3>
+					<p>
+						Remove entities directly from the scene. Complements the scene-management workflow — quickly
+						create, test, and remove objects while iterating on a scene.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/DeleteObject.png"
+						alt="Delete Object action">
+				</div>
+			</div>
 
-        <div class="image-card" id="project1">
+			<!-- File Dialog -->
+			<div class="showcase">
+				<div class="showcase-text">
+					<h3>File Dialog</h3>
+					<p>
+						An integrated file dialog for interacting with files and engine resources. The foundation for
+						managing external assets and scene-related files from within the editor — no need to switch to
+						external file-management tools.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/FileDialog.png"
+						alt="File Dialog">
+				</div>
+			</div>
 
-            <img src="./images/image1.png" alt="Project Image 1">
+			<!-- Collider Selector -->
+			<div class="showcase reverse">
+				<div class="showcase-text">
+					<h3>Collider Selector</h3>
+					<p>
+						Choose the type of physics collider associated with an object. Configure collision geometry
+						directly within the editor for a more visual workflow when setting up physical interactions
+						between objects.
+					</p>
+				</div>
+				<div class="showcase-media">
+					<img
+						src="https://raw.githubusercontent.com/KolKemboi/Asimov/0681f2b07b0ed5736f6a22318202f3fcfe09fc62/images/colliderTypeSelector.png"
+						alt="Collider type selector">
+				</div>
+			</div>
 
-            <div class="image-content">
+		</section>
 
-                <h2>Project One</h2>
+		<!-- ============ TECH STACK ============ -->
+		<section id="stack">
+			<div class="eyebrow">Technology Stack</div>
+			<h2>Built on proven, modular tools</h2>
+			<p>
+				Each subsystem is chosen to be replaceable and independently extensible — keeping the engine
+				architecture flexible as it grows.
+			</p>
 
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Praesent vitae justo nec lorem tincidunt consequat.
-                    Suspendisse potenti. Integer malesuada, neque at
-                    consectetur tincidunt, libero lorem feugiat massa,
-                    vitae consequat ipsum nulla at erat.
-                </p>
+			<table class="stack-table">
+				<thead>
+					<tr>
+						<th>Subsystem</th>
+						<th>Technology</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>User Interface</td>
+						<td><span class="tag">Dear ImGui — Docking Branch</span></td>
+					</tr>
+					<tr>
+						<td>Entity Component System</td>
+						<td><span class="tag">EnTT</span></td>
+					</tr>
+					<tr>
+						<td>Rendering</td>
+						<td><span class="tag">OpenGL</span></td>
+					</tr>
+					<tr>
+						<td>Window / Input Management</td>
+						<td><span class="tag">GLFW</span></td>
+					</tr>
+					<tr>
+						<td>OpenGL Loader</td>
+						<td><span class="tag">GLAD</span></td>
+					</tr>
+					<tr>
+						<td>Physics</td>
+						<td><span class="tag">ReactPhysics3D</span></td>
+					</tr>
+					<tr>
+						<td>Planned Rendering Backend</td>
+						<td><span class="tag planned">Vulkan / Rust</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
 
-            </div>
+		<!-- ============ GOALS ============ -->
+		<section id="goals">
+			<div class="eyebrow">Project Goals</div>
+			<h2>Roadmap</h2>
+			<p>
+				The long-term goal is a flexible real-time engine with a strong editor-driven workflow. Current
+				development focuses on building core systems and establishing a modular architecture that can support
+				additional rendering, physics, asset-management, and editor functionality in the future.
+			</p>
 
-        </div>
+			<div class="goals">
+				<div class="goal"><span class="check">◈</span> Vulkan rendering backend integration</div>
+				<div class="goal"><span class="check">◈</span> Rust-based rendering components</div>
+				<div class="goal"><span class="check">◈</span> Improved scene and asset management</div>
+				<div class="goal"><span class="check">◈</span> Expanded physics functionality</div>
+				<div class="goal"><span class="check">◈</span> Additional editor tools</div>
+				<div class="goal"><span class="check">◈</span> Scene serialization</div>
+				<div class="goal"><span class="check">◈</span> More rendering features</div>
+				<div class="goal"><span class="check">◈</span> Improved debugging and profiling tools</div>
+			</div>
+		</section>
 
+	</main>
 
-        <!-- PROJECT 2 -->
-
-        <div class="image-card" id="project2">
-
-            <img src="./images/image2.jpg" alt="Project Image 2">
-
-            <div class="image-content">
-
-                <h2>Project Two</h2>
-
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Donec feugiat, sapien sed faucibus tincidunt, mauris
-                    lectus consectetur libero, vitae tincidunt justo neque
-                    eget augue. Morbi vitae lectus sed libero consequat
-                    pellentesque.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- PROJECT 3 -->
-
-        <div class="image-card" id="project3">
-
-            <img src="./images/image3.jpg" alt="Project Image 3">
-
-            <div class="image-content">
-
-                <h2>Project Three</h2>
-
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Vestibulum ante ipsum primis in faucibus orci luctus et
-                    ultrices posuere cubilia curae. Nam vitae neque vel
-                    lectus aliquet faucibus. Phasellus vitae mauris sed
-                    libero tincidunt vulputate.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- PROJECT 4 -->
-
-        <div class="image-card" id="project4">
-
-            <img src="./images/image4.jpg" alt="Project Image 4">
-
-            <div class="image-content">
-
-                <h2>Project Four</h2>
-
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Mauris vitae lorem vel augue posuere consequat.
-                    Pellentesque habitant morbi tristique senectus et netus
-                    et malesuada fames ac turpis egestas.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
+	<footer>
+		<div class="quote">
+			“The most exciting phrase to hear in science, the one that heralds new discoveries, is not ‘Eureka!’
+			but ‘That’s funny…’”
+			<br>— Isaac Asimov
+		</div>
+		<div class="footer-links">
+			<a href="https://github.com/KolKemboi/Asimov" target="_blank" rel="noopener">GitHub</a>
+			<a href="#overview">Overview</a>
+			<a href="#architecture">Architecture</a>
+			<a href="#features">Features</a>
+			<a href="#stack">Tech Stack</a>
+		</div>
+		<p>A.P.E. — Asimov Physics Engine · Named after Isaac Asimov</p>
+	</footer>
 
 </body>
+
 </html>
