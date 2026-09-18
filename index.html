@@ -14,19 +14,22 @@
 		rel="stylesheet">
 	<style>
 		:root {
-			--bg: #0a0c10;
-			--bg-2: #0f1319;
-			--surface: #141922;
-			--surface-2: #1a2029;
-			--border: #262d38;
+			/* palette aligned to the profile site */
+			--bg: #0d0f12;
+			--bg-2: #14171c;
+			--surface: #171b21;
+			--surface-2: #1d222a;
+			--border: #242a33;
 			--border-2: #333c4a;
-			--text: #e8edf4;
-			--muted: #8b96a8;
+			--text: #e6e9ef;
+			--muted: #8b95a5;
 			--muted-2: #6b7688;
-			--accent: #5eead4;
-			--accent-2: #38bdf8;
-			--accent-3: #a78bfa;
-			--glow: rgba(94, 234, 212, 0.15);
+			--accent: #7dd3fc;
+			--accent-2: #a78bfa;
+			--glow: rgba(125, 211, 252, 0.12);
+
+			--mono: 'JetBrains Mono', ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+			--sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 		}
 
 		* {
@@ -41,7 +44,7 @@
 		}
 
 		body {
-			font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			font-family: var(--sans);
 			background: var(--bg);
 			color: var(--text);
 			line-height: 1.65;
@@ -49,8 +52,21 @@
 			overflow-x: hidden;
 		}
 
-		/* Ambient background glow */
+		/* blueprint grid backdrop — matches the profile site */
 		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			background-image:
+				linear-gradient(rgba(125, 211, 252, 0.035) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(125, 211, 252, 0.035) 1px, transparent 1px);
+			background-size: 44px 44px;
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		/* faint radial glow on top of the grid */
+		body::after {
 			content: "";
 			position: fixed;
 			top: -30%;
@@ -61,7 +77,7 @@
 			background: radial-gradient(circle, var(--glow) 0%, transparent 60%);
 			pointer-events: none;
 			z-index: 0;
-			opacity: 0.6;
+			opacity: 0.7;
 		}
 
 		a {
@@ -76,7 +92,7 @@
 
 		code,
 		pre {
-			font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+			font-family: var(--mono);
 		}
 
 		/* ---------- Header ---------- */
@@ -84,14 +100,14 @@
 			position: sticky;
 			top: 0;
 			z-index: 100;
-			background: rgba(10, 12, 16, 0.82);
+			background: rgba(13, 15, 18, 0.82);
 			backdrop-filter: blur(14px) saturate(180%);
 			-webkit-backdrop-filter: blur(14px) saturate(180%);
 			border-bottom: 1px solid var(--border);
 		}
 
 		nav {
-			max-width: 1080px;
+			max-width: 900px;
 			margin: 0 auto;
 			padding: 0.85rem 1.5rem;
 			display: flex;
@@ -104,9 +120,11 @@
 			display: flex;
 			align-items: center;
 			gap: 0.6rem;
-			font-weight: 800;
-			font-size: 1.05rem;
-			letter-spacing: -0.01em;
+			font-family: var(--mono);
+			font-weight: 600;
+			font-size: 0.95rem;
+			letter-spacing: -0.02em;
+			color: var(--text);
 		}
 
 		.brand .logo {
@@ -116,9 +134,9 @@
 			background: linear-gradient(135deg, var(--accent), var(--accent-2));
 			display: grid;
 			place-items: center;
-			font-size: 0.7rem;
+			font-size: 0.62rem;
 			font-weight: 800;
-			color: #0a0c10;
+			color: #0d0f12;
 		}
 
 		.brand small {
@@ -137,17 +155,17 @@
 
 		nav ul a {
 			color: var(--muted);
-			font-size: 0.88rem;
-			font-weight: 500;
+			font-size: 0.82rem;
+			font-family: var(--mono);
 		}
 
 		nav ul a:hover {
-			color: var(--text);
+			color: var(--accent);
 		}
 
 		/* ---------- Layout ---------- */
 		main {
-			max-width: 1080px;
+			max-width: 900px;
 			margin: 0 auto;
 			padding: 0 1.5rem 5rem;
 			position: relative;
@@ -163,19 +181,36 @@
 		}
 
 		.eyebrow {
-			font-size: 0.78rem;
-			font-weight: 600;
-			letter-spacing: 0.12em;
-			text-transform: uppercase;
-			color: var(--accent);
+			font-family: var(--mono);
+			font-size: 0.76rem;
+			font-weight: 500;
+			letter-spacing: 0.08em;
+			color: var(--muted);
 			margin-bottom: 0.75rem;
 		}
 
+		.eyebrow::before {
+			content: "// ";
+			color: var(--accent-2);
+		}
+
 		h2 {
-			font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+			font-size: clamp(1.35rem, 2.6vw, 1.6rem);
 			font-weight: 700;
-			letter-spacing: -0.02em;
+			letter-spacing: -0.025em;
 			margin-bottom: 1rem;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		h2::before {
+			content: "";
+			width: 4px;
+			height: 20px;
+			border-radius: 2px;
+			background: linear-gradient(var(--accent), var(--accent-2));
+			flex-shrink: 0;
 		}
 
 		h3 {
@@ -185,19 +220,19 @@
 		}
 
 		p {
-			color: var(--muted);
+			color: #aeb7c4;
 			max-width: 72ch;
 			margin-bottom: 1rem;
 		}
 
 		p.lead {
-			font-size: 1.08rem;
+			font-size: 1.05rem;
 			color: var(--text);
 		}
 
 		/* ---------- Hero ---------- */
 		.hero {
-			padding: 5.5rem 0 4rem;
+			padding: 5rem 0 3.5rem;
 			border-bottom: 1px solid var(--border);
 			position: relative;
 		}
@@ -210,7 +245,8 @@
 			background: var(--surface);
 			border: 1px solid var(--border);
 			border-radius: 999px;
-			font-size: 0.78rem;
+			font-family: var(--mono);
+			font-size: 0.74rem;
 			font-weight: 500;
 			color: var(--muted);
 			margin-bottom: 1.5rem;
@@ -238,24 +274,24 @@
 		}
 
 		.hero h1 {
-			font-size: clamp(2.2rem, 5.5vw, 3.6rem);
-			font-weight: 800;
-			line-height: 1.08;
+			font-size: clamp(2rem, 5.5vw, 3.1rem);
+			font-weight: 700;
+			line-height: 1.1;
 			letter-spacing: -0.035em;
 			margin-bottom: 1.25rem;
-			max-width: 22ch;
+			max-width: 24ch;
 		}
 
 		.hero h1 .grad {
-			background: linear-gradient(120deg, var(--accent), var(--accent-2) 60%, var(--accent-3));
+			background: linear-gradient(100deg, var(--accent), var(--accent-2));
 			-webkit-background-clip: text;
 			background-clip: text;
 			-webkit-text-fill-color: transparent;
 		}
 
 		.hero p {
-			font-size: 1.15rem;
-			color: var(--muted);
+			font-size: 1.05rem;
+			color: #aeb7c4;
 			max-width: 62ch;
 			margin-bottom: 2.25rem;
 		}
@@ -270,12 +306,13 @@
 			display: inline-flex;
 			align-items: center;
 			gap: 0.5rem;
-			padding: 0.7rem 1.3rem;
-			border-radius: 9px;
-			font-size: 0.92rem;
-			font-weight: 600;
-			border: 1px solid var(--border-2);
+			padding: 0.65rem 1.25rem;
+			border-radius: 8px;
+			font-size: 0.88rem;
+			font-family: var(--mono);
+			border: 1px solid var(--border);
 			color: var(--text);
+			background: var(--bg-2);
 			transition: all 0.18s ease;
 			cursor: pointer;
 		}
@@ -288,21 +325,21 @@
 		}
 
 		.btn.primary {
-			background: var(--accent);
-			color: #0a0c10;
-			border-color: var(--accent);
-			box-shadow: 0 0 24px rgba(94, 234, 212, 0.25);
+			background: linear-gradient(100deg, rgba(125, 211, 252, 0.14), rgba(167, 139, 250, 0.14));
+			border-color: rgba(125, 211, 252, 0.4);
+			color: var(--accent);
+			box-shadow: 0 0 24px rgba(125, 211, 252, 0.14);
 		}
 
 		.btn.primary:hover {
-			color: #0a0c10;
-			filter: brightness(1.08);
-			box-shadow: 0 0 32px rgba(94, 234, 212, 0.4);
+			color: var(--accent);
+			border-color: var(--accent);
+			box-shadow: 0 0 32px rgba(125, 211, 252, 0.28);
 		}
 
 		/* ---------- Hero image ---------- */
 		.hero-image {
-			margin-top: 3.5rem;
+			margin-top: 3rem;
 			border: 1px solid var(--border);
 			border-radius: 14px;
 			overflow: hidden;
@@ -315,7 +352,7 @@
 			content: "";
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(180deg, transparent 70%, rgba(10, 12, 16, 0.5));
+			background: linear-gradient(180deg, transparent 70%, rgba(13, 15, 18, 0.5));
 			pointer-events: none;
 			z-index: 2;
 		}
@@ -329,9 +366,9 @@
 		.hero-image .caption {
 			padding: 0.8rem 1.2rem;
 			border-top: 1px solid var(--border);
-			font-size: 0.82rem;
+			font-size: 0.76rem;
 			color: var(--muted-2);
-			font-family: 'JetBrains Mono', monospace;
+			font-family: var(--mono);
 		}
 
 		/* ---------- Feature grid ---------- */
@@ -343,7 +380,7 @@
 		}
 
 		.card {
-			background: linear-gradient(180deg, var(--surface), var(--bg-2));
+			background: var(--surface);
 			border: 1px solid var(--border);
 			border-radius: 12px;
 			padding: 1.4rem;
@@ -352,25 +389,23 @@
 			overflow: hidden;
 		}
 
-		.card::before {
+		.card::after {
 			content: "";
 			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 1px;
-			background: linear-gradient(90deg, transparent, var(--accent), transparent);
+			inset: 0;
+			background: linear-gradient(135deg, rgba(125, 211, 252, 0.06), transparent 55%);
 			opacity: 0;
-			transition: opacity 0.2s;
+			transition: opacity 0.2s ease;
+			pointer-events: none;
 		}
 
 		.card:hover {
-			border-color: var(--border-2);
+			border-color: rgba(125, 211, 252, 0.45);
 			transform: translateY(-3px);
 			box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 		}
 
-		.card:hover::before {
+		.card:hover::after {
 			opacity: 1;
 		}
 
@@ -388,14 +423,16 @@
 
 		.card h3 {
 			color: var(--text);
+			font-size: 1rem;
 		}
 
 		.card p {
-			font-size: 0.9rem;
+			font-size: 0.88rem;
 			margin: 0;
+			color: #aeb7c4;
 		}
 
-		/* ---------- Feature showcase (with image) ---------- */
+		/* ---------- Showcase rows ---------- */
 		.showcase {
 			display: grid;
 			gap: 2rem;
@@ -423,16 +460,27 @@
 		}
 
 		.showcase-text h3 {
-			font-size: 1.25rem;
-			font-weight: 700;
+			font-size: 1.15rem;
+			font-weight: 600;
 			letter-spacing: -0.02em;
 			margin-bottom: 0.6rem;
 			color: var(--text);
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.showcase-text h3::before {
+			content: "▸";
+			color: var(--accent);
+			font-family: var(--mono);
+			font-size: 0.9rem;
 		}
 
 		.showcase-text p {
-			font-size: 0.95rem;
+			font-size: 0.92rem;
 			margin: 0;
+			color: #aeb7c4;
 		}
 
 		.showcase-media {
@@ -441,6 +489,12 @@
 			overflow: hidden;
 			background: var(--surface);
 			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+			transition: border-color 0.2s ease, transform 0.2s ease;
+		}
+
+		.showcase-media:hover {
+			border-color: rgba(125, 211, 252, 0.4);
+			transform: translateY(-2px);
 		}
 
 		.showcase-media img {
@@ -464,13 +518,13 @@
 			background: var(--surface);
 			border: 1px solid var(--border);
 			border-radius: 9px;
-			color: var(--muted);
-			font-size: 0.93rem;
+			color: #aeb7c4;
+			font-size: 0.9rem;
 			transition: all 0.15s;
 		}
 
 		ul.features li:hover {
-			border-color: var(--border-2);
+			border-color: rgba(125, 211, 252, 0.4);
 			color: var(--text);
 		}
 
@@ -480,7 +534,7 @@
 			left: 1rem;
 			color: var(--accent);
 			font-weight: 700;
-			font-family: 'JetBrains Mono', monospace;
+			font-family: var(--mono);
 		}
 
 		/* ---------- Tech stack table ---------- */
@@ -491,7 +545,7 @@
 			border: 1px solid var(--border);
 			border-radius: 12px;
 			overflow: hidden;
-			font-size: 0.92rem;
+			font-size: 0.9rem;
 		}
 
 		.stack-table th,
@@ -502,10 +556,11 @@
 		}
 
 		.stack-table th {
-			background: var(--surface);
+			background: var(--bg-2);
 			color: var(--muted-2);
-			font-weight: 600;
-			font-size: 0.78rem;
+			font-family: var(--mono);
+			font-weight: 500;
+			font-size: 0.72rem;
 			letter-spacing: 0.08em;
 			text-transform: uppercase;
 		}
@@ -528,17 +583,19 @@
 
 		.tag {
 			display: inline-block;
-			padding: 0.15rem 0.5rem;
-			background: var(--surface-2);
-			border: 1px solid var(--border);
-			border-radius: 5px;
-			font-family: 'JetBrains Mono', monospace;
-			font-size: 0.82rem;
-			color: var(--accent-2);
+			padding: 0.15rem 0.55rem;
+			background: rgba(125, 211, 252, 0.08);
+			border: 1px solid rgba(125, 211, 252, 0.2);
+			border-radius: 99px;
+			font-family: var(--mono);
+			font-size: 0.75rem;
+			color: var(--accent);
 		}
 
 		.tag.planned {
-			color: var(--accent-3);
+			color: var(--accent-2);
+			border-color: rgba(167, 139, 250, 0.35);
+			background: rgba(167, 139, 250, 0.08);
 			border-style: dashed;
 		}
 
@@ -557,7 +614,7 @@
 			height: auto;
 		}
 
-		/* ---------- Goals list ---------- */
+		/* ---------- Goals ---------- */
 		.goals {
 			display: grid;
 			gap: 0.75rem;
@@ -573,8 +630,14 @@
 			background: var(--surface);
 			border: 1px solid var(--border);
 			border-radius: 10px;
-			font-size: 0.93rem;
-			color: var(--muted);
+			font-size: 0.9rem;
+			color: #aeb7c4;
+			transition: all 0.15s;
+		}
+
+		.goal:hover {
+			border-color: rgba(167, 139, 250, 0.4);
+			color: var(--text);
 		}
 
 		.goal .check {
@@ -586,7 +649,8 @@
 			display: grid;
 			place-items: center;
 			margin-top: 2px;
-			color: var(--accent-3);
+			color: var(--accent-2);
+			font-size: 0.7rem;
 		}
 
 		/* ---------- Footer ---------- */
@@ -595,7 +659,7 @@
 			padding: 2.5rem 1.5rem;
 			text-align: center;
 			color: var(--muted-2);
-			font-size: 0.88rem;
+			font-size: 0.85rem;
 			position: relative;
 			z-index: 1;
 		}
@@ -606,6 +670,8 @@
 			justify-content: center;
 			margin-bottom: 1rem;
 			flex-wrap: wrap;
+			font-family: var(--mono);
+			font-size: 0.8rem;
 		}
 
 		footer a {
@@ -617,11 +683,13 @@
 		}
 
 		footer .quote {
-			font-style: italic;
+			font-family: var(--mono);
+			font-style: normal;
 			color: var(--muted-2);
-			max-width: 50ch;
+			max-width: 55ch;
 			margin: 0 auto 1.25rem;
-			font-size: 0.85rem;
+			font-size: 0.82rem;
+			line-height: 1.7;
 		}
 
 		/* ---------- Responsive ---------- */
@@ -650,10 +718,10 @@
 				Asimov <small>Physics Engine</small>
 			</div>
 			<ul>
-				<li><a href="#overview">Overview</a></li>
-				<li><a href="#architecture">Architecture</a></li>
-				<li><a href="#features">Features</a></li>
-				<li><a href="#stack">Stack</a></li>
+				<li><a href="#overview">overview</a></li>
+				<li><a href="#architecture">architecture</a></li>
+				<li><a href="#features">features</a></li>
+				<li><a href="#stack">stack</a></li>
 				<li><a href="https://github.com/KolKemboi/Asimov" target="_blank" rel="noopener">GitHub ↗</a></li>
 			</ul>
 		</nav>
@@ -707,7 +775,7 @@
 			</p>
 
 			<div class="eyebrow" style="margin-top: 2.5rem;">Long-term vision</div>
-			<h3 style="color: var(--text); font-size: 1.1rem; margin-bottom: 0.5rem;">A lightweight, extensible simulation
+			<h3 style="color: var(--text); font-size: 1.05rem; margin-bottom: 0.5rem;">A lightweight, extensible simulation
 				platform for:</h3>
 			<ul class="features">
 				<li>Robotics simulation</li>
@@ -991,10 +1059,10 @@
 		</div>
 		<div class="footer-links">
 			<a href="https://github.com/KolKemboi/Asimov" target="_blank" rel="noopener">GitHub</a>
-			<a href="#overview">Overview</a>
-			<a href="#architecture">Architecture</a>
-			<a href="#features">Features</a>
-			<a href="#stack">Tech Stack</a>
+			<a href="#overview">overview</a>
+			<a href="#architecture">architecture</a>
+			<a href="#features">features</a>
+			<a href="#stack">stack</a>
 		</div>
 		<p>A.P.E. — Asimov Physics Engine · Named after Isaac Asimov</p>
 	</footer>
