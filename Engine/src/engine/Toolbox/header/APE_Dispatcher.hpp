@@ -12,8 +12,8 @@ enum class EventType {
   OBJECT_MODIFIED,
   COLLIDER_TYPE_MODIFIED,
   KEYPRESS,
-  MODELLOADED,
-  ROBOTLOADED,
+	MODELLOADED,
+	ROBOTLOADED,
 };
 
 class Dispatcher {
@@ -28,6 +28,7 @@ public:
   // Subscriber and Emitter
   void Subscriber(EventType, Handler);
   void Emitter(EventType, const std::string &);
+
 
 private:
   std::unordered_map<EventType, std::vector<Handler>> handlers;

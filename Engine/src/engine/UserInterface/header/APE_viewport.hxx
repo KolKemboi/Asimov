@@ -114,6 +114,8 @@ public:
 
     auto selected = reg.view<Selected>();
 
+    glm::vec3 rotBak = {0, 0, 0};
+
     for (auto entity : selected) {
       auto &transform = reg.get<Transform>(entity);
       auto &name = reg.get<Name>(entity);
@@ -133,11 +135,20 @@ public:
                                               sca);
 
         transform.s_Position = glm::vec3(pos[0], pos[1], pos[2]);
+
         transform.s_Rotation = glm::vec3(rot[0], rot[1], rot[2]);
+
+        // read rot for all
+        // store,
+        // make them zeros,
+        // rotate
+        // replace
         transform.s_Scale = glm::vec3(sca[0], sca[1], sca[2]);
 
         isComplete = true;
       } else if (!ImGuizmo::IsUsing() && isComplete) {
+
+        rotBak = transform.s_Rotation;
 
         dispatcher.Emitter(EventType::OBJECT_MODIFIED,
                            "Selected objected had been resized");
