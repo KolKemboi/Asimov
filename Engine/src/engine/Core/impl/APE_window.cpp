@@ -45,7 +45,7 @@ void APE_Window::_setUpGLFWContext() {
   if (std::optional<GLFWwindow *> window =
           this->_createWindow(m_WindowWidth, m_WindowHeight, m_WindowName)) {
     this->m_Window = *window;
-    this->m_Windows.push_back(this->m_Window);
+    this->m_Windows_Vector.push_back(this->m_Window);
   } else {
     printf("ERROR::WINDOW_CREATION\n"); // read on SPDLOG
     this->_destroyGLFWContext();
@@ -71,10 +71,10 @@ void APE_Window::_setUpGLFWContext() {
 
   // these dont need to be in the context set up
   // set up shader and framebuffer
-  this->m_MainShader = std::make_shared<Shader>(
+  this->m_MainShader_SharedPtr = std::make_shared<Shader>(
       "shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
 
-  this->m_MainFrameBuffer =
+  this->m_MainFrameBuffer_UniquePtr =
       std::make_unique<FrameBuffer>(m_WindowWidth, m_WindowHeight);
 
   this->_setUpPrimitives();
@@ -82,9 +82,9 @@ void APE_Window::_setUpGLFWContext() {
   // Shift->A add primitives
   // it is an Imgui pop up window
   this->m_AddObjectPopUp.SetDispatcher(m_Dispatcher);
-  this->m_AddObjectPopUp.SetUpPrimitiveData(_CubePrimitive, _CylinderPrimitive,
-                                            _SpherePrimitive, _CapsulePrimitive,
-                                            _ConvexMeshPrimitive);
+  this->m_AddObjectPopUp.SetUpPrimitiveData(
+      _CubePrimitive_Tuple, _CylinderPrimitive_Tuple, _SpherePrimitive_Tuple,
+      _CapsulePrimitive_Tuple, _ConvexMeshPrimitive_Tuple);
 
   m_Camera.SetUpCamera(m_CamPos, m_CamUp, -90.0f, 0.0f);
 
@@ -96,19 +96,20 @@ void APE_Window::_setUpGLFWContext() {
   glfwSetScrollCallback(m_Window, InputSystem::ScrollCallbackFunc);
 
   // ensure this runs after the Callback functions
-  this->m_MainInterface = std::make_unique<Interface>(this->m_Window);
+  this->m_MainInterface_UniquePtr = std::make_unique<Interface>(this->m_Window);
 
   // physics
   m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld();
 
   // robots
-  this->m_RobotMaker = std::make_unique<RobotMaker>(this->m_Dispatcher);
+  this->m_RobotMaker_UniquePtr =
+      std::make_unique<RobotMaker>(this->m_Dispatcher);
 }
 
 void APE_Window::_run() {
 
   // will probably use one shader
-  this->m_MainShader->UseShader();
+  this->m_MainShader_SharedPtr->UseShader();
 
   glm::mat4 projection;
   projection = glm::perspective(glm::radians(45.0f),
@@ -146,12 +147,13 @@ void APE_Window::_run() {
         worldrun = true;
     }
 
-    this->m_MainShader->SetMat4(
+    this->m_MainShader_SharedPtr->SetMat4(
         this->m_Camera.GetViewMatrix(),
         "view"); // view matrix setup, Model View Projection matrix
-    this->m_MainShader->SetVec3(m_Camera.GetPosition(),
-                                "viewPos"); // for some type of phong shading
-    this->m_MainShader->SetVec3(
+    this->m_MainShader_SharedPtr->SetVec3(
+        m_Camera.GetPosition(),
+        "viewPos"); // for some type of phong shading
+    this->m_MainShader_SharedPtr->SetVec3(
         m_Camera.GetPosition(),
         "lightPos"); // set lightpos to be cam pos, blender style
 
@@ -191,8 +193,8 @@ void APE_Window::_run() {
       }
     }
     // USER interface
-    this->m_MainInterface->SetUpNewFrame();
-    this->m_MainInterface->SetUpDocking();
+    this->m_MainInterface_UniquePtr->SetUpNewFrame();
+    this->m_MainInterface_UniquePtr->SetUpDocking();
 
     // probably should be moved somewhere else
     // meanwhile, delete and duplicate abilities
@@ -217,7 +219,7 @@ void APE_Window::_run() {
 
     // 			properties window
     // Render properties
-    m_Properties.MakeProperties(m_Registry, m_MainShader, lightColor,
+    m_Properties.MakeProperties(m_Registry, m_MainShader_SharedPtr, lightColor,
                                 m_Dispatcher);
     // physics properties
     m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
@@ -234,11 +236,12 @@ void APE_Window::_run() {
     // render call -> render first, then blit the framebuffer, so that the
     // rendered buffer is shown immediately, not the previous buffer as
     // originally put
-    m_RenderSystem.RenderEntities(m_MainFrameBuffer, m_Registry, m_MainShader);
+    m_RenderSystem.RenderEntities(m_MainFrameBuffer_UniquePtr, m_Registry,
+                                  m_MainShader_SharedPtr);
 
     // the viewport setup
-    m_Viewport.View(this->m_MainFrameBuffer, m_Camera, m_Registry, m_MainShader,
-                    m_EventSystem, m_Dispatcher);
+    m_Viewport.View(this->m_MainFrameBuffer_UniquePtr, m_Camera, m_Registry,
+                    m_MainShader_SharedPtr, m_EventSystem, m_Dispatcher);
 
     // selection system -> outliner section
     m_Selection.Selection(m_Registry);
@@ -246,7 +249,8 @@ void APE_Window::_run() {
     // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
     // m_MainShader);
 
-    this->m_MainInterface->NewRenderIMGUI(); // render the imgui windows
+    this->m_MainInterface_UniquePtr
+        ->NewRenderIMGUI(); // render the imgui windows
 
     // clear the vectors in the input event system
     m_EventSystem.m_KeysPressed.clear();
@@ -268,23 +272,23 @@ void APE_Window::_setUpPrimitives() {
   // Does not need to be changed to fit non primitive
   // DONT TOUCH THIS!!!!
   for (auto &primitive : primitives) {
-    this->m_MeshMaker = std::make_unique<MeshMakerHelper>(primitive);
-    auto tup = m_MeshMaker->ReturnObjectData();
+    this->m_MeshMaker_UniquePtr = std::make_unique<MeshMakerHelper>(primitive);
+    auto tup = m_MeshMaker_UniquePtr->ReturnObjectData();
     for (auto &data : tup) {
       if (std::strcmp(data.first.c_str(), "Cube") == 0) {
-        _CubePrimitive = data.second;
+        _CubePrimitive_Tuple = data.second;
         printf("Found Cube\n");
       } else if (strcmp(data.first.c_str(), "Cylinder") == 0) {
-        _CylinderPrimitive = data.second;
+        _CylinderPrimitive_Tuple = data.second;
         printf("Found Cylinder\n");
       } else if (std::strcmp(data.first.data(), "Sphere") == 0) {
-        _SpherePrimitive = data.second;
+        _SpherePrimitive_Tuple = data.second;
         printf("Found Sphere\n");
       } else if (strcmp(data.first.c_str(), "Capsule") == 0) {
-        _CapsulePrimitive = data.second;
+        _CapsulePrimitive_Tuple = data.second;
         printf("Found Capsule\n");
       } else if (std::strcmp(data.first.data(), "ConvexMesh") == 0) {
-        _ConvexMeshPrimitive = data.second;
+        _ConvexMeshPrimitive_Tuple = data.second;
         printf("Found ConvexMesh\n");
       }
     }
@@ -295,23 +299,23 @@ void APE_Window::_setUpPrimitives() {
 
 // clean windows
 void APE_Window::_emptyWindowVector() {
-  for (GLFWwindow *&window : this->m_Windows) {
+  for (GLFWwindow *&window : this->m_Windows_Vector) {
     glfwDestroyWindow(window);
     window = nullptr;
     // should be replaced by spdLOG
-    printf("DELETED::WINDOW::%d\n", (int)this->m_Windows.size());
+    printf("DELETED::WINDOW::%d\n", (int)this->m_Windows_Vector.size());
   }
-  this->m_Windows.clear();
+  this->m_Windows_Vector.clear();
 }
 
 // I am not sure I have cleaned everything, but, VALGRIND tells me no memory
 // leaks, so maybe RAII???
 void APE_Window::CleanUp() {
   m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
-  this->m_MeshMaker->Clean();
-  this->m_MainInterface->DestroyIMGUIContext();
-  this->m_MainInterface = nullptr;
-  this->m_MainFrameBuffer->Clean();
+  this->m_MeshMaker_UniquePtr->Clean();
+  this->m_MainInterface_UniquePtr->DestroyIMGUIContext();
+  this->m_MainInterface_UniquePtr = nullptr;
+  this->m_MainFrameBuffer_UniquePtr->Clean();
   this->_emptyWindowVector();
   this->_destroyGLFWContext();
   printf("APE_WINDOW::CLEANED\n");

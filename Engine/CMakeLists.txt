@@ -6,7 +6,9 @@ project(${PROJ_NAME})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_BUILD_TYPE Debug)
+
 
 find_package(glfw3 REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
@@ -85,6 +87,9 @@ set(ECS_SOURCES
 
 add_library(APE_ecs STATIC ${ECS_SOURCES})
 target_include_directories(APE_ecs PUBLIC ${ECS_DIR}/header)
+
+
+
 
 ###### CHANGE HERE TO COMPILE YOUR OWN IMGUI
 
@@ -169,6 +174,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
 
+target_compile_definitions( Asimov PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
+target_compile_definitions( APE_ecs PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
+target_compile_definitions( APE_helpers PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
+target_compile_definitions( APE_toolbox PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
+target_compile_definitions( APE_core PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
+
+
+
 # Add the executable and link the libraries
 target_link_libraries(
 	APE_ecs
@@ -219,3 +232,4 @@ target_link_libraries(${PROJ_NAME}
   GL
 	ReactPhysics3D::ReactPhysics3D
 )
+

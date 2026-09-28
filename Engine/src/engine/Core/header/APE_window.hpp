@@ -56,13 +56,14 @@ public:
 private:
   // this is for viewport rendering
   std::unique_ptr<FrameBuffer>
-      m_MainFrameBuffer; // for rendering to, to place on an IMGUI window
+      m_MainFrameBuffer_UniquePtr; // for rendering to, to place on an IMGUI
+                                   // window
 
   // prevent multiple program usage, a super shader that
   // needs to be attached once, and uniforms affect how
   // it works
-  std::shared_ptr<Shader> m_MainShader;
-  std::unique_ptr<Interface> m_MainInterface; // Imgui SetUp
+  std::shared_ptr<Shader> m_MainShader_SharedPtr;
+  std::unique_ptr<Interface> m_MainInterface_UniquePtr; // Imgui SetUp
   Viewport m_Viewport;     // for the frame buffer and Imguizmo widgets
   Properties m_Properties; // stores editable properties of selected models ->
                            // both physics and render properties
@@ -74,8 +75,8 @@ private:
 
   // Window specifics
   GLFWwindow *m_Window;
-  std::vector<GLFWwindow *>
-      m_Windows; // stores ptrs to the windows present, for ease of cleaning
+  std::vector<GLFWwindow *> m_Windows_Vector; // stores ptrs to the windows
+                                              // present, for ease of cleaning
   unsigned int m_WindowWidth, m_WindowHeight;
   const char *m_WindowName;
 
@@ -91,11 +92,11 @@ private:
                            // other functions run
 
   // for primitives
-  std::unique_ptr<MeshMakerHelper> m_MeshMaker;
+  std::unique_ptr<MeshMakerHelper> m_MeshMaker_UniquePtr;
   AddObjectPopUp m_AddObjectPopUp;
 
   // Robot stuff
-  std::unique_ptr<RobotMaker> m_RobotMaker;
+  std::unique_ptr<RobotMaker> m_RobotMaker_UniquePtr;
 
   // Physics stuff
   rp3d::PhysicsCommon m_PhysicsCommon;
@@ -106,11 +107,12 @@ private:
   // I can guarantee these, the primitives will be in a specific order
   // add other prims -> plane, capsule,
   std::tuple<unsigned int, unsigned int>
-      _CubePrimitive; // std::get<0>(_CubePrimitive) -> gets you the 1st U_INT
-  std::tuple<unsigned int, unsigned int> _SpherePrimitive;
-  std::tuple<unsigned int, unsigned int> _CylinderPrimitive;
-  std::tuple<unsigned int, unsigned int> _ConvexMeshPrimitive;
-  std::tuple<unsigned int, unsigned int> _CapsulePrimitive;
+      _CubePrimitive_Tuple; // std::get<0>(_CubePrimitive) -> gets you the 1st
+                            // U_INT
+  std::tuple<unsigned int, unsigned int> _SpherePrimitive_Tuple;
+  std::tuple<unsigned int, unsigned int> _CylinderPrimitive_Tuple;
+  std::tuple<unsigned int, unsigned int> _ConvexMeshPrimitive_Tuple;
+  std::tuple<unsigned int, unsigned int> _CapsulePrimitive_Tuple;
 
   // initial camera positions and view setting
   glm::vec3 m_CamPos = glm::vec3(0.0f, 0.0f, -10.0f);

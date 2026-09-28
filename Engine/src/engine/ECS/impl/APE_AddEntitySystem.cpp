@@ -5,6 +5,10 @@
 #include <cstring>
 #include <string>
 
+// -- TODO: break this into classes for each entity
+// so that I have control for each thing. sphere only needs rad
+// convex needs rad, cylinder needs len and rad
+//
 void AddEntitySystem::_helperFunction(entt::registry &reg, const char *objName,
                                       unsigned int vao, unsigned int idxCount) {
 

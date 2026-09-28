@@ -1,5 +1,11 @@
 #include "APE_window.hpp"
 
+#ifdef DEBUG__
+#pragma message("DEBUG__ is defined")
+#else
+#pragma message("DEBUG__ is NOT defined")
+#endif
+
 int main() {
   // Asimov Physics Engine (A.P.E.)
   // Use the stack when possible
