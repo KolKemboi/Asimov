@@ -2,6 +2,7 @@
 
 #include "APE_Dispatcher.hpp"
 #include "APE_FBO.hpp"
+#include "APE_KeyEvents.hpp"
 #include "APE_camera.hpp"
 #include "APE_eventsystem.hxx"
 #include <APE_Components.hpp>
@@ -65,49 +66,35 @@ public:
     ImGuizmo::SetRect(Pos.x, Pos.y, avail.x, avail.y);
 
     static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
+    if (eventSystem.Keys & (int)Alicia::W) {
+      operation = ImGuizmo::TRANSLATE;
+    }
+    if (eventSystem.Keys & (int)Alicia::E) {
+      operation = ImGuizmo::ROTATE;
+    }
+    if (eventSystem.Keys & (int)Alicia::R) {
+      operation = ImGuizmo::SCALE;
+    }
+    if (eventSystem.Keys & (int)Alicia::SHIFT &&
+        eventSystem.Keys & (int)Alicia::G) {
+      mode = ImGuizmo::WORLD;
+    }
+    if (eventSystem.Keys & (int)Alicia::SHIFT &&
+        eventSystem.Keys & (int)Alicia::L) {
+      mode = ImGuizmo::LOCAL;
+    }
 
-    for (auto key : eventSystem.m_KeysPressed) {
-      if (key == KeyPress::W)
-        operation = ImGuizmo::TRANSLATE;
-      if (key == KeyPress::E)
-        operation = ImGuizmo::ROTATE;
-      if (key == KeyPress::R)
-        operation = ImGuizmo::SCALE;
-      if (key == KeyPress::G) {
-        for (auto mod : eventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            mode = ImGuizmo::WORLD;
-          }
-        }
-      }
-      if (key == KeyPress::L) {
-        for (auto mod : eventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            mode = ImGuizmo::LOCAL;
-          }
-        }
-      }
-      if (key == KeyPress::X) {
-        for (auto mod : eventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            operation = ImGuizmo::ROTATE_X;
-          }
-        }
-      }
-      if (key == KeyPress::Y) {
-        for (auto mod : eventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            operation = ImGuizmo::ROTATE_Y;
-          }
-        }
-      }
-      if (key == KeyPress::Z) {
-        for (auto mod : eventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            operation = ImGuizmo::ROTATE_Z;
-          }
-        }
-      }
+    if (eventSystem.Keys & (int)Alicia::CTRL &&
+        eventSystem.Keys & (int)Alicia::X) {
+      operation = ImGuizmo::ROTATE_X;
+    }
+    if (eventSystem.Keys & (int)Alicia::CTRL &&
+        eventSystem.Keys & (int)Alicia::Y) {
+      operation = ImGuizmo::ROTATE_Y;
+    }
+    if (eventSystem.Keys & (int)Alicia::CTRL &&
+        eventSystem.Keys & (int)Alicia::Z) {
+      operation = ImGuizmo::ROTATE_Z;
     }
 
     glm::mat4 view = camera.GetViewMatrix();

@@ -8,12 +8,18 @@
 
 // add more events
 enum class EventType {
+  // object events
   OBJECT_ADDED,
+  CUBE_ADDED,
+  CYLINDER_ADDED,
+  SPHERE_ADDED,
+  CONVEXMESH_ADDED,
+  //
   OBJECT_MODIFIED,
   COLLIDER_TYPE_MODIFIED,
   KEYPRESS,
-	MODELLOADED,
-	ROBOTLOADED,
+  MODELLOADED,
+  ROBOTLOADED,
 };
 
 class Dispatcher {
@@ -28,7 +34,6 @@ public:
   // Subscriber and Emitter
   void Subscriber(EventType, Handler);
   void Emitter(EventType, const std::string &);
-
 
 private:
   std::unordered_map<EventType, std::vector<Handler>> handlers;

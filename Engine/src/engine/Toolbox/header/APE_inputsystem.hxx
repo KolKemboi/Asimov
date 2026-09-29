@@ -20,6 +20,7 @@
  */
 
 // making a singleton
+// I'll probably let this control the camera
 class InputSystem {
 private:
   InputSystem() = default;
@@ -50,6 +51,9 @@ public:
 
   static void MouseCallbackFunc(GLFWwindow *window, double xPos, double yPos) {
     instance().MouseCallBack(window, xPos, yPos);
+    instance().eventSystem->MousePosCallback(window, xPos, yPos);
+    // get x pos => instance().eventSystem->MousePos & ~(0xFFFFu << 16)
+    // get y pos => instance().eventSystem->MousePos >> 16
   }
 
   void MouseCallBack(GLFWwindow *window, double xPos, double yPos) {
@@ -82,7 +86,6 @@ public:
     instance().eventSystem->ScrollCallback(window, xOffset, yOffset);
   }
   void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
-
     camera->ProcessDolly(yOffset);
   }
 

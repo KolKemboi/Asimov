@@ -1,5 +1,6 @@
 #include "APE_Components.hpp"
 #include "APE_FBO.hpp"
+#include "APE_KeyEvents.hpp"
 #include "APE_camera.hpp"
 #include "APE_eventsystem.hxx"
 #include "APE_inputsystem.hxx"
@@ -9,6 +10,7 @@
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog.h>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -21,6 +23,7 @@
 #include <reactphysics3d/mathematics/Quaternion.h>
 #include <reactphysics3d/mathematics/Vector3.h>
 #include <string>
+#include <sys/types.h>
 #include <tuple>
 
 // set up window data given and set up GLFW context
@@ -137,14 +140,34 @@ void APE_Window::_run() {
   unsigned int count = 0;
 
   bool worldrun = false;
+
   while (!glfwWindowShouldClose(m_Window)) {
 
+#ifdef DEBUG__
+    if (m_EventSystem.Keys & (int)Alicia::A) {
+      printf("A BROOO\n");
+    }
+    if (m_EventSystem.Keys & (int)Alicia::LEFT) {
+      printf("LEFT BROOO\n");
+    }
+    if (m_EventSystem.Keys & (int)Alicia::RIGHT) {
+      printf("RIGHT BROOO\n");
+    }
+    if (m_EventSystem.Keys & (int)Alicia::MIDDLE) {
+      printf("MIDDLE BROOO\n");
+    }
+    if (m_EventSystem.Keys & (int)Alicia::A &&
+        m_EventSystem.Keys & (int)Alicia::SHIFT) {
+      printf("SHIFT A BROOO\n");
+    }
+#endif
+
     // activate physics, should be a UI thing
-    for (auto key : m_EventSystem.m_KeysPressed) {
-      if (key == KeyPress::P)
-        worldrun = false;
-      if (key == KeyPress::C)
-        worldrun = true;
+    if (m_EventSystem.Keys & (int)Alicia::P) {
+      worldrun = false;
+    }
+    if (m_EventSystem.Keys & (int)Alicia::C) {
+      worldrun = true;
     }
 
     this->m_MainShader_SharedPtr->SetMat4(
@@ -163,6 +186,8 @@ void APE_Window::_run() {
     lastTime = currTime;
     m_Camera.ResetViewSmooth(deltaTime); // HOME key enables cam to return to
                                          // original pos, using glm::lerp
+
+    // check if mouse is clicked
 
     // update it here, check if the transforms arent the same,
     // I am stupid, I am stupid -> Coll Leclerc
@@ -198,19 +223,16 @@ void APE_Window::_run() {
 
     // probably should be moved somewhere else
     // meanwhile, delete and duplicate abilities
-    for (auto key : m_EventSystem.m_KeysPressed) {
-      if (key == KeyPress::D) {
-        for (auto mod : m_EventSystem.m_ModKeys) {
-          if (mod == ModKeys::SHIFT) {
-            m_DuplicateSystem.AddDuplicate(m_Registry,
-                                           m_Dispatcher); // duplicate
-          }
-        }
-      }
-      if (key == KeyPress::DELETE) {
-        ImGui::OpenPopup("Delete Object");
-      }
+    if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
+        m_EventSystem.Keys & (int)Alicia::D) {
+      m_DuplicateSystem.AddDuplicate(m_Registry,
+                                     m_Dispatcher); // duplicate
     }
+    if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
+        m_EventSystem.Keys & (int)Alicia::X) {
+      ImGui::OpenPopup("Delete Object");
+    }
+
     if (m_ConfirmPopUp.ConfirmDelete())
       //     // bug was here, now fixed
       m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
@@ -253,8 +275,9 @@ void APE_Window::_run() {
         ->NewRenderIMGUI(); // render the imgui windows
 
     // clear the vectors in the input event system
-    m_EventSystem.m_KeysPressed.clear();
-    m_EventSystem.m_ModKeys.clear();
+    // m_EventSystem.m_KeysPressed.clear();
+    // m_EventSystem.m_ModKeys.clear();
+    m_EventSystem.Keys = 0;
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();
   }
