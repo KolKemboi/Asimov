@@ -5,6 +5,8 @@
 #endif
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
 #include <string>
 
 class Shader {

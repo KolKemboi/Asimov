@@ -93,6 +93,11 @@ private:
 
 public:
   void AddCollider(const std::string &bodyType = "STATIC") {
+#ifdef DEBUG__
+    spdlog::set_level(spdlog::level::debug);
+#else
+    spdlog::set_level(spdlog::level::warn);
+#endif
 
     rp3d::Collider *bodyCollider;
     // creates an instance of physics data to be filled for the ECS

@@ -2,8 +2,15 @@
 #include <APE_types.hpp>
 #include <cstddef>
 #include <cstdio>
+#include <spdlog/spdlog.h>
 
-VertexArray::VertexArray() {}
+VertexArray::VertexArray() {
+#ifdef DEBUG__
+  spdlog::set_level(spdlog::level::debug);
+#else
+  spdlog::set_level(spdlog::level::warn);
+#endif
+}
 
 void VertexArray::GenVertexArrays() {
   glGenVertexArrays(1, &this->m_VertexArray);
@@ -31,5 +38,5 @@ unsigned int VertexArray::GetVAO() { return this->m_VertexArray; }
 
 void VertexArray::Clean() {
   glDeleteVertexArrays(1, &this->m_VertexArray);
-  printf("VAO::CLEANED\n");
+  spdlog::info("VAO::CLEANED");
 }

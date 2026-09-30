@@ -10,7 +10,6 @@
 #include <APE_window.hpp>
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog.h>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -32,6 +31,12 @@ APE_Window::APE_Window(unsigned int windowWidth, unsigned int windowHeight,
     : m_WindowWidth(windowWidth), m_WindowHeight(windowHeight),
       m_WindowName(windowName) {
   this->_setUpGLFWContext();
+
+#ifdef DEBUG__
+  spdlog::set_level(spdlog::level::debug);
+#else
+  spdlog::set_level(spdlog::level::warn);
+#endif
 }
 
 void APE_Window::_setUpGLFWContext() {
@@ -50,7 +55,7 @@ void APE_Window::_setUpGLFWContext() {
     this->m_Window = *window;
     this->m_Windows_Vector.push_back(this->m_Window);
   } else {
-    printf("ERROR::WINDOW_CREATION\n"); // read on SPDLOG
+    spdlog::error("ERROR::WINDOW_CREATION"); // read on SPDLOG
     this->_destroyGLFWContext();
     std::exit(1);
   }
@@ -58,7 +63,7 @@ void APE_Window::_setUpGLFWContext() {
 
   // GLAD LOADING ERROR CHECK
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    printf("ERROR::GLAD ERROR::FAILED TO INIT GLAD\n");
+    spdlog::error("ERROR::GLAD ERROR::FAILED TO INIT GLAD");
     glfwTerminate();
     std::exit(1);
   }
@@ -143,24 +148,22 @@ void APE_Window::_run() {
 
   while (!glfwWindowShouldClose(m_Window)) {
 
-#ifdef DEBUG__
     if (m_EventSystem.Keys & (int)Alicia::A) {
-      printf("A BROOO\n");
+      spdlog::info("A BROOO");
     }
     if (m_EventSystem.Keys & (int)Alicia::LEFT) {
-      printf("LEFT BROOO\n");
+      spdlog::info("LEFT BROOO");
     }
     if (m_EventSystem.Keys & (int)Alicia::RIGHT) {
-      printf("RIGHT BROOO\n");
+      spdlog::info("RIGHT BROOO");
     }
     if (m_EventSystem.Keys & (int)Alicia::MIDDLE) {
-      printf("MIDDLE BROOO\n");
+      spdlog::info("MIDDLE BROOO");
     }
     if (m_EventSystem.Keys & (int)Alicia::A &&
         m_EventSystem.Keys & (int)Alicia::SHIFT) {
-      printf("SHIFT A BROOO\n");
+      spdlog::info("SHIFT A BROOO");
     }
-#endif
 
     // activate physics, should be a UI thing
     if (m_EventSystem.Keys & (int)Alicia::P) {
@@ -300,23 +303,22 @@ void APE_Window::_setUpPrimitives() {
     for (auto &data : tup) {
       if (std::strcmp(data.first.c_str(), "Cube") == 0) {
         _CubePrimitive_Tuple = data.second;
-        printf("Found Cube\n");
+        spdlog::info("Found Cube");
       } else if (strcmp(data.first.c_str(), "Cylinder") == 0) {
         _CylinderPrimitive_Tuple = data.second;
-        printf("Found Cylinder\n");
+        spdlog::info("Found Cylinder");
       } else if (std::strcmp(data.first.data(), "Sphere") == 0) {
         _SpherePrimitive_Tuple = data.second;
-        printf("Found Sphere\n");
+        spdlog::info("Found Sphere");
       } else if (strcmp(data.first.c_str(), "Capsule") == 0) {
         _CapsulePrimitive_Tuple = data.second;
-        printf("Found Capsule\n");
+        spdlog::info("Found Capsule");
       } else if (std::strcmp(data.first.data(), "ConvexMesh") == 0) {
         _ConvexMeshPrimitive_Tuple = data.second;
-        printf("Found ConvexMesh\n");
+        spdlog::info("Found ConvexMesh");
       }
     }
   }
-
   primitives.clear();
 }
 
@@ -326,7 +328,7 @@ void APE_Window::_emptyWindowVector() {
     glfwDestroyWindow(window);
     window = nullptr;
     // should be replaced by spdLOG
-    printf("DELETED::WINDOW::%d\n", (int)this->m_Windows_Vector.size());
+    spdlog::info("DELETED::WINDOW::", (int)this->m_Windows_Vector.size());
   }
   this->m_Windows_Vector.clear();
 }
@@ -341,7 +343,7 @@ void APE_Window::CleanUp() {
   this->m_MainFrameBuffer_UniquePtr->Clean();
   this->_emptyWindowVector();
   this->_destroyGLFWContext();
-  printf("APE_WINDOW::CLEANED\n");
+  spdlog::info("APE_WINDOW::CLEANED");
 }
 
 void APE_Window::RunEngine() { this->_run(); }

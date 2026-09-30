@@ -14,6 +14,7 @@ find_package(glfw3 REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
 find_package(assimp REQUIRED)
 find_package(urdfdom REQUIRED)
+find_package(spdlog REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -187,17 +188,20 @@ target_link_libraries(
 	APE_ecs
 	PUBLIC
 	imgui
+	spdlog::spdlog
 )
 target_link_libraries(
 	APE_helpers
 	PUBLIC
 	assimp
 	APE_buffers
+	spdlog::spdlog
 )
 target_link_libraries(
 	APE_toolbox
 	PUBLIC
 	urdfdom_model
+	spdlog::spdlog
 
 )
 
@@ -209,6 +213,7 @@ target_link_libraries(
 	node_editor
 	APE_helpers
 	APE_ecs
+	spdlog::spdlog
 )
 
 target_link_libraries(
@@ -217,6 +222,7 @@ target_link_libraries(
 	APE_physics
 	APE_toolbox
 	APE_helpers
+	spdlog::spdlog
 )
 
 target_link_libraries(${PROJ_NAME} 
@@ -231,5 +237,6 @@ target_link_libraries(${PROJ_NAME}
   glfw 
   GL
 	ReactPhysics3D::ReactPhysics3D
+	spdlog::spdlog
 )
 

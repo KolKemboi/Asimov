@@ -1,10 +1,18 @@
 #include <APE_FBO.hpp>
 #include <cstdio>
+#include <spdlog/spdlog.h>
 
 // this also works,
 // makes an FBO, if it doesnt, you'll see the error message find WARN:
 FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
     : windowWidth(Width), windowHeight(Height) {
+
+#ifdef DEBUG__
+  spdlog::set_level(spdlog::level::debug);
+#else
+  spdlog::set_level(spdlog::level::warn);
+#endif
+
   // make framebuffer
   glGenFramebuffers(1, &m_FrameBuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
@@ -33,7 +41,7 @@ FrameBuffer::FrameBuffer(unsigned int Width, unsigned int Height)
   // check if it failed
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     //--WARN: if it doesnt work, this will print out
-    printf("ERROR::FRAMEBUFFER IS NOT COMPLETE\n");
+    spdlog::error("ERROR::FRAMEBUFFER IS NOT COMPLETE");
   }
   // unbind the FBO
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -62,5 +70,5 @@ void FrameBuffer::Clean() {
   glDeleteFramebuffers(1, &m_FrameBuffer);
   glDeleteTextures(1, &m_ColorTexture);
   glDeleteRenderbuffers(1, &m_RenderBufferObject);
-  printf("FBO::CLEANED\n");
+  spdlog::info("FBO::CLEANED");
 }

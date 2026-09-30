@@ -4,7 +4,13 @@
 
 class AddEntitySystem {
 public:
-  AddEntitySystem(Dispatcher &dispatcher) : m_LocalDispatcher(dispatcher) {};
+  AddEntitySystem(Dispatcher &dispatcher) : m_LocalDispatcher(dispatcher) {
+#ifdef DEBUG__
+    spdlog::set_level(spdlog::level::debug);
+#else
+    spdlog::set_level(spdlog::level::warn);
+#endif
+  };
   // add cube and set collider
   void AddCubeSystem(entt::registry &, unsigned int, unsigned int);
   // add sphere and set collider

@@ -2,11 +2,18 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
+#include <spdlog/spdlog.h>
 #include <sstream>
 #include <string>
 
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
+
+#ifdef DEBUG__
+  spdlog::set_level(spdlog::level::debug);
+#else
+  spdlog::set_level(spdlog::level::warn);
+#endif
+
   std::string vertexCode;
   std::string fragmentCode;
   std::ifstream vShaderFile;
@@ -29,7 +36,8 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
     vertexCode = vShaderStream.str();
     fragmentCode = fShaderStream.str();
   } catch (std::ifstream::failure e) {
-    std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+    spdlog::error("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ");
+    // std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
     std::exit(1);
   }
   const char *vShaderCode = vertexCode.c_str();
@@ -64,14 +72,23 @@ void Shader::_checkShaderCompilation(unsigned int shader, std::string type) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-      printf("ERROR::SHADER COMPILATION ERROR::%s::%s\n", type.c_str(),
-             infoLog);
+
+      std::string ERR_MSG =
+          "ERROR::SHADER COMPILATION ERROR::" + type + "::" + infoLog;
+      spdlog::error(ERR_MSG);
+      // printf("ERROR::SHADER COMPILATION ERROR::%s::%s\n", type.c_str(),
+      //        infoLog);
     }
   } else {
     glGetProgramiv(shader, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-      printf("ERROR::PROGRAM LINKING ERROR::%s::%s\n", type.c_str(), infoLog);
+
+      std::string ERR_MSG =
+          "ERROR::PROGRAM LINKING ERROR::" + type + "::" + infoLog;
+      spdlog::error(ERR_MSG);
+      // printf("ERROR::PROGRAM LINKING ERROR::%s::%s\n", type.c_str(),
+      // infoLog);
     }
   }
 }

@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <spdlog/spdlog.h>
 
 class Interface {
 public:
@@ -16,6 +17,12 @@ public:
   // variable, so that I dont need to use smart ptrs
   Interface(GLFWwindow *&window) {
     this->m_ImGUIWindow = window;
+
+#ifdef DEBUG__
+    spdlog::set_level(spdlog::level::debug);
+#else
+    spdlog::set_level(spdlog::level::warn);
+#endif
 
     this->SetUpIMGUIContext();
   }
@@ -46,7 +53,7 @@ private:
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    printf("INTERFACE::DESTROYED_CONTEXT\n");
+    spdlog::error("INTERFACE::DESTROYED_CONTEXT");
   }
 
   void _setUpDocking() {

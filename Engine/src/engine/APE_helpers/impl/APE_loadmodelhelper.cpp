@@ -3,10 +3,17 @@
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <cstdio>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 
 ModelLoaderHelper::ModelLoaderHelper(std::string const &path) {
+
+#ifdef DEBUG__
+  spdlog::set_level(spdlog::level::debug);
+#else
+  spdlog::set_level(spdlog::level::warn);
+#endif
   this->_loadModel(path);
 }
 
@@ -19,7 +26,7 @@ void ModelLoaderHelper::_loadModel(std::string path) {
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
-    printf("ERROR::ASSIMP::%s", importer.GetErrorString());
+    spdlog::error("ERROR::ASSIMP::%s", importer.GetErrorString());
     return;
   }
 
