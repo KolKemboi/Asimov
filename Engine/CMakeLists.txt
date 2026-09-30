@@ -6,8 +6,8 @@ project(${PROJ_NAME})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
+# set(CMAKE_BUILD_TYPE Debug)
 
 
 find_package(glfw3 REQUIRED)
@@ -20,6 +20,7 @@ set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(IMGUI_LIB "${CMAKE_SOURCE_DIR}/extLibs/libimgui.a")
 
+add_compile_definitions(IMGUI_DEFINE_MATH_OPERATORS)
 ####### SETTING UP APE static libs
 
 ##HELPERS STATIC LIBS
@@ -136,6 +137,15 @@ add_library(filedialog STATIC ${FILE_DIALOG_SOURCES})
 target_include_directories(filedialog PUBLIC ${FILE_DIALOG_DIR})
 target_link_libraries(filedialog PUBLIC imgui)
 
+set(TEXT_EDITOR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-text-editor)
+set(TEXT_EDITOR_SOURCES
+	${TEXT_EDITOR_DIR}/TextEditor.cpp
+)
+
+add_library(texteditor STATIC ${TEXT_EDITOR_SOURCES})
+target_include_directories(texteditor PUBLIC ${TEXT_EDITOR_DIR})
+target_link_libraries(texteditor PUBLIC imgui)
+
 #IMGUI NODE EDITOR
 set(NODE_EDITOR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
 set(NODE_EDITOR_SOURCES
@@ -152,7 +162,7 @@ target_link_libraries(node_editor PUBLIC imgui)
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/shaders DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/models DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/src/assets/robots DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/imgui.ini DESTINATION ${CMAKE_BINARY_DIR})
+# file(COPY ${CMAKE_SOURCE_DIR}/imgui.ini DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJ_NAME}
 	src/App/app.cpp 
@@ -174,6 +184,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/engine/APE_helpers/header)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/ImGuiFileDialog)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-node-editor)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extLibs/imgui-text-editor)
 
 target_compile_definitions( Asimov PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
 target_compile_definitions( APE_ecs PRIVATE $<$<CONFIG:Debug>:DEBUG__> )
@@ -189,6 +200,7 @@ target_link_libraries(
 	PUBLIC
 	imgui
 	spdlog::spdlog
+	
 )
 target_link_libraries(
 	APE_helpers
@@ -214,6 +226,7 @@ target_link_libraries(
 	APE_helpers
 	APE_ecs
 	spdlog::spdlog
+	texteditor
 )
 
 target_link_libraries(

@@ -146,24 +146,9 @@ void APE_Window::_run() {
 
   bool worldrun = false;
 
-  while (!glfwWindowShouldClose(m_Window)) {
+  // Coding font
 
-    if (m_EventSystem.Keys & (int)Alicia::A) {
-      spdlog::info("A BROOO");
-    }
-    if (m_EventSystem.Keys & (int)Alicia::LEFT) {
-      spdlog::info("LEFT BROOO");
-    }
-    if (m_EventSystem.Keys & (int)Alicia::RIGHT) {
-      spdlog::info("RIGHT BROOO");
-    }
-    if (m_EventSystem.Keys & (int)Alicia::MIDDLE) {
-      spdlog::info("MIDDLE BROOO");
-    }
-    if (m_EventSystem.Keys & (int)Alicia::A &&
-        m_EventSystem.Keys & (int)Alicia::SHIFT) {
-      spdlog::info("SHIFT A BROOO");
-    }
+  while (!glfwWindowShouldClose(m_Window)) {
 
     // activate physics, should be a UI thing
     if (m_EventSystem.Keys & (int)Alicia::P) {
@@ -224,8 +209,43 @@ void APE_Window::_run() {
     this->m_MainInterface_UniquePtr->SetUpNewFrame();
     this->m_MainInterface_UniquePtr->SetUpDocking();
 
-    // probably should be moved somewhere else
-    // meanwhile, delete and duplicate abilities
+    this->m_MainInterface_UniquePtr->SetLayoutTab([&](ImGuiID dock) {
+      ImGui::Begin("Main Viewport");
+      m_Viewport.View(m_MainFrameBuffer_UniquePtr, m_Camera, m_Registry,
+                      m_MainShader_SharedPtr, m_EventSystem, m_Dispatcher);
+      ImGui::End();
+
+      m_Properties.MakeProperties(m_Registry, m_MainShader_SharedPtr,
+                                  lightColor, m_Dispatcher);
+      m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
+                                         m_PhysicsWorld, m_Dispatcher);
+
+      m_Selection.Selection(m_Registry);
+    });
+
+    m_MainInterface_UniquePtr->SetScriptingTab([&](ImGuiID dock) {
+      ImGui::Begin("Code Viewport");
+      m_Viewport.View(m_MainFrameBuffer_UniquePtr, m_Camera, m_Registry,
+                      m_MainShader_SharedPtr, m_EventSystem, m_Dispatcher);
+      ImGui::End();
+      ImGui::Begin("Code Editor");
+      m_ScriptingTab.Draw();
+      ImGui::End();
+    });
+
+    m_MainInterface_UniquePtr->SetNodeEditorTab([&](ImGuiID dock) {
+      ImGui::Begin("Node Viewport");
+      m_Viewport.View(m_MainFrameBuffer_UniquePtr, m_Camera, m_Registry,
+                      m_MainShader_SharedPtr, m_EventSystem, m_Dispatcher);
+      ImGui::End();
+
+      ImGui::Begin("Node Editor");
+      m_NodeEditor.Draw();
+      ImGui::End();
+    });
+
+    // // probably should be moved somewhere else
+    // // meanwhile, delete and duplicate abilities
     if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
         m_EventSystem.Keys & (int)Alicia::D) {
       m_DuplicateSystem.AddDuplicate(m_Registry,
@@ -242,14 +262,6 @@ void APE_Window::_run() {
 
     SetUpMenuBar(m_Window, m_Dispatcher);
 
-    // 			properties window
-    // Render properties
-    m_Properties.MakeProperties(m_Registry, m_MainShader_SharedPtr, lightColor,
-                                m_Dispatcher);
-    // physics properties
-    m_Properties.MakePhysicsProperties(m_Registry, m_PhysicsCommon,
-                                       m_PhysicsWorld, m_Dispatcher);
-
     // set up the projection matrix,
     // this->m_MainShader->SetMat4(projection, "projection");
 
@@ -263,14 +275,7 @@ void APE_Window::_run() {
     // originally put
     m_RenderSystem.RenderEntities(m_MainFrameBuffer_UniquePtr, m_Registry,
                                   m_MainShader_SharedPtr);
-
-    // the viewport setup
-    m_Viewport.View(this->m_MainFrameBuffer_UniquePtr, m_Camera, m_Registry,
-                    m_MainShader_SharedPtr, m_EventSystem, m_Dispatcher);
-
-    // selection system -> outliner section
-    m_Selection.Selection(m_Registry);
-
+    //
     // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
     // m_MainShader);
 

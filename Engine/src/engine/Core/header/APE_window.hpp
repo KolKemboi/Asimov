@@ -2,6 +2,7 @@
 #include "APE_Dispatcher.hpp"
 #include "APE_properties.hxx"
 #include "APE_viewport.hxx"
+#include "TextEditor.hpp"
 #include <APE_confirmpopup.hxx>
 #include <reactphysics3d/engine/PhysicsCommon.h>
 #include <tuple>
@@ -26,8 +27,10 @@
 #include <APE_interface.hxx>
 #include <APE_loadmodelhelper.hpp>
 #include <APE_meshmakerhelper.hpp>
+#include <APE_nodeeditor.hxx>
 #include <APE_robotmaker.hpp>
 #include <APE_shader.hpp>
+#include <APE_texteditor.hxx>
 #include <APE_types.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
@@ -68,6 +71,8 @@ private:
   Properties m_Properties; // stores editable properties of selected models ->
                            // both physics and render properties
   ConfirmPopUp m_ConfirmPopUp;
+  NodeEditor m_NodeEditor;
+  ScriptingTab m_ScriptingTab;
 
   SelectionSystem m_Selection;           // sets up the outliner,
   DuplicateMeshSystem m_DuplicateSystem; // Shift-D ability, -> blender style

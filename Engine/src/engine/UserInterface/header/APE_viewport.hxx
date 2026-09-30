@@ -29,7 +29,7 @@ public:
             EventSystem &eventSystem, Dispatcher &dispatcher) {
     ImGuizmo::BeginFrame();
 
-    ImGui::Begin("Viewport");
+    // ImGui::Begin("Viewport");
 
     ImVec2 Pos = ImGui::GetWindowPos();
     ImVec2 avail = ImGui::GetContentRegionAvail();
@@ -144,7 +144,7 @@ public:
       }
     }
 
-    ImGui::End();
+    // ImGui::End();
   }
 
 private:

@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 
 class Interface {
@@ -26,6 +27,11 @@ public:
 
     this->SetUpIMGUIContext();
   }
+  using TabDrawFn = std::function<void(ImGuiID dock_id)>;
+
+  void SetLayoutTab(TabDrawFn fn) { m_LayoutTab = std::move(fn); }
+  void SetScriptingTab(TabDrawFn fn) { m_ScriptingTab = std::move(fn); }
+  void SetNodeEditorTab(TabDrawFn fn) { m_NodeEditorTab = std::move(fn); }
 
   void SetUpIMGUIContext() { this->_setUpIMGUIContext(); }
   void DestroyIMGUIContext() { this->_destroyIMGUIContext(); }
@@ -47,6 +53,9 @@ private:
         m_ImGUIWindow,
         true); // passes GLFW events to imgui, never knew that
     ImGui_ImplOpenGL3_Init("#version 460");
+    // ImFontConfig cfg;
+    // cfg.SizePixels = 16.0f;
+    // m_IO.Fonts->AddFontDefault(&cfg);
   }
   void _destroyIMGUIContext() {
     // clean the imgui context
@@ -57,35 +66,124 @@ private:
   }
 
   void _setUpDocking() {
-    // this sets up docking, dont try to understand it
     ImGuiWindowFlags window_flags =
         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
     const ImGuiViewport *viewport = ImGui::GetMainViewport();
-
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowViewport(viewport->ID);
 
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-
-    window_flags |=
-        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                    ImGuiWindowFlags_NoNavFocus;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
     ImGui::Begin("DockSpace", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
 
-    ImGui::PopStyleVar(2);
+    if (ImGui::BeginTabBar("TopLevelTabs")) {
 
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+      if (ImGui::BeginTabItem("Layout")) {
+        ImGuiID dock_id = ImGui::GetID("DockSpace_Layout");
+        ImGui::DockSpace(dock_id, ImVec2(0, 0), ImGuiDockNodeFlags_None);
+        _buildLayoutDockspace(dock_id);
+        if (m_LayoutTab)
+          m_LayoutTab(dock_id);
+        ImGui::EndTabItem();
+      }
 
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+      if (ImGui::BeginTabItem("Scripting")) {
+        ImGuiID dock_id = ImGui::GetID("DockSpace_Scripting");
+        ImGui::DockSpace(dock_id, ImVec2(0, 0), ImGuiDockNodeFlags_None);
+        _buildScriptingDockspace(dock_id);
+        if (m_ScriptingTab)
+          m_ScriptingTab(dock_id);
+        ImGui::EndTabItem();
+      }
+
+      if (ImGui::BeginTabItem("Node Editor")) {
+        ImGuiID dock_id = ImGui::GetID("DockSpace_NodeEditor");
+        ImGui::DockSpace(dock_id, ImVec2(0, 0), ImGuiDockNodeFlags_None);
+        _buildNodeEditorDockspace(dock_id);
+        if (m_NodeEditorTab)
+          m_NodeEditorTab(dock_id);
+        ImGui::EndTabItem();
+      }
+
+      ImGui::EndTabBar();
+    }
 
     ImGui::End();
   }
+  void _buildLayoutDockspace(ImGuiID dockspace_id) {
+
+    if (ImGui::DockBuilderGetNode(dockspace_id) != nullptr)
+      return;
+
+    ImGui::DockBuilderRemoveNode(dockspace_id);
+    ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+    ImGui::DockBuilderSetNodeSize(dockspace_id,
+                                  ImGui::GetMainViewport()->WorkSize);
+
+    ImGuiID center = dockspace_id;
+    ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.25f,
+                                                nullptr, &center);
+    ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.25f,
+                                                 nullptr, &center);
+
+    ImGui::DockBuilderDockWindow("Viewport##Layout", center);
+    ImGui::DockBuilderDockWindow("Properties##Layout", right);
+    ImGui::DockBuilderDockWindow("Outliner##Layout", right);
+    ImGui::DockBuilderDockWindow("Console##Layout", bottom);
+
+    ImGui::DockBuilderFinish(dockspace_id);
+  }
+
+  void _buildScriptingDockspace(ImGuiID dockspace_id) {
+
+    if (ImGui::DockBuilderGetNode(dockspace_id) != nullptr)
+      return;
+
+    ImGui::DockBuilderRemoveNode(dockspace_id);
+    ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+    ImGui::DockBuilderSetNodeSize(dockspace_id,
+                                  ImGui::GetMainViewport()->WorkSize);
+
+    ImGuiID center = dockspace_id;
+    ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.30f,
+                                                 nullptr, &center);
+
+    ImGui::DockBuilderDockWindow("Code Editor##Scripting", center);
+    ImGui::DockBuilderDockWindow("Console##Scripting", bottom);
+
+    ImGui::DockBuilderFinish(dockspace_id);
+  }
+
+  void _buildNodeEditorDockspace(ImGuiID dockspace_id) {
+
+    if (ImGui::DockBuilderGetNode(dockspace_id) != nullptr)
+      return;
+
+    ImGui::DockBuilderRemoveNode(dockspace_id);
+    ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+    ImGui::DockBuilderSetNodeSize(dockspace_id,
+                                  ImGui::GetMainViewport()->WorkSize);
+
+    ImGuiID center = dockspace_id;
+    ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.30f,
+                                                nullptr, &center);
+
+    ImGui::DockBuilderDockWindow("Node Graph##NodeEditor", center);
+    ImGui::DockBuilderDockWindow("Node Inspector##NodeEditor", right);
+
+    ImGui::DockBuilderFinish(dockspace_id);
+  }
+
   void _setUpNewFrame() {
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
@@ -100,4 +198,7 @@ private:
 
 private:
   GLFWwindow *m_ImGUIWindow;
+  TabDrawFn m_LayoutTab;
+  TabDrawFn m_ScriptingTab;
+  TabDrawFn m_NodeEditorTab;
 };
