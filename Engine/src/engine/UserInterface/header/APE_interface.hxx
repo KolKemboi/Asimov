@@ -53,6 +53,10 @@ private:
         m_ImGUIWindow,
         true); // passes GLFW events to imgui, never knew that
     ImGui_ImplOpenGL3_Init("#version 460");
+    // FIRA CODE
+    // std::string firacode_path = "fonts/Fira_Code/static/FiraCode-Bold.ttf";
+    // ImFont *Firacode =
+    //     m_IO.Fonts->AddFontFromFileTTF(firacode_path.c_str(), 18.0f);
     // ImFontConfig cfg;
     // cfg.SizePixels = 16.0f;
     // m_IO.Fonts->AddFontDefault(&cfg);
@@ -62,7 +66,7 @@ private:
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    spdlog::error("INTERFACE::DESTROYED_CONTEXT");
+    spdlog::info("INTERFACE::DESTROYED_CONTEXT");
   }
 
   void _setUpDocking() {
@@ -120,6 +124,7 @@ private:
 
     ImGui::End();
   }
+
   void _buildLayoutDockspace(ImGuiID dockspace_id) {
 
     if (ImGui::DockBuilderGetNode(dockspace_id) != nullptr)

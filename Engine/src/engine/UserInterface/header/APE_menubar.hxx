@@ -34,6 +34,10 @@ inline void SetUpMenuBar(GLFWwindow *window, Dispatcher &dispatcher) {
       ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("Settings")) {
+
+      ImGui::EndMenu();
+    }
     if (ImGui::BeginMenu("Edit")) {
       if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
         // Undo
