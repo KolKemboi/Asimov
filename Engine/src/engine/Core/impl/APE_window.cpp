@@ -19,6 +19,7 @@
 #include <imgui_node_editor.h>
 #include <memory>
 #include <optional>
+#include <reactphysics3d/engine/PhysicsWorld.h>
 #include <reactphysics3d/mathematics/Quaternion.h>
 #include <reactphysics3d/mathematics/Vector3.h>
 #include <string>
@@ -47,6 +48,8 @@ void APE_Window::_setUpGLFWContext() {
   glfwWindowHint(GLFW_RESIZABLE,
                  GL_FALSE); // take away the ability to resize the window,
                             // useful in tiling window managers
+
+  m_Scene = M_ENGINE_STATE.create();
 
   // create the window or error, in this case, exit from the app totally
   // app requires a first UI
@@ -77,8 +80,6 @@ void APE_Window::_setUpGLFWContext() {
   glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  // these dont need to be in the context set up
-  // set up shader and framebuffer
   this->m_MainShader_SharedPtr = std::make_shared<Shader>(
       "shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
 
@@ -112,6 +113,13 @@ void APE_Window::_setUpGLFWContext() {
   // robots
   this->m_RobotMaker_UniquePtr =
       std::make_unique<RobotMaker>(this->m_Dispatcher);
+
+  // M_ENGINE_STATE.emplace<rp3d::PhysicsWorld *>(m_Scene, m_PhysicsWorld);
+  // M_ENGINE_STATE.emplace<rp3d::PhysicsCommon>(m_Scene, m_PhysicsCommon);
+  // M_ENGINE_STATE.emplace<entt::registry>(m_Scene, m_Registry);
+  // M_ENGINE_STATE.emplace<Camera>(m_Scene, m_Camera);
+  // M_ENGINE_STATE.emplace<EventSystem>(m_Scene, m_EventSystem);
+  // M_ENGINE_STATE.emplace<Shader>(m_Scene, m_MainShader_SharedPtr);
 }
 
 void APE_Window::_run() {
@@ -123,14 +131,10 @@ void APE_Window::_run() {
   projection = glm::perspective(glm::radians(45.0f),
                                 (float)m_WindowWidth / (float)m_WindowHeight,
                                 0.1f, 100.0f);
-  // probably need a better time tracking
-  // chrono maybe
   float deltaTime = 0.0f;
   float timeScale = 0.5f;
   float lastTime = glfwGetTime();
 
-  // sets up rp3d ptrs to the main world and physics common, and a ptr to the
-  // registry
   m_AddCollider.SetColliderRequirements(m_PhysicsWorld, m_PhysicsCommon,
                                         m_Registry);
   m_AddCollider.SetDispatcher(m_Dispatcher); // event dispatcher
@@ -138,9 +142,7 @@ void APE_Window::_run() {
   m_Camera.SetTarget(glm::vec3(0.0f));
   m_Camera.SetInitialState(m_CamPos, glm::vec3(0.0f), -90.0f, 0.0f);
 
-  // DUMMY DATA FOR LIGHTS
   glm::vec3 lightColor = glm::vec3(1.0f);
-  // this->m_MainShader->SetVec3(lightColor, "lightColor");
 
   unsigned int count = 0;
 
@@ -172,34 +174,19 @@ void APE_Window::_run() {
     float currTime = glfwGetTime();
     deltaTime = currTime - lastTime;
     lastTime = currTime;
-    m_Camera.ResetViewSmooth(deltaTime); // HOME key enables cam to return to
-                                         // original pos, using glm::lerp
+    m_Camera.ResetViewSmooth(deltaTime);
 
-    // check if mouse is clicked
-
-    // update it here, check if the transforms arent the same,
-    // I am stupid, I am stupid -> Coll Leclerc
     if (worldrun) {
-      // use colider to update positions
       m_PhysicsWorld->update(deltaTime);
 
-      // grab transform, physics body and physics data, update the physics body
-      // using physics grab the new transform, retrieve the position, then
-      // update the physics body and mesh position
       auto view = m_Registry.view<Transform, PhysicsBody, PhysicsData>();
       for (auto [entity, transform, fzxBody, fzxData] : view.each()) {
 
-        // grab new pos
         const rp3d::Transform &newTrans = fzxBody.s_Body->getTransform();
         const rp3d::Vector3 &newPosition = newTrans.getPosition();
 
-        // update physics data pos
         fzxData.s_Position_C = newPosition;
 
-        // update mesh position
-        // mesh pos is a glm::vec3 while new transform is a rp3d::Vector3 hence
-        // the value wise update, anywhere rp3d::Vector3 and glm::vec3 will need
-        // an interchange of data, this will be the format,
         transform.s_Position.x = newPosition.x;
         transform.s_Position.y = newPosition.y;
         transform.s_Position.z = newPosition.z;
@@ -244,47 +231,33 @@ void APE_Window::_run() {
       ImGui::End();
     });
 
-    // // probably should be moved somewhere else
-    // // meanwhile, delete and duplicate abilities
-    if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
-        m_EventSystem.Keys & (int)Alicia::D) {
-      m_DuplicateSystem.AddDuplicate(m_Registry,
-                                     m_Dispatcher); // duplicate
-    }
-    if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
-        m_EventSystem.Keys & (int)Alicia::X) {
-      ImGui::OpenPopup("Delete Object");
+    if (m_Camera.m_IsInViewPort) {
+
+      if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
+          m_EventSystem.Keys & (int)Alicia::D) {
+        m_DuplicateSystem.AddDuplicate(m_Registry,
+                                       m_Dispatcher); // duplicate
+      }
+
+      if (m_EventSystem.Keys & (int)Alicia::SHIFT &&
+          m_EventSystem.Keys & (int)Alicia::X) {
+        ImGui::OpenPopup("Delete Object");
+      }
+      this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
+                                        m_PhysicsWorld, m_PhysicsCommon);
     }
 
     if (m_ConfirmPopUp.ConfirmDelete())
-      //     // bug was here, now fixed
-      m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete
+      m_RemoveEntity.RemoveEntity(m_Registry, m_PhysicsWorld); // delete }
 
     SetUpMenuBar(m_Window, m_Dispatcher);
 
-    // set up the projection matrix,
-    // this->m_MainShader->SetMat4(projection, "projection");
-
-    // needs to be changed -> use dispatcher to call this when Shift->A is
-    // called
-    this->m_AddObjectPopUp.SetUpPopUp(this->m_Window, this->m_Registry,
-                                      m_PhysicsWorld, m_PhysicsCommon);
-
-    // render call -> render first, then blit the framebuffer, so that the
-    // rendered buffer is shown immediately, not the previous buffer as
-    // originally put
     m_RenderSystem.RenderEntities(m_MainFrameBuffer_UniquePtr, m_Registry,
                                   m_MainShader_SharedPtr);
-    //
-    // m_RenderCollider.RenderColliders(m_MainFrameBuffer, m_Registry,
-    // m_MainShader);
 
     this->m_MainInterface_UniquePtr
         ->NewRenderIMGUI(); // render the imgui windows
-
-    // clear the vectors in the input event system
-    // m_EventSystem.m_KeysPressed.clear();
-    // m_EventSystem.m_ModKeys.clear();
+                            //
     m_EventSystem.Keys = 0;
     glfwSwapBuffers(this->m_Window);
     glfwPollEvents();

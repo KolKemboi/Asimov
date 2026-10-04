@@ -36,45 +36,51 @@ glm::mat4 Camera::GetViewMatrix() {
 };
 
 void Camera::ProcessOrbit(float xOffset, float yOffset) {
-  xOffset *= m_MouseSens;
-  yOffset *= m_MouseSens;
+  if (m_IsInViewPort) {
+    xOffset *= m_MouseSens;
+    yOffset *= m_MouseSens;
 
-  m_Yaw += xOffset;
-  m_Pitch += yOffset;
+    m_Yaw += xOffset;
+    m_Pitch += yOffset;
 
-  if (m_Pitch > 89.0f)
-    this->m_Pitch = 89.0f;
-  if (m_Pitch < -89.0f)
-    this->m_Pitch = -89.0f;
+    if (m_Pitch > 89.0f)
+      this->m_Pitch = 89.0f;
+    if (m_Pitch < -89.0f)
+      this->m_Pitch = -89.0f;
 
-  this->_updateCameVectors();
+    this->_updateCameVectors();
 
-  float distance = glm::distance(m_Position, m_Target);
-  m_Position = m_Target - m_Front * distance;
+    float distance = glm::distance(m_Position, m_Target);
+    m_Position = m_Target - m_Front * distance;
+  }
 }
 
 void Camera::ProcessPan(float xOffset, float yOffset) {
-  float panSpeed = 0.005f;
+  if (m_IsInViewPort) {
+    float panSpeed = 0.005f;
 
-  glm::vec3 panRight = m_Right * (-xOffset * panSpeed);
-  glm::vec3 panUp = m_Up * (-yOffset * panSpeed);
+    glm::vec3 panRight = m_Right * (-xOffset * panSpeed);
+    glm::vec3 panUp = m_Up * (-yOffset * panSpeed);
 
-  m_Position += panRight + panUp;
-  m_Target += panRight + panUp;
+    m_Position += panRight + panUp;
+    m_Target += panRight + panUp;
+  }
 }
+
 void Camera::ProcessDolly(float yOffset) {
+  if (m_IsInViewPort) {
+    float dollySpeed = 0.5f;
 
-  float dollySpeed = 0.5f;
+    glm::vec3 dir = glm::normalize(m_Target - m_Position);
+    float distance = glm::distance(m_Position, m_Target);
 
-  glm::vec3 dir = glm::normalize(m_Target - m_Position);
-  float distance = glm::distance(m_Position, m_Target);
+    float newDistance = distance - (yOffset * dollySpeed);
+    if (newDistance < 0.1f)
+      newDistance = 0.1f;
 
-  float newDistance = distance - (yOffset * dollySpeed);
-  if (newDistance < 0.1f)
-    newDistance = 0.1f;
-
-  // printf("Poss %f %f %f\n", m_Position.x, m_Position.y, m_Position.z);
-  m_Position = m_Target - dir * newDistance;
+    // printf("Poss %f %f %f\n", m_Position.x, m_Position.y, m_Position.z);
+    m_Position = m_Target - dir * newDistance;
+  }
 }
 void Camera::SetInitialState(const glm::vec3 &pos, const glm::vec3 &target,
                              float yaw = YAW, float pitch = PITCH) {
@@ -84,7 +90,7 @@ void Camera::SetInitialState(const glm::vec3 &pos, const glm::vec3 &target,
   m_InitialPitch = pitch;
 }
 void Camera::ResetViewSmooth(float deltaTime) {
-  if (m_IsResetting) {
+  if (m_IsResetting && m_IsInViewPort) {
     float speed = 2.0f;
     float t = glm::clamp(deltaTime * speed, 0.0f, 1.0f);
 

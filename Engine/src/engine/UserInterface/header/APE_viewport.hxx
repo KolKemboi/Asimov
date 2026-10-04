@@ -1,9 +1,12 @@
 #pragma once
 
 #include "APE_Dispatcher.hpp"
+#include "APE_DuplicateSystem.hxx"
+#include "APE_EditRegistrySystem.hxx"
 #include "APE_FBO.hpp"
 #include "APE_KeyEvents.hpp"
 #include "APE_camera.hpp"
+#include "APE_confirmpopup.hxx"
 #include "APE_eventsystem.hxx"
 #include <APE_Components.hpp>
 #include <ImGuizmo.h>
@@ -23,16 +26,28 @@ class Viewport {
 public:
   bool isComplete = false;
   ImGuizmo::MODE mode = ImGuizmo::WORLD;
+  bool inViewPort = false;
 
   void View(std::unique_ptr<FrameBuffer> &framebuffer, Camera &camera,
             entt::registry &reg, std::shared_ptr<Shader> &shader,
             EventSystem &eventSystem, Dispatcher &dispatcher) {
+
+    // bit clean to get mouse x and y
+    int mouseX = eventSystem.MousePos & 0xFFFFu;
+    int mouseY = eventSystem.MousePos >> 16;
+
     ImGuizmo::BeginFrame();
 
     // ImGui::Begin("Viewport");
 
     ImVec2 Pos = ImGui::GetWindowPos();
     ImVec2 avail = ImGui::GetContentRegionAvail();
+    ImVec2 size = ImGui::GetWindowSize();
+
+    inViewPort = mouseX >= Pos.x && mouseX < Pos.x + size.x &&
+                 mouseY >= Pos.y && mouseY < Pos.y + size.y;
+
+    camera.m_IsInViewPort = inViewPort;
 
     unsigned int imguiWidth = (unsigned int)avail.x;
     unsigned int imguiHeight = (unsigned int)avail.y;
@@ -66,35 +81,38 @@ public:
     ImGuizmo::SetRect(Pos.x, Pos.y, avail.x, avail.y);
 
     static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
-    if (eventSystem.Keys & (int)Alicia::W) {
-      operation = ImGuizmo::TRANSLATE;
-    }
-    if (eventSystem.Keys & (int)Alicia::E) {
-      operation = ImGuizmo::ROTATE;
-    }
-    if (eventSystem.Keys & (int)Alicia::R) {
-      operation = ImGuizmo::SCALE;
-    }
-    if (eventSystem.Keys & (int)Alicia::SHIFT &&
-        eventSystem.Keys & (int)Alicia::G) {
-      mode = ImGuizmo::WORLD;
-    }
-    if (eventSystem.Keys & (int)Alicia::SHIFT &&
-        eventSystem.Keys & (int)Alicia::L) {
-      mode = ImGuizmo::LOCAL;
-    }
 
-    if (eventSystem.Keys & (int)Alicia::CTRL &&
-        eventSystem.Keys & (int)Alicia::X) {
-      operation = ImGuizmo::ROTATE_X;
-    }
-    if (eventSystem.Keys & (int)Alicia::CTRL &&
-        eventSystem.Keys & (int)Alicia::Y) {
-      operation = ImGuizmo::ROTATE_Y;
-    }
-    if (eventSystem.Keys & (int)Alicia::CTRL &&
-        eventSystem.Keys & (int)Alicia::Z) {
-      operation = ImGuizmo::ROTATE_Z;
+    if (inViewPort) {
+      if (eventSystem.Keys & (int)Alicia::W) {
+        operation = ImGuizmo::TRANSLATE;
+      }
+      if (eventSystem.Keys & (int)Alicia::E) {
+        operation = ImGuizmo::ROTATE;
+      }
+      if (eventSystem.Keys & (int)Alicia::R) {
+        operation = ImGuizmo::SCALE;
+      }
+      if (eventSystem.Keys & (int)Alicia::SHIFT &&
+          eventSystem.Keys & (int)Alicia::G) {
+        mode = ImGuizmo::WORLD;
+      }
+      if (eventSystem.Keys & (int)Alicia::SHIFT &&
+          eventSystem.Keys & (int)Alicia::L) {
+        mode = ImGuizmo::LOCAL;
+      }
+
+      if (eventSystem.Keys & (int)Alicia::CTRL &&
+          eventSystem.Keys & (int)Alicia::X) {
+        operation = ImGuizmo::ROTATE_X;
+      }
+      if (eventSystem.Keys & (int)Alicia::CTRL &&
+          eventSystem.Keys & (int)Alicia::Y) {
+        operation = ImGuizmo::ROTATE_Y;
+      }
+      if (eventSystem.Keys & (int)Alicia::CTRL &&
+          eventSystem.Keys & (int)Alicia::Z) {
+        operation = ImGuizmo::ROTATE_Z;
+      }
     }
 
     glm::mat4 view = camera.GetViewMatrix();

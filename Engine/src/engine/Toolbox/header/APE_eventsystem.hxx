@@ -33,26 +33,26 @@ public:
     m_MouseOffset.xOffset = xOffset;
 
     if (xOffset == -1) {
-      Keys |= (int)Alicia::MOUSE_ON_X;
-      Keys |= (int)Alicia::MOUSE_X_SIGN;
+      Keys |= (uint)Alicia::MOUSE_ON_X;
+      Keys |= (uint)Alicia::MOUSE_X_SIGN;
     } else if (xOffset == 1) {
-      Keys |= (int)Alicia::MOUSE_ON_X;
-      Keys &= ~(int)Alicia::MOUSE_X_SIGN;
+      Keys |= (uint)Alicia::MOUSE_ON_X;
+      Keys &= ~(uint)Alicia::MOUSE_X_SIGN;
     } else {
-      Keys &= ~(int)Alicia::MOUSE_ON_X;
-      Keys &= ~(int)Alicia::MOUSE_X_SIGN;
+      Keys &= ~(uint)Alicia::MOUSE_ON_X;
+      Keys &= ~(uint)Alicia::MOUSE_X_SIGN;
     }
     m_MouseOffset.yOffset = yOffset;
 
     if (yOffset == -1) {
-      Keys |= (int)Alicia::MOUSE_ON_Y;
-      Keys |= (int)Alicia::MOUSE_Y_SIGN;
+      Keys |= (uint)Alicia::MOUSE_ON_Y;
+      Keys |= (uint)Alicia::MOUSE_Y_SIGN;
     } else if (yOffset == 1) {
-      Keys |= (int)Alicia::MOUSE_ON_Y;
-      Keys &= ~(int)Alicia::MOUSE_Y_SIGN;
+      Keys |= (uint)Alicia::MOUSE_ON_Y;
+      Keys &= ~(uint)Alicia::MOUSE_Y_SIGN;
     } else {
-      Keys &= ~(int)Alicia::MOUSE_ON_Y;
-      Keys &= ~(int)Alicia::MOUSE_Y_SIGN;
+      Keys &= ~(uint)Alicia::MOUSE_ON_Y;
+      Keys &= ~(uint)Alicia::MOUSE_Y_SIGN;
     }
   }
 
@@ -61,109 +61,109 @@ public:
                    int mods) {
 
     if (mods == GLFW_MOD_SHIFT && action == GLFW_PRESS)
-      Keys |= (int)Alicia::SHIFT;
+      Keys |= (uint)Alicia::SHIFT;
 
     if (mods == GLFW_MOD_ALT && action == GLFW_PRESS)
-      Keys |= (int)Alicia::ALT;
+      Keys |= (uint)Alicia::ALT;
 
     if (mods == GLFW_MOD_CONTROL && action == GLFW_PRESS)
-      Keys |= (int)Alicia::CTRL;
+      Keys |= (uint)Alicia::CTRL;
 
     if (key == GLFW_KEY_DELETE && action == GLFW_PRESS)
-      Keys |= (int)Alicia::DELETE;
+      Keys |= (uint)Alicia::DELETE;
 
     if (key == GLFW_KEY_Q && action == GLFW_PRESS)
-      Keys |= (int)Alicia::Q;
+      Keys |= (uint)Alicia::Q;
 
     if (key == GLFW_KEY_W && action == GLFW_PRESS)
-      Keys |= (int)Alicia::W;
+      Keys |= (uint)Alicia::W;
 
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
-      Keys |= (int)Alicia::E;
+      Keys |= (uint)Alicia::E;
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
-      Keys |= (int)Alicia::R;
+      Keys |= (uint)Alicia::R;
 
     if (key == GLFW_KEY_T && action == GLFW_PRESS)
-      Keys |= (int)Alicia::T;
+      Keys |= (uint)Alicia::T;
 
     if (key == GLFW_KEY_Y && action == GLFW_PRESS)
-      Keys |= (int)Alicia::Y;
+      Keys |= (uint)Alicia::Y;
 
     if (key == GLFW_KEY_U && action == GLFW_PRESS)
-      Keys |= (int)Alicia::U;
+      Keys |= (uint)Alicia::U;
 
     if (key == GLFW_KEY_I && action == GLFW_PRESS)
-      Keys |= (int)Alicia::I;
+      Keys |= (uint)Alicia::I;
 
     if (key == GLFW_KEY_O && action == GLFW_PRESS)
-      Keys |= (int)Alicia::O;
+      Keys |= (uint)Alicia::O;
 
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
-      Keys |= (int)Alicia::P;
+      Keys |= (uint)Alicia::P;
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS)
-      Keys |= (int)Alicia::A;
+      Keys |= (uint)Alicia::A;
 
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
-      Keys |= (int)Alicia::S;
+      Keys |= (uint)Alicia::S;
 
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
-      Keys |= (int)Alicia::D;
+      Keys |= (uint)Alicia::D;
 
     if (key == GLFW_KEY_F && action == GLFW_PRESS)
-      Keys |= (int)Alicia::F;
+      Keys |= (uint)Alicia::F;
 
     if (key == GLFW_KEY_G && action == GLFW_PRESS)
-      Keys |= (int)Alicia::G;
+      Keys |= (uint)Alicia::G;
 
     if (key == GLFW_KEY_H && action == GLFW_PRESS)
-      Keys |= (int)Alicia::H;
+      Keys |= (uint)Alicia::H;
 
     if (key == GLFW_KEY_J && action == GLFW_PRESS)
-      Keys |= (int)Alicia::J;
+      Keys |= (uint)Alicia::J;
 
     if (key == GLFW_KEY_K && action == GLFW_PRESS)
-      Keys |= (int)Alicia::K;
+      Keys |= (uint)Alicia::K;
 
     if (key == GLFW_KEY_L && action == GLFW_PRESS)
-      Keys |= (int)Alicia::L;
+      Keys |= (uint)Alicia::L;
 
     if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-      Keys |= (int)Alicia::Z;
+      Keys |= (uint)Alicia::Z;
 
     if (key == GLFW_KEY_X && action == GLFW_PRESS)
-      Keys |= (int)Alicia::X;
+      Keys |= (uint)Alicia::X;
 
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
-      Keys |= (int)Alicia::C;
+      Keys |= (uint)Alicia::C;
 
     if (key == GLFW_KEY_V && action == GLFW_PRESS)
-      Keys |= (int)Alicia::V;
+      Keys |= (uint)Alicia::V;
 
     if (key == GLFW_KEY_B && action == GLFW_PRESS)
-      Keys |= (int)Alicia::B;
+      Keys |= (uint)Alicia::B;
 
     if (key == GLFW_KEY_N && action == GLFW_PRESS)
-      Keys |= (int)Alicia::N;
+      Keys |= (uint)Alicia::N;
 
     if (key == GLFW_KEY_M && action == GLFW_PRESS)
-      Keys |= (int)Alicia::M;
+      Keys |= (uint)Alicia::M;
 
     if (key == GLFW_KEY_HOME && action == GLFW_PRESS)
-      Keys |= (int)Alicia::HOME;
+      Keys |= (uint)Alicia::HOME;
   }
   // bit set mouse key press events
   void MouseButtonCallback(GLFWwindow *window, int button, int action,
                            int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-      Keys |= (int)Alicia::LEFT;
+      Keys |= (uint)Alicia::LEFT;
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-      Keys |= (int)Alicia::RIGHT;
+      Keys |= (uint)Alicia::RIGHT;
 
     if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
-      Keys |= (int)Alicia::MIDDLE;
+      Keys |= (uint)Alicia::MIDDLE;
   }
 
 private:

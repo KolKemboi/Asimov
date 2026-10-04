@@ -38,6 +38,8 @@ public:
   glm::vec3 GetTarget() const { return m_Target; }
   void SetTarget(const glm::vec3 &target) { m_Target = target; }
 
+	bool m_IsInViewPort = false;
+
 private:
   glm::vec3 m_Position, m_Front, m_Up, m_Target, m_Right, m_WorldUp;
   float m_Yaw, m_Pitch;

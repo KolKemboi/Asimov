@@ -36,6 +36,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 #include <optional>
+
 /*
  * APE window is resposible for setting up the openGL context,
  * Provides a framebuffer, to which the renderer will render to
@@ -49,6 +50,13 @@
 // --INFO: this class should be renamed as Resource Center
 // a monolith of some sort
 namespace rp3d = reactphysics3d; // prevent using reactphysics3d everywhere
+
+struct M_ENGINE_STATE {
+  Camera *camera;
+  entt::registry *registry;
+  rp3d::PhysicsCommon *physicsCommon;
+  rp3d::PhysicsWorld *physicsWorld;
+};
 
 class APE_Window {
 public:
